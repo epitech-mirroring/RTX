@@ -6,7 +6,7 @@
 ** You can even have multiple lines if you want !
 */
 
-#include <sfml/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include <chrono>
 #include <iostream>
 
@@ -18,7 +18,7 @@ const float deg2Rad = 3.14159265358979323846f / 180.0f;
 struct Camera {
     sf::Glsl::Vec3 position;
     sf::Glsl::Vec3 rotation;
-    float fieldOfView = 90;
+    float fieldOfView = 60;
 };
 
 sf::Glsl::Mat4 Translation(sf::Glsl::Vec3 translation)
@@ -66,13 +66,16 @@ int main(int argc, char **argv)
 {
     sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "RTX");
     sf::Shader shader;
-    sf::Texture texture;
-    texture.create(WIDTH, HEIGHT);
-    sf::Sprite sprite = sf::Sprite(texture);
+    sf::RectangleShape fullscreenRect = sf::RectangleShape(sf::Vector2f(WIDTH, HEIGHT));
+    fullscreenRect.setFillColor(sf::Color::White);
+    fullscreenRect.setPosition(0, 0);
     Camera camera = {sf::Glsl::Vec3(0, 0, 0), sf::Glsl::Vec3(0, 0, 0)};
-    float focusDistance = 1;
-    float planeHeight = focusDistance * tan(camera.fieldOfView * 0.5f * deg2Rad) * 2;
-    float planeWidth = planeHeight * WIDTH / HEIGHT;
+    float nearClipPlane = 1;
+    float planeHeight = nearClipPlane * tan(camera.fieldOfView * 0.5f * deg2Rad) * 2.0f;
+    float planeWidth = planeHeight * ((float) WIDTH / (float) HEIGHT);
+    bool mousePressed = false;
+    int lastMouseX = 0;
+    int lastMouseY = 0;
 
     shader.loadFromFile("shaders/fragment.glsl", sf::Shader::Fragment);
     while (window.isOpen()) {
@@ -80,24 +83,30 @@ int main(int argc, char **argv)
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::MouseButtonPressed)
+                mousePressed = true;
+            if (event.type == sf::Event::MouseButtonReleased)
+                mousePressed = false;
+            if (event.type == sf::Event::MouseMoved) {
+                if (mousePressed) {
+                camera.rotation.y +=
+                        (float) (event.mouseMove.x - lastMouseX) * 0.01f;
+                camera.rotation.x +=
+                        (float) (event.mouseMove.y - lastMouseY) * 0.01f;
+                }
+                lastMouseX = event.mouseMove.x;
+                lastMouseY = event.mouseMove.y;
+            }
+
         }
         window.clear();
         // Draw here
-        texture.update(window);
         shader.setUniform("u_time", (float) std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
         shader.setUniform("u_resolution", sf::Glsl::Vec2(WIDTH, HEIGHT));
         shader.setUniform("cameraPosition", camera.position);
-        sf::Glsl::Mat4 cameraLocalToWorldMatrix = CameraLocalToWorldMatrix(camera);
-        // Print matrix
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++)
-                std::cout << cameraLocalToWorldMatrix.array[i*4 + j] << " ";
-            std::cout << std::endl;
-        }
         shader.setUniform("cameraLocalToWorldMatrix", CameraLocalToWorldMatrix(camera));
-        shader.setUniform("viewParams", sf::Glsl::Vec3(planeWidth, planeHeight, focusDistance));
-        window.draw(sprite, &shader);
+        shader.setUniform("viewParams", sf::Glsl::Vec3(planeWidth, planeHeight, nearClipPlane));
+        window.draw(fullscreenRect, &shader);
         window.display();
-        // Update here
     }
 }

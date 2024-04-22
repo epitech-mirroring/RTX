@@ -1,3 +1,5 @@
+#version 120
+
 struct Sphere {
     vec3 center;
     float radius;
@@ -35,24 +37,30 @@ uniform vec3 viewParams;
 uniform vec3 cameraPosition;
 uniform mat4 cameraLocalToWorldMatrix;
 
-mat4 mul(mat4 a, vec4 b) {
-    return mat4(
-        a[0] * b.x,
-        a[1] * b.y,
-        a[2] * b.z,
-        a[3] * b.w
-    );
-}
-
 void main() {
-    vec2 uv = gl_TexCoord[0].xy * 2.0 - 1.0;
-    vec3 viewPointLocal = vec3(uv - 0.5, 1.0) * viewParams;
-    mat4 temp = mul(cameraLocalToWorldMatrix, vec4(viewPointLocal, 1.0));
-    vec3 viewPointWorld = vec3(temp[0].w, temp[1].w, temp[2].w);
+    // Screen space (0 -> 0,5)
+    vec2 p = gl_FragCoord.xy*2.0 - vec2(1920.0, 1080.0);
+    gl_FragColor = vec4(p.x, p.y, 0.0, 1.0);
 
-    Ray ray;
+/*
+    gl_FragColor = vec4(uv.x, uv.y, 0.0, 1.0);
+    // View space (-1 -> 1)
+    vec3 viewPointLocal = vec3(uv * 4.0 - 2.0, 1.0);
+    // World space
+    vec3 viewPointWorld = (cameraLocalToWorldMatrix * vec4(viewPointLocal, 1.0)).xyz;
+
+    /*Ray ray;
     ray.origin = cameraPosition;
-    ray.direction = normalize(viewPointWorld - ray.origin);
+    ray.direction = normalize(viewPointWorld - cameraPosition);
 
-    gl_FragColor = vec4(uv.yyy, 1.0);
+    Sphere sphere;
+    sphere.center = vec3(0.0, 0.0, 10.0);
+    sphere.radius = 0.5;
+
+    RayHit hit = hitSphere(ray, sphere);
+    if (hit.hit) {
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    } else {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    } */
 }
