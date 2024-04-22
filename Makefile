@@ -14,7 +14,8 @@ CXX_TESTS		=
 # Compiler and linker settings
 NAME 			= 	raytracer
 CXX				= 	g++
-CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include \
+					-lsfml-graphics -lsfml-window -lsfml-system
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
