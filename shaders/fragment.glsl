@@ -45,7 +45,7 @@ mat4 mul(mat4 a, vec4 b) {
 }
 
 void main() {
-    vec2 uv = gl_TexCoord[0].xy; // 0.0 to 1.0
+    vec2 uv = gl_TexCoord[0].xy * 2.0 - 1.0;
     vec3 viewPointLocal = vec3(uv - 0.5, 1.0) * viewParams;
     mat4 temp = mul(cameraLocalToWorldMatrix, vec4(viewPointLocal, 1.0));
     vec3 viewPointWorld = vec3(temp[0].w, temp[1].w, temp[2].w);
@@ -54,5 +54,5 @@ void main() {
     ray.origin = cameraPosition;
     ray.direction = normalize(viewPointWorld - ray.origin);
 
-    gl_FragColor = vec4(ray.direction, 1.0);
+    gl_FragColor = vec4(uv.yyy, 1.0);
 }
