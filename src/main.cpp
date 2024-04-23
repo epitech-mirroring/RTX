@@ -10,8 +10,8 @@
 #include <chrono>
 #include <iostream>
 
-#define WIDTH 1920
-#define HEIGHT 1080
+#define WIDTH 960
+#define HEIGHT 540
 
 const float deg2Rad = 3.14159265358979323846f / 180.0f;
 
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
     int lastMouseX = 0;
     int lastMouseY = 0;
 
-    shader.loadFromFile("shaders/fragment.glsl", sf::Shader::Fragment);
+    shader.loadFromFile("shaders/fragment.frag", sf::Shader::Fragment);
     while (window.isOpen()) {
         sf::Event event = {};
         while (window.pollEvent(event)) {
@@ -97,12 +97,26 @@ int main(int argc, char **argv)
                 lastMouseX = event.mouseMove.x;
                 lastMouseY = event.mouseMove.y;
             }
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Z)
+                    camera.position.z += 0.1f;
+                if (event.key.code == sf::Keyboard::S)
+                    camera.position.z -= 0.1f;
+                if (event.key.code == sf::Keyboard::Q)
+                    camera.position.x -= 0.1f;
+                if (event.key.code == sf::Keyboard::D)
+                    camera.position.x += 0.1f;
+                if (event.key.code == sf::Keyboard::Space)
+                    camera.position.y += 0.1f;
+                if (event.key.code == sf::Keyboard::LShift)
+                    camera.position.y -= 0.1f;
+            }
 
         }
         window.clear();
         // Draw here
         shader.setUniform("u_time", (float) std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
-        shader.setUniform("u_resolution", sf::Glsl::Vec2(WIDTH, HEIGHT));
+        shader.setUniform("resolution", sf::Glsl::Vec2(WIDTH, HEIGHT));
         shader.setUniform("cameraPosition", camera.position);
         shader.setUniform("cameraLocalToWorldMatrix", CameraLocalToWorldMatrix(camera));
         shader.setUniform("viewParams", sf::Glsl::Vec3(planeWidth, planeHeight, nearClipPlane));

@@ -13,9 +13,13 @@ struct Ray {
 struct RayHit {
     bool hit;
     float distance;
+    vec3 normal;
+    vec3 position;
 };
 
 RayHit hitSphere(Ray ray, Sphere sphere) {
+    RayHit hit;
+    hit.hit = false;
     vec3 centeredRayOrigin = ray.origin - sphere.center;
     float a = dot(ray.direction, ray.direction);
     float b = 2.0 * dot(centeredRayOrigin, ray.direction);
@@ -24,34 +28,34 @@ RayHit hitSphere(Ray ray, Sphere sphere) {
     float discriminant = b * b - 4.0 * a * c;
 
     if (discriminant < 0.0) {
-        return RayHit(false, 0.0);
+        return hit;
     }
-
-    float hit1 = (-b - sqrt(discriminant)) / (2.0 * a);
+    hit.hit = true;
+    hit.distance = (-b - sqrt(discriminant)) / (2.0 * a);
+    hit.position = ray.origin + ray.direction * hit.distance;
+    hit.normal = normalize(hit.position - sphere.center);
     // float hit2 = (-b + sqrt(discriminant)) / (2.0 * a);
-    return RayHit(true, hit1);
+    return hit;
 }
 
 uniform float u_time;
 uniform vec3 viewParams;
 uniform vec3 cameraPosition;
 uniform mat4 cameraLocalToWorldMatrix;
+uniform vec2 resolution;
 
 void main() {
-    // Screen space (0 -> 0,5)
-    vec2 p = gl_FragCoord.xy*2.0 - vec2(1920.0, 1080.0);
-    gl_FragColor = vec4(p.x, p.y, 0.0, 1.0);
-
-/*
-    gl_FragColor = vec4(uv.x, uv.y, 0.0, 1.0);
+    // Screen space (0 -> 1)
+    vec2 uv = gl_FragCoord.xy / vec2(resolution);
     // View space (-1 -> 1)
-    vec3 viewPointLocal = vec3(uv * 4.0 - 2.0, 1.0);
+    vec3 viewPointLocal = vec3(uv - 0.5, 1.0) * viewParams;
     // World space
     vec3 viewPointWorld = (cameraLocalToWorldMatrix * vec4(viewPointLocal, 1.0)).xyz;
 
-    /*Ray ray;
+    Ray ray;
     ray.origin = cameraPosition;
     ray.direction = normalize(viewPointWorld - cameraPosition);
+    gl_FragColor = vec4(ray.direction, 1.0);
 
     Sphere sphere;
     sphere.center = vec3(0.0, 0.0, 10.0);
@@ -59,8 +63,8 @@ void main() {
 
     RayHit hit = hitSphere(ray, sphere);
     if (hit.hit) {
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(hit.normal, 1.0);
     } else {
         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-    } */
+    }
 }
