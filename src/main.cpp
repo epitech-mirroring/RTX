@@ -6,6 +6,8 @@
 ** You can even have multiple lines if you want !
 */
 
+#include "GLSL/Vector.hpp"
+
 int main(int argc, char **argv)
 {
     (void)argc;
