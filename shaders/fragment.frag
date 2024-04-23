@@ -30,8 +30,13 @@ RayHit hitSphere(Ray ray, Sphere sphere) {
     if (discriminant < 0.0) {
         return hit;
     }
+    float dist = (-b - sqrt(discriminant)) / (2.0 * a);
+    if (dist < 0.0) {
+        return hit;
+    }
+
     hit.hit = true;
-    hit.distance = (-b - sqrt(discriminant)) / (2.0 * a);
+    hit.distance = dist;
     hit.position = ray.origin + ray.direction * hit.distance;
     hit.normal = normalize(hit.position - sphere.center);
     // float hit2 = (-b + sqrt(discriminant)) / (2.0 * a);
