@@ -8,7 +8,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <cmath>
-#include <chrono>
 #include <iostream>
 
 #define WIDTH 960
@@ -99,18 +98,15 @@ int main(int argc, char **argv)
                 lastMouseY = event.mouseMove.y;
             }
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::Z)
-                    camera.position.z += 0.1f;
-                if (event.key.code == sf::Keyboard::S)
-                    camera.position.z -= 0.1f;
+                // Camera rotation is up
+                if (event.key.code == sf::Keyboard::Z) // Forward
+                    camera.position += sf::Glsl::Vec3(sin(camera.rotation.y), 0, cos(camera.rotation.y)) * 0.1f;
+                if (event.key.code == sf::Keyboard::S) // Backward
+                    camera.position -= sf::Glsl::Vec3(sin(camera.rotation.y), 0, cos(camera.rotation.y)) * 0.1f;
                 if (event.key.code == sf::Keyboard::Q)
-                    camera.position.x -= 0.1f;
+                    camera.position += sf::Glsl::Vec3(-cos(camera.rotation.y), 0, sin(camera.rotation.y)) * 0.1f;
                 if (event.key.code == sf::Keyboard::D)
-                    camera.position.x += 0.1f;
-                if (event.key.code == sf::Keyboard::Space)
-                    camera.position.y += 0.1f;
-                if (event.key.code == sf::Keyboard::LShift)
-                    camera.position.y -= 0.1f;
+                    camera.position += sf::Glsl::Vec3(cos(camera.rotation.y), 0, -sin(camera.rotation.y)) * 0.1f;
             }
 
         }
