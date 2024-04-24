@@ -7,6 +7,7 @@
 */
 
 #include "GLSL/Vector.hpp"
+#include "GLSL/Vertex.hpp"
 
 int main(int argc, char **argv)
 {
