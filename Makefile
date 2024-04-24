@@ -7,9 +7,10 @@
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/main.cpp
+CXX_SOURCES		= 	src/main.cpp \
 
-CXX_TESTS		= 	tests/testsVector.cpp
+CXX_TESTS		= 	tests/testsVector.cpp \
+					tests/testsVertex.cpp \
 
 # Compiler and linker settings
 NAME 			= 	raytracer
