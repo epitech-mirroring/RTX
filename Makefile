@@ -7,10 +7,11 @@
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/main.cpp \
+CXX_SOURCES		= 	src/main.cpp			\
 
-CXX_TESTS		= 	tests/testsVector.cpp \
-					tests/testsVertex.cpp \
+CXX_TESTS		= 	tests/testsVector.cpp 	\
+					tests/testsVertex.cpp 	\
+					tests/testsMatrix.cpp	\
 
 # Compiler and linker settings
 NAME 			= 	raytracer
@@ -19,7 +20,7 @@ CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
-LOG				= ./build.log
+LOG				=	./build.log
 
 .PHONY: all clean fclean re tests_run clean_test
 
