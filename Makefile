@@ -9,7 +9,7 @@
 # All the source files
 CXX_SOURCES		= 	src/main.cpp
 
-CXX_TESTS		=
+CXX_TESTS		= 	tests/testsVector.cpp
 
 # Compiler and linker settings
 NAME 			= 	raytracer
@@ -124,10 +124,6 @@ tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
 	&& printf "\r$(SUCCESS)\n" \
 	|| printf "\r$(FAILURE)\n";
 	@cat coverage.log;
-
-clean_test:
-# Delete all the object files
-
 
 clean_test:
 	@printf "$(RUNNING) $(RED) 🗑️   Deleting tests.out$(RESET)"
