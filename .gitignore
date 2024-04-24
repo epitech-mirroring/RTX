@@ -112,3 +112,4 @@ Temporary Items
 *.log
 raytracer
 *.xml
+vgcore*
