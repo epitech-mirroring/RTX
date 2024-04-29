@@ -277,6 +277,21 @@ Test(Matrix, equalOperator)
     }
 }
 
+Test(Matrix, equalOperatorSame)
+{
+    auto matrix1 = GLSL::Matrix<4, 4>(0.0, 1.0, 2.0, 3.0,
+                                    4.0, 5.0, 6.0, 7.0,
+                                    8.0, 9.0, 10.0, 11.0,
+                                    12.0, 13.0, 14.0, 15.0);
+    matrix1 = matrix1;
+    for (int i = 0; i < 4; i++) {
+        cr_assert_eq(matrix1[i][0], i * 4, "i: %d, matrix1[i][0]: %f", i, matrix1[i][0]);
+        cr_assert_eq(matrix1[i][1], i * 4 + 1, "i: %d, matrix1[i][1]: %f", i, matrix1[i][1]);
+        cr_assert_eq(matrix1[i][2], i * 4 + 2, "i: %d, matrix1[i][2]: %f", i, matrix1[i][2]);
+        cr_assert_eq(matrix1[i][3], i * 4 + 3, "i: %d, matrix1[i][3]: %f", i, matrix1[i][3]);
+    }
+}
+
 Test(Matrix, Addition) {
     const auto matrix1 = GLSL::Matrix<4, 4>(0.0, 1.0, 2.0, 3.0,
                                                 4.0, 5.0, 6.0, 7.0,

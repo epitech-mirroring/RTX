@@ -53,8 +53,20 @@ Test(Texture, getPath)
     cr_assert_eq(texture.getPath(), "path");
 }
 
+Test(Texture, getPathConst)
+{
+    const Texture texture = Texture("path", Texture::DIFFUSE);
+    cr_assert_eq(texture.getPath(), "path");
+}
+
 Test(Texture, getType)
 {
     Texture texture = Texture("path", Texture::DIFFUSE);
+    cr_assert_eq(texture.getType(), Texture::DIFFUSE);
+}
+
+Test(Texture, getTypeConst)
+{
+    const Texture texture = Texture("path", Texture::DIFFUSE);
     cr_assert_eq(texture.getType(), Texture::DIFFUSE);
 }
