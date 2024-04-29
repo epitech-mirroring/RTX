@@ -8,7 +8,7 @@
 
 #pragma once
 #include "GLSL/Color.hpp"
-#include "Material.hpp"
+#include <string>
 
 class Texture {
 public:
@@ -18,15 +18,18 @@ public:
         NORMAL,
         HEIGHT,
     };
-    Texture();
-    Texture(const Texture &texture);
-    Texture(const std::string &path, const TextureType type);
-    ~Texture() = default;
-    void setPath(const std::string &path);
-    void setType(const TextureType type);
-    const std::string &getPath() const;
-    const TextureType &getType() const;
 private:
     std::string _path;
     TextureType _type;
+public:
+    Texture();
+    Texture(const Texture &texture);
+    Texture(const std::string &path, TextureType type);
+    ~Texture() = default;
+    void setPath(const std::string &path);
+    void setType(TextureType type);
+    [[nodiscard]] std::string getPath() const;
+    [[nodiscard]] std::string &getPath();
+    [[nodiscard]] TextureType getType() const;
+    [[nodiscard]] TextureType &getType();
 };

@@ -7,17 +7,18 @@
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/main.cpp		\
-					src/Color.cpp		\
-					src/Material.cpp	\
-					src/Texture.cpp		\
+CXX_SOURCES		= 	src/main.cpp					\
+					src/Color.cpp					\
+					src/Material.cpp				\
+					src/Texture.cpp					\
 
-CXX_TESTS		=	tests/testsColor.cpp	\
-					tests/testsMaterial.cpp	\
-					tests/testsMatrix.cpp	\
-					tests/testsTexture.cpp	\
-					tests/testsVector.cpp 	\
-					tests/testsVertex.cpp 	\
+CXX_TESTS		=	tests/testsColor.cpp			\
+					tests/testsMaterial.cpp			\
+					tests/testsMatrix.cpp			\
+					tests/testsTexture.cpp			\
+					tests/testsVector.cpp 			\
+					tests/testsVertex.cpp 			\
+					tests/testsTransform.cpp		\
 
 # Compiler and linker settings
 NAME 			= 	raytracer

@@ -44,7 +44,7 @@ Test(Material, Constructor2)
 Test(Material, Constructor3)
 {
     GLSL::Material material = GLSL::Material(GLSL::Color(0.0, 0.0, 0.0), GLSL::Color(0.0, 0.0, 0.0), 0.0, 0.0);
-    GLSL::Material material2 = GLSL::Material(material);
+    auto material2 = GLSL::Material(material);
     cr_assert_eq(material2.getColor().getR(), 0.0);
     cr_assert_eq(material2.getColor().getG(), 0.0);
     cr_assert_eq(material2.getColor().getB(), 0.0);

@@ -23,13 +23,7 @@ GLSL::Color::Color(const double r, const double g, const double b, const double 
     _data[3] = a;
 }
 
-GLSL::Color::Color(const Color &color)
-{
-    _data[0] = color._data[0];
-    _data[1] = color._data[1];
-    _data[2] = color._data[2];
-    _data[3] = color._data[3];
-}
+GLSL::Color::Color(const Color &color) = default;
 
 double GLSL::Color::getR() const
 {

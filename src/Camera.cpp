@@ -15,7 +15,7 @@ Camera::Camera()
     this->_near = 0;
 }
 
-Camera::Camera(Transform transform, float fov, float aspect, float near)
+Camera::Camera(const Transform &transform, float fov, float aspect, float near)
 {
     this->_transform = transform;
     this->_fov = fov;

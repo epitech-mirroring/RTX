@@ -227,7 +227,10 @@ namespace GLSL {
             return _matrix[index];
         }
 
-        Matrix operator=(const Matrix &other) {
+        Matrix &operator=(const Matrix &other) {
+            if (this == &other) {
+                return *this;
+            }
             for (std::size_t i = 0; i < HEIGHT; i++) {
                 _matrix[i] = other[i];
             }
