@@ -67,17 +67,17 @@ Test(Matrix, Determinant)
                                             13.0, 14.0, 15.0, 16.0);
     auto fiveByFive = GLSL::Matrix<5, 5>();
 
-    cr_assert_eq(notSquared.GetDeterminant(), 0.0, "Determinant for non squared matrix %i but should be 0", notSquared.GetDeterminant());
+    cr_assert_eq(notSquared.getDeterminant(), 0.0, "Determinant for non squared matrix %i but should be 0", notSquared.getDeterminant());
     printf("Determinant for non squared matrix: OK\n");
-    cr_assert_eq(oneByOne.GetDeterminant(), 1.0, "Determinant for 1x1 matrix %i but should be itself (here 1)", oneByOne.GetDeterminant());
+    cr_assert_eq(oneByOne.getDeterminant(), 1.0, "Determinant for 1x1 matrix %i but should be itself (here 1)", oneByOne.getDeterminant());
     printf("Determinant for 1x1 matrix: OK\n");
-    cr_assert_eq(twoByTwo.GetDeterminant(), -2.0, "Determinant for 2x2 matrix %i but should be a*d - b*c (here 1*4 - 2*3 = -2)", twoByTwo.GetDeterminant());
+    cr_assert_eq(twoByTwo.getDeterminant(), -2.0, "Determinant for 2x2 matrix %i but should be a*d - b*c (here 1*4 - 2*3 = -2)", twoByTwo.getDeterminant());
     printf("Determinant for 2x2 matrix: OK\n");
-    cr_assert_eq(threeByThree.GetDeterminant(), 0.0, "Determinant for 3x3 matrix %i but should be (a*e*i + b*f*g + c*d*h) - (c*e*g + b*d*i + a*f*h) (here 1*5*9 + 2*6*7 + 3*4*8 - 3*5*7 - 2*4*9 - 1*6*8 = 0)", threeByThree.GetDeterminant());
+    cr_assert_eq(threeByThree.getDeterminant(), 0.0, "Determinant for 3x3 matrix %i but should be (a*e*i + b*f*g + c*d*h) - (c*e*g + b*d*i + a*f*h) (here 1*5*9 + 2*6*7 + 3*4*8 - 3*5*7 - 2*4*9 - 1*6*8 = 0)", threeByThree.getDeterminant());
     printf("Determinant for 3x3 matrix: OK\n");
-    cr_assert_eq(fourByFour.GetDeterminant(), 0.0, "Determinant for 4x4 matrix %i but should be 0", fourByFour.GetDeterminant());
+    cr_assert_eq(fourByFour.getDeterminant(), 0.0, "Determinant for 4x4 matrix %i but should be 0", fourByFour.getDeterminant());
     printf("Determinant for 4x4 matrix: OK\n");
-    cr_assert_throw(fiveByFive.GetDeterminant(), std::runtime_error);
+    cr_assert_throw(fiveByFive.getDeterminant(), std::runtime_error);
 }
 
 Test(Matrix, Identity)
@@ -115,7 +115,7 @@ Test(Matrix, Get_Row) {
                                                 4.0, 5.0, 6.0, 7.0,
                                                 8.0, 9.0, 10.0, 11.0,
                                                 12.0, 13.0, 14.0, 15.0);
-    GLSL::Vector<4> row = matrix.GetRow(2);
+    GLSL::Vector<4> row = matrix.getRow(2);
     cr_assert_eq(row[0], 8.0, "row[0]: %f", row[0]);
     cr_assert_eq(row[1], 9.0, "row[1]: %f", row[1]);
     cr_assert_eq(row[2], 10.0, "row[2]: %f", row[2]);
@@ -125,7 +125,7 @@ Test(Matrix, Get_Row) {
 
 Test(Matrix, getRowThrow) {
     const auto matrix = GLSL::Matrix<1, 1>(0.0);
-    cr_assert_throw(matrix.GetRow(3), std::out_of_range);
+    cr_assert_throw(matrix.getRow(3), std::out_of_range);
 }
 
 Test(Matrix, Get_Column) {
@@ -133,7 +133,7 @@ Test(Matrix, Get_Column) {
                                                 4.0, 5.0, 6.0, 7.0,
                                                 8.0, 9.0, 10.0, 11.0,
                                                 12.0, 13.0, 14.0, 15.0);
-    GLSL::Vector<4> column = matrix.GetColumn(2);
+    GLSL::Vector<4> column = matrix.getColumn(2);
     cr_assert_eq(column[0], 2.0, "column[0]: %f", column[0]);
     cr_assert_eq(column[1], 6.0, "column[1]: %f", column[1]);
     cr_assert_eq(column[2], 10.0, "column[2]: %f", column[2]);
@@ -143,14 +143,14 @@ Test(Matrix, Get_Column) {
 
 Test(Matrix, getColumnThrow) {
     const auto matrix = GLSL::Matrix<1, 1>(0.0);
-    cr_assert_throw(matrix.GetColumn(3), std::out_of_range);
+    cr_assert_throw(matrix.getColumn(3), std::out_of_range);
 }
 
 Test(Matrix, Get_Inverse) {
     auto matrix = GLSL::Matrix<2, 2>(4.0, 3.0,
                                         1.0, 1.0);
 
-    GLSL::Matrix<2, 2> inverse = matrix.GetInverse();
+    GLSL::Matrix<2, 2> inverse = matrix.getInverse();
     cr_assert_eq(inverse[0][0], 1.0, "inverse[0][0]: %f", inverse[0][0]);
     cr_assert_eq(inverse[0][1], -3.0, "inverse[0][1]: %f", inverse[0][1]);
     cr_assert_eq(inverse[1][0], -1.0, "inverse[1][0]: %f", inverse[1][0]);
@@ -165,7 +165,7 @@ Test(Matrix, Get_Inverse) {
                                             2.0, 1.0, 2.0,
                                             -1.0, 2.0, 1.0);
 
-    GLSL::Matrix<3, 3> inverse3 = matrix3.GetInverse();
+    GLSL::Matrix<3, 3> inverse3 = matrix3.getInverse();
     cr_assert_eq(inverse3[0][0], 3.0/16.0, "inverse[0][0]: %f", inverse3[0][0]);
     cr_assert_eq(inverse3[0][1], 1.0/4.0, "inverse[0][1]: %f", inverse3[0][1]);
     cr_assert_eq(inverse3[0][2], -5.0/16.0, "inverse[0][2]: %f", inverse3[0][2]);
@@ -186,7 +186,7 @@ Test(Matrix, Get_Inverse) {
                                             1.0, -1.0, 1.0, 1.0,
                                             -1.0, 1.0, 1.0, 1.0);
 
-    GLSL::Matrix<4, 4> inverse4 = matrix4.GetInverse();
+    GLSL::Matrix<4, 4> inverse4 = matrix4.getInverse();
     cr_assert_eq(inverse4[0][0], 1.0/4.0, "inverse[0][0]: %f", inverse4[0][0]);
     cr_assert_eq(inverse4[0][1], 1.0/4.0, "inverse[0][1]: %f", inverse4[0][1]);
     cr_assert_eq(inverse4[0][2], 1.0/4.0, "inverse[0][2]: %f", inverse4[0][2]);
@@ -214,7 +214,7 @@ Test(Matrix, Get_Inverse_Not_Invertible) {
                                         9.0, 10.0, 11.0, 12.0,
                                         13.0, 14.0, 15.0, 16.0);
     matrix[0][0] = 0.0;
-    cr_assert_throw(matrix.GetInverse(), std::runtime_error);
+    cr_assert_throw(matrix.getInverse(), std::runtime_error);
     printf("Get inverse not invertible: OK\n");
 }
 
@@ -224,7 +224,7 @@ Test(Matrix, Set_Row) {
                                         8.0, 9.0, 10.0, 11.0,
                                         12.0, 13.0, 14.0, 15.0);
     const auto row = GLSL::Vector<4>(42.0, 42.0, 42.0, 42.0);
-    matrix.SetRow(2, row);
+    matrix.setRow(2, row);
     cr_assert_eq(matrix[2][0], 42.0, "matrix[2][0]: %f", matrix[2][0]);
     cr_assert_eq(matrix[2][1], 42.0, "matrix[2][1]: %f", matrix[2][1]);
     cr_assert_eq(matrix[2][2], 42.0, "matrix[2][2]: %f", matrix[2][2]);
@@ -236,7 +236,7 @@ Test(Matrix, Set_Row_Throw)
 {
     auto matrix = GLSL::Matrix<1, 1>(0.0);
     const auto row = GLSL::Vector<1>(0.0);
-    cr_assert_throw(matrix.SetRow(3, row), std::out_of_range);
+    cr_assert_throw(matrix.setRow(3, row), std::out_of_range);
 
 }
 
@@ -246,7 +246,7 @@ Test(Matrix, Set_Column) {
                                         8.0, 9.0, 10.0, 11.0,
                                         12.0, 13.0, 14.0, 15.0);
     const auto column = GLSL::Vector<4>(42.0, 42.0, 42.0, 42.0);
-    matrix.SetColumn(2, column);
+    matrix.setColumn(2, column);
     cr_assert_eq(matrix[0][2], 42.0, "matrix[0][2]: %f", matrix[0][2]);
     cr_assert_eq(matrix[1][2], 42.0, "matrix[1][2]: %f", matrix[1][2]);
     cr_assert_eq(matrix[2][2], 42.0, "matrix[2][2]: %f", matrix[2][2]);
@@ -258,7 +258,7 @@ Test(Matrix, Set_Column_Throw)
 {
     auto matrix = GLSL::Matrix<1, 1>(0.0);
     const auto column = GLSL::Vector<1>(0.0);
-    cr_assert_throw(matrix.SetColumn(3, column), std::out_of_range);
+    cr_assert_throw(matrix.setColumn(3, column), std::out_of_range);
 }
 
 Test(Matrix, equalOperator)

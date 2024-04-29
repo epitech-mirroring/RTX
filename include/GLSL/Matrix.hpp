@@ -60,7 +60,7 @@ namespace GLSL {
             return matrix;
         }
 
-        [[nodiscard]] Matrix<HEIGHT - 1, WIDTH - 1> GetMinor(const std::size_t row, const std::size_t column) const {
+        [[nodiscard]] Matrix<HEIGHT - 1, WIDTH - 1> getMinor(const std::size_t row, const std::size_t column) const {
             if (HEIGHT != WIDTH) {
                 throw std::runtime_error("Matrix must be square to have a minor");
             }
@@ -75,20 +75,20 @@ namespace GLSL {
             return minor;
         }
 
-        [[nodiscard]] Matrix GetAdjugate() const {
+        [[nodiscard]] Matrix getAdjugate() const {
             if (HEIGHT != WIDTH) {
                 throw std::runtime_error("Matrix must be square to have an adjugate");
             }
             Matrix adjugate;
             for (std::size_t i = 0; i < HEIGHT; i++) {
                 for (std::size_t j = 0; j < WIDTH; j++) {
-                    adjugate[i][j] = std::pow(-1, i + j) * GetMinor(i, j).GetDeterminant();
+                    adjugate[i][j] = std::pow(-1, i + j) * getMinor(i, j).getDeterminant();
                 }
             }
             return adjugate;
         }
 
-        [[nodiscard]] int GetDeterminant() const {
+        [[nodiscard]] int getDeterminant() const {
             if (HEIGHT != WIDTH) {
                 return 0;
             }
@@ -123,21 +123,21 @@ namespace GLSL {
                     _matrix[0][1], _matrix[0][2], _matrix[0][3],
                     _matrix[1][1], _matrix[1][2], _matrix[1][3],
                     _matrix[2][1], _matrix[2][2], _matrix[2][3]);
-                return _matrix[0][0] * subMatrix1.GetDeterminant() -
-                       _matrix[1][0] * subMatrix2.GetDeterminant() +
-                       _matrix[2][0] * subMatrix3.GetDeterminant() -
-                       _matrix[3][0] * subMatrix4.GetDeterminant();
+                return _matrix[0][0] * subMatrix1.getDeterminant() -
+                       _matrix[1][0] * subMatrix2.getDeterminant() +
+                       _matrix[2][0] * subMatrix3.getDeterminant() -
+                       _matrix[3][0] * subMatrix4.getDeterminant();
             }
             throw std::runtime_error("Matrix determinant not implemented for N > 4");
         }
 
-        [[nodiscard]] Vector<WIDTH> GetRow(std::size_t row) const {
+        [[nodiscard]] Vector<WIDTH> getRow(std::size_t row) const {
             if (row >= HEIGHT) {
                 throw std::out_of_range("Row index out of range");
             }
             return _matrix[row];
         }
-        [[nodiscard]] Vector<HEIGHT> GetColumn(std::size_t column) const {
+        [[nodiscard]] Vector<HEIGHT> getColumn(std::size_t column) const {
             if (column >= WIDTH) {
                 throw std::out_of_range("Column index out of range");
             }
@@ -147,11 +147,11 @@ namespace GLSL {
             }
             return columnVector;
         }
-        [[nodiscard]] Matrix GetInverse() const {
+        [[nodiscard]] Matrix getInverse() const {
             if (HEIGHT != WIDTH) {
                 throw std::runtime_error("Matrix must be square to have an inverse");
             }
-            double determinant = GetDeterminant();
+            double determinant = getDeterminant();
             if (determinant == 0) {
                 throw std::runtime_error("Matrix determinant is zero");
             }
@@ -193,19 +193,19 @@ namespace GLSL {
                 );
             }
             if (HEIGHT == 4) {
-                return (1.0/determinant) * this->GetAdjugate();
+                return (1.0/determinant) * this->getAdjugate();
             }
 
             throw std::runtime_error("Matrix inverse not implemented for N > 4");
         }
 
-        void SetRow(std::size_t row, Vector<WIDTH> vector) {
+        void setRow(std::size_t row, Vector<WIDTH> vector) {
             if (row >= HEIGHT) {
                 throw std::out_of_range("Row index out of range");
             }
             _matrix[row] = vector;
         }
-        void SetColumn(std::size_t column, Vector<HEIGHT> vector) {
+        void setColumn(std::size_t column, Vector<HEIGHT> vector) {
             if (column >= WIDTH) {
                 throw std::out_of_range("Column index out of range");
             }
@@ -262,7 +262,7 @@ namespace GLSL {
             return result;
         }
         Matrix operator/(const Matrix &other) const {
-            return *this * other.GetInverse();
+            return *this * other.getInverse();
         }
 
         Matrix operator+(const Vector<WIDTH> &other) const {

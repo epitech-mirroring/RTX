@@ -27,29 +27,29 @@ namespace GLSL {
             _uv = uv;
         };
         Vertex(const Vertex &other) {
-            _position = other.GetPosition();
-            _normal = other.GetNormal();
-            _uv = other.GetUV();
+            _position = other.getPosition();
+            _normal = other.getNormal();
+            _uv = other.getUV();
         };
         ~Vertex() = default;
 
-        [[nodiscard]] Vector<3> GetPosition() const {
+        [[nodiscard]] Vector<3> getPosition() const {
             return _position;
         };
-        [[nodiscard]] Vector<3> GetNormal() const {
+        [[nodiscard]] Vector<3> getNormal() const {
             return _normal;
         };
-        [[nodiscard]] Vector<2> GetUV() const {
+        [[nodiscard]] Vector<2> getUV() const {
             return _uv;
         };
 
-        void SetPosition(const Vector<3>& position) {
+        void setPosition(const Vector<3>& position) {
             _position = position;
         };
-        void SetNormal(const Vector<3>& normal) {
+        void setNormal(const Vector<3>& normal) {
             _normal = normal;
         };
-        void SetUV(const Vector<2>& uv) {
+        void setUV(const Vector<2>& uv) {
             _uv = uv;
         };
     };
