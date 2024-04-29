@@ -19,7 +19,7 @@ public:
     Camera();
     Camera(Transform transform, float fov, float aspect, float near);
     Camera(const Camera &other);
-    ~Camera();
+    ~Camera() = default;
 
     float GetFov() const;
     float GetAspect() const;
