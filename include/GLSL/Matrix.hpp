@@ -227,6 +227,13 @@ namespace GLSL {
             return _matrix[index];
         }
 
+        Matrix operator=(const Matrix &other) {
+            for (std::size_t i = 0; i < HEIGHT; i++) {
+                _matrix[i] = other[i];
+            }
+            return *this;
+        }
+
         Matrix operator+(const Matrix &other) const {
             Matrix result;
             for (std::size_t i = 0; i < HEIGHT; i++) {
@@ -244,7 +251,7 @@ namespace GLSL {
             for (std::size_t i = 0; i < HEIGHT; i++) {
                 for (std::size_t j = 0; j < OTHER_WIDTH; j++) {
                     result[i][j] = 0;
-                    for (int k = 0; k < WIDTH; k++) {
+                    for (std::size_t k = 0; k < WIDTH; k++) {
                         result[i][j] += _matrix[i][k] * other[k][j];
                     }
                 }
@@ -303,7 +310,7 @@ namespace GLSL {
         }
         Matrix operator/(double scalar) const {
             Matrix result;
-            for (int i = 0; i < HEIGHT; i++) {
+            for (std::size_t i = 0; i < HEIGHT; i++) {
                 result[i] = _matrix[i] / scalar;
             }
             return result;
@@ -374,7 +381,7 @@ namespace GLSL {
         }
 
         bool operator==(const Matrix &other) const {
-            for (int i = 0; i < HEIGHT; i++) {
+            for (std::size_t i = 0; i < HEIGHT; i++) {
                 if (_matrix[i] != other[i]) {
                     return false;
                 }

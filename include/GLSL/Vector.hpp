@@ -61,6 +61,13 @@ namespace GLSL {
             return _data[index];
         };
 
+        Vector &operator=(const Vector &other) {
+            for (std::size_t i = 0; i < N; i++) {
+                _data[i] = other[i];
+            }
+            return *this;
+        };
+
         bool operator==(const Vector &other) const {
             for (std::size_t i = 0; i < N; i++) {
                 if (_data[i] != other[i]) {
@@ -3283,7 +3290,7 @@ namespace GLSL {
             }
             return _data[2];
         };
-        [[nodiscard]] double b() {
+        [[nodiscard]] double &b() {
             if (N < 3) {
                 throw std::invalid_argument("Vector must have at least 3 dimensions");
             }

@@ -96,7 +96,7 @@ Test(Matrix, Copy) {
                                                    4.0, 5.0, 6.0, 7.0,
                                                    8.0, 9.0, 10.0, 11.0,
                                                    12.0, 13.0, 14.0, 15.0);
-    auto copy = GLSL::Matrix(matrix);
+    auto copy = GLSL::Matrix<4, 4>(matrix);
     for (int i = 0; i < 4; i++) {
         cr_assert_eq(copy[i][0], i * 4, "i: %d, copy[i][0]: %f", i, copy[i][0]);
         cr_assert_eq(copy[i][1], i * 4 + 1, "i: %d, copy[i][1]: %f", i, copy[i][1]);
@@ -234,6 +234,22 @@ Test(Matrix, Set_Column) {
     cr_assert_eq(matrix[2][2], 42.0, "matrix[2][2]: %f", matrix[2][2]);
     cr_assert_eq(matrix[3][2], 42.0, "matrix[3][2]: %f", matrix[3][2]);
     printf("Set column: OK\n");
+}
+
+Test(Matrix, equalOperator)
+{
+    auto matrix1 = GLSL::Matrix<4, 4>();
+    auto matrix2 = GLSL::Matrix<4, 4>(0.0, 1.0, 2.0, 3.0,
+                                        4.0, 5.0, 6.0, 7.0,
+                                        8.0, 9.0, 10.0, 11.0,
+                                        12.0, 13.0, 14.0, 15.0);
+    matrix1 = matrix2;
+    for (int i = 0; i < 4; i++) {
+        cr_assert_eq(matrix1[i][0], i * 4, "i: %d, matrix1[i][0]: %f", i, matrix1[i][0]);
+        cr_assert_eq(matrix1[i][1], i * 4 + 1, "i: %d, matrix1[i][1]: %f", i, matrix1[i][1]);
+        cr_assert_eq(matrix1[i][2], i * 4 + 2, "i: %d, matrix1[i][2]: %f", i, matrix1[i][2]);
+        cr_assert_eq(matrix1[i][3], i * 4 + 3, "i: %d, matrix1[i][3]: %f", i, matrix1[i][3]);
+    }
 }
 
 Test(Matrix, Addition) {
