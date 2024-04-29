@@ -207,28 +207,41 @@ Test(Vector, operator_divide_scalar_equal)
     cr_assert(cmp_double(vec[2], 1.5));
 }
 
+Test(Vector, Normalize) {
+    const GLSL::Vector<3> vec(1.0, 2.0, 3.0);
+    GLSL::Vector<3> r = vec.normalize();
+    cr_assert_eq(cmp_double(r.length(), 1.0), true);
+    cr_assert_eq(cmp_double(r[0], 0.267261), true);
+    cr_assert_eq(cmp_double(r[1], 0.534522), true);
+    cr_assert_eq(cmp_double(r[2], 0.801784), true);
+}
+
 Test(Vector, x)
 {
     GLSL::Vector<3> vec(1.0, 2.0, 3.0);
-    cr_assert_eq(vec.x(), 1.0);
+    const double x = vec.x()[0];
+    cr_assert_eq(x, 1.0);
 }
 
 Test(Vector, y)
 {
     GLSL::Vector<3> vec(1.0, 2.0, 3.0);
-    cr_assert_eq(vec.y(), 2.0);
+    double y = vec.y()[0];
+    cr_assert_eq(y, 2.0);
 }
 
 Test(Vector, z)
 {
     GLSL::Vector<3> vec(1.0, 2.0, 3.0);
-    cr_assert_eq(vec.z(), 3.0);
+    double z = vec.z()[0];
+    cr_assert_eq(z, 3.0);
 }
 
 Test(Vector, w)
 {
     GLSL::Vector<4> vec(1.0, 2.0, 3.0, 4.0);
-    cr_assert_eq(vec.w(), 4.0);
+    double w = vec.w()[0];
+    cr_assert_eq(w, 4.0);
 }
 
 Test(Vector, xx)
@@ -3466,25 +3479,29 @@ Test(Vector, wwww)
 Test(Vector, r)
 {
     GLSL::Vector<4> vec(1.0, 2.0, 3.0, 4.0);
-    cr_assert_eq(vec.r(), 1.0);
+    double r = vec.r()[0];
+    cr_assert_eq(r, 1.0);
 }
 
 Test(Vector, g)
 {
     GLSL::Vector<4> vec(1.0, 2.0, 3.0, 4.0);
-    cr_assert_eq(vec.g(), 2.0);
+    double g = vec.g()[0];
+    cr_assert_eq(g, 2.0);
 }
 
 Test(Vector, b)
 {
     GLSL::Vector<4> vec(1.0, 2.0, 3.0, 4.0);
-    cr_assert_eq(vec.b(), 3.0);
+    double b = vec.b()[0];
+    cr_assert_eq(b, 3.0);
 }
 
 Test(Vector, a)
 {
     GLSL::Vector<4> vec(1.0, 2.0, 3.0, 4.0);
-    cr_assert_eq(vec.a(), 4.0);
+    double a = vec.a()[0];
+    cr_assert_eq(a, 4.0);
 }
 
 Test(Vector, rr)
