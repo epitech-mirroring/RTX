@@ -21,7 +21,7 @@ namespace GLSL {
             _normal = Vector<3>(0.0, 0.0, 0.0);
             _uv = Vector<2>(0.0, 0.0);
         };
-        Vertex(Vector<3> position, Vector<3> normal, Vector<2> uv) {
+        Vertex(const Vector<3>& position, const Vector<3>& normal, const Vector<2>& uv) {
             _position = position;
             _normal = normal;
             _uv = uv;
@@ -33,23 +33,23 @@ namespace GLSL {
         };
         ~Vertex() = default;
 
-        Vector<3> GetPosition() const {
+        [[nodiscard]] Vector<3> GetPosition() const {
             return _position;
         };
-        Vector<3> GetNormal() const {
+        [[nodiscard]] Vector<3> GetNormal() const {
             return _normal;
         };
-        Vector<2> GetUV() const {
+        [[nodiscard]] Vector<2> GetUV() const {
             return _uv;
         };
 
-        void SetPosition(Vector<3> position) {
+        void SetPosition(const Vector<3>& position) {
             _position = position;
         };
-        void SetNormal(Vector<3> normal) {
+        void SetNormal(const Vector<3>& normal) {
             _normal = normal;
         };
-        void SetUV(Vector<2> uv) {
+        void SetUV(const Vector<2>& uv) {
             _uv = uv;
         };
     };
