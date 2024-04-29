@@ -81,11 +81,12 @@ pipeline {
                 sh 'python3 -m pip install -Iv gcovr==6.0'
 
                 script {
-                    def dirs = ['.']
+                    def dirs = []
 
                     for (dir in dirs) {
                         junit(testResults: "${dir}/criterion.xml", allowEmptyResults : true)
                     }
+                    junit(testResults: "criterion.xml", allowEmptyResults : true)
                 }
 
                 sh 'gcovr --cobertura cobertura.xml --exclude tests/'
