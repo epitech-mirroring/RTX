@@ -15,7 +15,8 @@ Camera::Camera()
     this->_near = 0;
 }
 
-Camera::Camera(const Transform &transform, float fov, float aspect, float near)
+Camera::Camera(const Transform &transform, const float fov, const float aspect,
+               const float near)
 {
     this->_transform = transform;
     this->_fov = fov;
@@ -31,37 +32,62 @@ Camera::Camera(const Camera &other)
     this->_near = other._near;
 }
 
-float Camera::GetFov() const
+float Camera::getFov() const
 {
     return this->_fov;
 }
 
-float Camera::GetAspect() const
+float &Camera::getFov()
+{
+    return this->_fov;
+}
+
+float Camera::getAspect() const
 {
     return this->_aspect;
 }
 
-float Camera::GetNear() const
+float &Camera::getAspect()
+{
+    return this->_aspect;
+}
+
+float Camera::getNear() const
 {
     return this->_near;
 }
 
-Transform Camera::GetTransform() const
+float &Camera::getNear()
+{
+    return this->_near;
+}
+
+Transform Camera::getTransform() const
 {
     return this->_transform;
 }
 
-void Camera::SetFov(float fov)
+Transform &Camera::getTransform()
+{
+    return this->_transform;
+}
+
+void Camera::setFov(const float fov)
 {
     this->_fov = fov;
 }
 
-void Camera::SetAspect(float aspect)
+void Camera::setAspect(const float aspect)
 {
     this->_aspect = aspect;
 }
 
-void Camera::SetNear(float near)
+void Camera::setNear(const float near)
 {
     this->_near = near;
+}
+
+void Camera::setTransform(const Transform& transform)
+{
+    this->_transform = transform;
 }

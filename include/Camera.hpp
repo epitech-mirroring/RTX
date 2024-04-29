@@ -17,7 +17,7 @@ protected:
     float _near;
 public:
     Camera();
-    Camera(Transform transform, float fov, float aspect, float near);
+    Camera(const Transform &transform, float fov, float aspect, float near);
     Camera(const Camera &other);
     ~Camera() = default;
 
@@ -34,4 +34,5 @@ public:
     void setFov(float fov);
     void setAspect(float aspect);
     void setNear(float near);
+    void setTransform(const Transform& transform);
 };
