@@ -70,6 +70,16 @@ Test(Vector, operator_brackets_const)
     cr_assert_eq(vec[2], 3.0);
 }
 
+Test(Vector, assign_operator)
+{
+    GLSL::Vector<3> vec;
+    GLSL::Vector<3> vec2(1.0, 2.0, 3.0);
+    vec = vec2;
+    cr_assert_eq(vec[0], vec2[0]);
+    cr_assert_eq(vec[1], vec2[1]);
+    cr_assert_eq(vec[2], vec2[2]);
+}
+
 Test(Vector, operator_equal)
 {
     GLSL::Vector<3> vec(1.0, 2.0, 3.0);

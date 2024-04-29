@@ -114,3 +114,4 @@ raytracer
 *.xml
 vgcore*
 node_modules/
+*.lockb
