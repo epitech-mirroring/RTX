@@ -112,14 +112,18 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"
 
 tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
-	@printf "$(RUNNING) $(BLUE) 🔗  Linking$(RESET)"
+	@printf "$(RUNNING) $(BLUE) 🔗  Linking for $(shell uname -m)\
+ architecture$(RESET)";
 	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \
-	$(CXX_TESTS_OBJS) $(CXXFLAGS) -lcriterion >> $(LOG) 2>&1 \
+	$(CXX_TESTS_OBJS) $(CXXFLAGS) \
+	$(shell [ `uname -m` != "arm64" ]	\
+	&& echo "-lcriterion" \
+	|| echo "-lcriterion") >> $(LOG) 2>&1 \
 	&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n";
 	@printf "$(RUNNING)$(MAGENTA)  ⚗️  Running tests$(RESET)" \
 	&& ./tests.out --xml=criterion.xml --ignore-warnings >> tests.log 2>&1 \
 	&& printf "\r$(SUCCESS)\n" \
-	|| printf "\r$(FAILURE)\n";
+	|| (printf "\r$(FAILURE)\n" && cat tests.log && exit 1);
 	@cat tests.log;
 	@printf "$(RUNNING)$(YELLOW)  📊  Generating coverage$(RESET)" \
 	&& gcovr --exclude tests/ >> coverage.log 2>&1 \

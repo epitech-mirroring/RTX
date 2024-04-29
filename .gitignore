@@ -113,3 +113,4 @@ Temporary Items
 raytracer
 *.xml
 vgcore*
+node_modules/
