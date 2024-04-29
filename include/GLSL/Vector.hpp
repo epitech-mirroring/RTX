@@ -62,6 +62,9 @@ namespace GLSL {
         };
 
         Vector &operator=(const Vector &other) {
+            if (this == &other) {
+                return *this;
+            }
             for (std::size_t i = 0; i < N; i++) {
                 _data[i] = other[i];
             }
@@ -107,7 +110,7 @@ namespace GLSL {
             Vector result;
             for (size_t i = 0; i < N; ++i) {
                 if (other[i] == 0) {
-                    throw std::invalid_argument("Division par zéro.");
+                    throw std::invalid_argument("Division by zero");
                 }
                 result[i] = _data[i] / other[i];
             }

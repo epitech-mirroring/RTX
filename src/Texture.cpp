@@ -36,12 +36,22 @@ void Texture::setType(const TextureType type)
     _type = type;
 }
 
-const std::string &Texture::getPath() const
+std::string Texture::getPath() const
 {
     return _path;
 }
 
-const Texture::TextureType &Texture::getType() const
+Texture::TextureType Texture::getType() const
+{
+    return _type;
+}
+
+std::string &Texture::getPath()
+{
+    return _path;
+}
+
+Texture::TextureType &Texture::getType()
 {
     return _type;
 }

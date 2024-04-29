@@ -21,12 +21,17 @@ public:
     Camera(const Camera &other);
     ~Camera() = default;
 
-    float GetFov() const;
-    float GetAspect() const;
-    float GetNear() const;
-    Transform GetTransform() const;
+    [[nodiscard]] float getFov() const;
+    [[nodiscard]] float getAspect() const;
+    [[nodiscard]] float getNear() const;
+    [[nodiscard]] Transform getTransform() const;
 
-    void SetFov(float fov);
-    void SetAspect(float aspect);
-    void SetNear(float near);
+    [[nodiscard]] float &getFov();
+    [[nodiscard]] float &getAspect();
+    [[nodiscard]] float &getNear();
+    [[nodiscard]] Transform &getTransform();
+
+    void setFov(float fov);
+    void setAspect(float aspect);
+    void setNear(float near);
 };

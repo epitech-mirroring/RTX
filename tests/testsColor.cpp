@@ -32,7 +32,7 @@ Test(Color, Constructor2)
 Test(Color, Constructor3)
 {
     GLSL::Color color = GLSL::Color(0.0, 0.0, 0.0, 0.0);
-    GLSL::Color color2 = GLSL::Color(color);
+    auto color2 = GLSL::Color(color);
     cr_assert_eq(color2.getR(), 0.0);
     cr_assert_eq(color2.getG(), 0.0);
     cr_assert_eq(color2.getB(), 0.0);

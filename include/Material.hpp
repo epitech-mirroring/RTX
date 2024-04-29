@@ -18,7 +18,7 @@ namespace GLSL {
         double _roughness;
     public:
         Material();
-        Material(const Color &color, const Color &emission, const double brightness, const double roughness);
+        Material(const Color &color, const Color &emission, double brightness, double roughness);
         Material(const Material &material);
         ~Material() = default;
         [[nodiscard]] Color getColor() const;
@@ -31,8 +31,8 @@ namespace GLSL {
         [[nodiscard]] double &getRoughness();
         void setColor(const Color &color);
         void setEmission(const Color &emission);
-        void setBrightness(const double brightness);
-        void setRoughness(const double roughness);
+        void setBrightness(double brightness);
+        void setRoughness(double roughness);
         //TODO: Diffraction
     };
 }

@@ -96,7 +96,7 @@ Test(Matrix, Copy) {
                                                    4.0, 5.0, 6.0, 7.0,
                                                    8.0, 9.0, 10.0, 11.0,
                                                    12.0, 13.0, 14.0, 15.0);
-    auto copy = GLSL::Matrix<4, 4>(matrix);
+    auto copy = GLSL::Matrix(matrix);
     for (int i = 0; i < 4; i++) {
         cr_assert_eq(copy[i][0], i * 4, "i: %d, copy[i][0]: %f", i, copy[i][0]);
         cr_assert_eq(copy[i][1], i * 4 + 1, "i: %d, copy[i][1]: %f", i, copy[i][1]);
@@ -235,7 +235,7 @@ Test(Matrix, Set_Row) {
 Test(Matrix, Set_Row_Throw)
 {
     auto matrix = GLSL::Matrix<1, 1>(0.0);
-    auto row = GLSL::Vector<1>(0.0);
+    const auto row = GLSL::Vector<1>(0.0);
     cr_assert_throw(matrix.SetRow(3, row), std::out_of_range);
 
 }
@@ -257,14 +257,14 @@ Test(Matrix, Set_Column) {
 Test(Matrix, Set_Column_Throw)
 {
     auto matrix = GLSL::Matrix<1, 1>(0.0);
-    auto column = GLSL::Vector<1>(0.0);
+    const auto column = GLSL::Vector<1>(0.0);
     cr_assert_throw(matrix.SetColumn(3, column), std::out_of_range);
 }
 
 Test(Matrix, equalOperator)
 {
     auto matrix1 = GLSL::Matrix<4, 4>();
-    auto matrix2 = GLSL::Matrix<4, 4>(0.0, 1.0, 2.0, 3.0,
+    const auto matrix2 = GLSL::Matrix<4, 4>(0.0, 1.0, 2.0, 3.0,
                                         4.0, 5.0, 6.0, 7.0,
                                         8.0, 9.0, 10.0, 11.0,
                                         12.0, 13.0, 14.0, 15.0);
@@ -348,7 +348,7 @@ Test(Matrix, Multiplication) {
         }
     }
     printf("Matrix not changed: OK\n");
-    cr_assert(result != (matrix2 * matrix1), "Matrix multiplication is not commutative");
+    cr_assert(result != matrix2 * matrix1, "Matrix multiplication is not commutative");
     printf("Matrix multiplication is not commutative: OK\n");
 }
 
