@@ -18,7 +18,7 @@ namespace GLSL {
     protected:
         double _data[N]{};
     public:
-        Vector() const {
+        Vector() {
             for (std::size_t i = 0; i < N; i++) {
                 _data[i] = 0.0;
             }
