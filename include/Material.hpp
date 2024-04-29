@@ -9,30 +9,28 @@
 #pragma once
 #include "GLSL/Color.hpp"
 
-namespace GLSL {
-    class Material {
-    protected:
-        Color _color;
-        Color _emission;
-        double _brightness;
-        double _roughness;
-    public:
-        Material();
-        Material(const Color &color, const Color &emission, double brightness, double roughness);
-        Material(const Material &material);
-        ~Material() = default;
-        [[nodiscard]] Color getColor() const;
-        [[nodiscard]] Color getEmission() const;
-        [[nodiscard]] Color &getColor();
-        [[nodiscard]] Color &getEmission();
-        [[nodiscard]] double getBrightness() const;
-        [[nodiscard]] double &getBrightness();
-        [[nodiscard]] double getRoughness() const;
-        [[nodiscard]] double &getRoughness();
-        void setColor(const Color &color);
-        void setEmission(const Color &emission);
-        void setBrightness(double brightness);
-        void setRoughness(double roughness);
-        //TODO: Diffraction
-    };
-}
+class Material {
+protected:
+    GLSL::Color _color;
+    GLSL::Color _emission;
+    double _brightness;
+    double _roughness;
+public:
+    Material();
+    Material(const GLSL::Color &color, const GLSL::Color &emission, double brightness, double roughness);
+    Material(const Material &material);
+    ~Material() = default;
+    [[nodiscard]] GLSL::Color getColor() const;
+    [[nodiscard]] GLSL::Color getEmission() const;
+    [[nodiscard]] GLSL::Color &getColor();
+    [[nodiscard]] GLSL::Color &getEmission();
+    [[nodiscard]] double getBrightness() const;
+    [[nodiscard]] double &getBrightness();
+    [[nodiscard]] double getRoughness() const;
+    [[nodiscard]] double &getRoughness();
+    void setColor(const GLSL::Color &color);
+    void setEmission(const GLSL::Color &emission);
+    void setBrightness(double brightness);
+    void setRoughness(double roughness);
+    //TODO: Diffraction
+};

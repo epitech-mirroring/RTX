@@ -13,7 +13,7 @@
 
 Test(Material, Constructor)
 {
-    GLSL::Material material = GLSL::Material();
+    Material material = Material();
     cr_assert_eq(material.getColor().getR(), 0.0);
     cr_assert_eq(material.getColor().getG(), 0.0);
     cr_assert_eq(material.getColor().getB(), 0.0);
@@ -28,7 +28,7 @@ Test(Material, Constructor)
 
 Test(Material, Constructor2)
 {
-    GLSL::Material material = GLSL::Material(GLSL::Color(0.0, 0.0, 0.0), GLSL::Color(0.0, 0.0, 0.0), 0.0, 0.0);
+    Material material = Material(GLSL::Color(0.0, 0.0, 0.0), GLSL::Color(0.0, 0.0, 0.0), 0.0, 0.0);
     cr_assert_eq(material.getColor().getR(), 0.0);
     cr_assert_eq(material.getColor().getG(), 0.0);
     cr_assert_eq(material.getColor().getB(), 0.0);
@@ -43,8 +43,8 @@ Test(Material, Constructor2)
 
 Test(Material, Constructor3)
 {
-    GLSL::Material material = GLSL::Material(GLSL::Color(0.0, 0.0, 0.0), GLSL::Color(0.0, 0.0, 0.0), 0.0, 0.0);
-    auto material2 = GLSL::Material(material);
+    Material material = Material(GLSL::Color(0.0, 0.0, 0.0), GLSL::Color(0.0, 0.0, 0.0), 0.0, 0.0);
+    auto material2 = Material(material);
     cr_assert_eq(material2.getColor().getR(), 0.0);
     cr_assert_eq(material2.getColor().getG(), 0.0);
     cr_assert_eq(material2.getColor().getB(), 0.0);
@@ -59,7 +59,7 @@ Test(Material, Constructor3)
 
 Test(Material, setColor)
 {
-    GLSL::Material material = GLSL::Material();
+    Material material = Material();
     material.setColor(GLSL::Color(1.0, 1.0, 1.0));
     cr_assert_eq(material.getColor().getR(), 1.0);
     cr_assert_eq(material.getColor().getG(), 1.0);
@@ -69,7 +69,7 @@ Test(Material, setColor)
 
 Test(Material, setEmission)
 {
-    GLSL::Material material = GLSL::Material();
+    Material material = Material();
     material.setEmission(GLSL::Color(1.0, 1.0, 1.0));
     cr_assert_eq(material.getEmission().getR(), 1.0);
     cr_assert_eq(material.getEmission().getG(), 1.0);
@@ -79,21 +79,21 @@ Test(Material, setEmission)
 
 Test(Material, setBrightness)
 {
-    GLSL::Material material = GLSL::Material();
+    Material material = Material();
     material.setBrightness(1.0);
     cr_assert_eq(material.getBrightness(), 1.0);
 }
 
 Test(Material, setRoughness)
 {
-    GLSL::Material material = GLSL::Material();
+    Material material = Material();
     material.setRoughness(1.0);
     cr_assert_eq(material.getRoughness(), 1.0);
 }
 
 Test(Material, constGetColor)
 {
-    const GLSL::Material material = GLSL::Material();
+    const Material material = Material();
     cr_assert_eq(material.getColor().getR(), 0.0);
     cr_assert_eq(material.getColor().getG(), 0.0);
     cr_assert_eq(material.getColor().getB(), 0.0);
@@ -102,7 +102,7 @@ Test(Material, constGetColor)
 
 Test(Material, constGetEmission)
 {
-    const GLSL::Material material = GLSL::Material();
+    const Material material = Material();
     cr_assert_eq(material.getEmission().getR(), 0.0);
     cr_assert_eq(material.getEmission().getG(), 0.0);
     cr_assert_eq(material.getEmission().getB(), 0.0);
@@ -111,12 +111,12 @@ Test(Material, constGetEmission)
 
 Test(Material, constGetBrightness)
 {
-    const GLSL::Material material = GLSL::Material();
+    const Material material = Material();
     cr_assert_eq(material.getBrightness(), 0.0);
 }
 
 Test(Material, constGetRoughness)
 {
-    const GLSL::Material material = GLSL::Material();
+    const Material material = Material();
     cr_assert_eq(material.getRoughness(), 0.0);
 }

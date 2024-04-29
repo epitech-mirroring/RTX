@@ -20,34 +20,32 @@ protected:
     Material _material;
     Transform _transform;
     std::vector<GLSL::Vertex> _vertices;
-    std::vector<unsigned int> _indices;
+    std::vector<std::size_t> _indices;
     std::unordered_map<Texture::TextureType, Texture> _textures;
 public:
     Object();
-    Object(Material material, Transform transform, std::vector<GLSL::Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+    Object(Material material, Transform transform, std::vector<GLSL::Vertex> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures);
     Object(const Object &other);
-    ~Object();
+    ~Object() = default;
 
-    Transform &GetTransform();
+    Transform &getTransform();
+    Transform getTransform() const;
+    Material &getMaterial();
+    Material getMaterial() const;
+    std::vector<GLSL::Vertex> &getVertices();
+    std::vector<GLSL::Vertex> getVertices() const;
+    std::vector<std::size_t> &getIndices();
+    std::vector<std::size_t> getIndices() const;
+    std::vector<Texture> &getTextures();
+    std::vector<Texture> getTextures() const;
+    Texture &getTexture(Texture::TextureType type);
+    Texture getTexture(Texture::TextureType type) const;
 
-    const Material &GetMaterial() const;
-    const Transform &GetTransform() const;
-    const GLSL::Vector<3> &GetPosition() const;
-    const GLSL::Vector<3> &GetRotation() const;
-    const GLSL::Vector<3> &GetScale() const;
-    const std::vector<GLSL::Vertex> &GetVertices() const;
-    const std::vector<unsigned int> &GetIndices() const;
-    const std::vector<Texture> &GetTextures() const;
-    const Texture &GetTexture(Texture::TextureType type) const;
-
-    void SetTransform(Transform transform);
-    void SetMaterial(Material material);
-    void SetPosition(GLSL::Vector<3> position);
-    void SetRotation(GLSL::Vector<3> rotation);
-    void SetScale(GLSL::Vector<3> scale);
-    void SetVertices(std::vector<GLSL::Vertex> vertices);
-    void SetIndices(std::vector<unsigned int> indices);
-    void SetTextures(std::vector<Texture> textures);
-    void SetTextures(std::unordered_map<Texture::TextureType, Texture> textures);
-    void SetTexture(Texture texture);
+    void setTransform(Transform transform);
+    void setMaterial(Material material);
+    void setVertices(std::vector<GLSL::Vertex> vertices);
+    void setIndices(std::vector<std::size_t> indices);
+    void setTextures(std::vector<Texture> textures);
+    void setTextures(std::unordered_map<Texture::TextureType, Texture> textures);
+    void setTexture(Texture texture);
 };
