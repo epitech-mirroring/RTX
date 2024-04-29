@@ -186,11 +186,17 @@ namespace GLSL {
             return *this / length();
         };
         // Swizzling
-        [[nodiscard]] Vector<1> x() const {
+        [[nodiscard]] double x() const {
             if (N < 1) {
                 throw std::invalid_argument("Vector must have at least 1 dimension");
             }
-            return Vector<1>(_data[0]);
+            return _data[0];
+        };
+        [[nodiscard]] double &x() {
+            if (N < 1) {
+                throw std::invalid_argument("Vector must have at least 1 dimension");
+            }
+            return _data[0];
         };
         [[nodiscard]] Vector<2> xx() const {
             if (N < 1) {
@@ -697,11 +703,17 @@ namespace GLSL {
             }
             return Vector<4>(_data[0], _data[3], _data[3], _data[3]);
         };
-        [[nodiscard]]Vector<1> y() const {
+        [[nodiscard]] double y() const {
             if (N < 2) {
                 throw std::invalid_argument("Vector must have at least 2 dimensions");
             }
-            return Vector<1>(_data[1]);
+            return _data[1];
+        };
+        [[nodiscard]] double &y() {
+            if (N < 2) {
+                throw std::invalid_argument("Vector must have at least 2 dimensions");
+            }
+            return _data[1];
         };
         [[nodiscard]]Vector<2> yx() const {
             if (N < 2) {
@@ -1207,11 +1219,17 @@ namespace GLSL {
             }
             return Vector<4>(_data[1], _data[3], _data[3], _data[3]);
         };
-        [[nodiscard]]Vector<1> z() const {
+        [[nodiscard]] double z() const {
             if (N < 3) {
                 throw std::invalid_argument("Vector must have at least 3 dimensions");
             }
-            return Vector<1>(_data[2]);
+            return _data[2];
+        };
+        [[nodiscard]] double &z() {
+            if (N < 3) {
+                throw std::invalid_argument("Vector must have at least 3 dimensions");
+            }
+            return _data[2];
         };
         [[nodiscard]]Vector<2> zx() const {
             if (N < 3) {
@@ -1717,11 +1735,17 @@ namespace GLSL {
             }
             return Vector<4>(_data[2], _data[3], _data[3], _data[3]);
         };
-        [[nodiscard]]Vector<1> w() const {
+        [[nodiscard]] double w() const {
             if (N < 4) {
                 throw std::invalid_argument("Vector must have at least 4 dimensions");
             }
-            return Vector<1>(_data[3]);
+            return _data[3];
+        };
+        [[nodiscard]] double &w() {
+            if (N < 4) {
+                throw std::invalid_argument("Vector must have at least 4 dimensions");
+            }
+            return _data[3];
         };
         [[nodiscard]]Vector<2> wx() const {
             if (N < 4) {
@@ -2221,11 +2245,17 @@ namespace GLSL {
             }
             return Vector<4>(_data[3], _data[3], _data[3], _data[3]);
         };
-        [[nodiscard]]Vector<1> r() const {
+        [[nodiscard]] double r() const {
             if (N < 1) {
                 throw std::invalid_argument("Vector must have at least 1 dimensions");
             }
-            return Vector<1>(_data[0]);
+            return _data[0];
+        };
+        [[nodiscard]] double &r() {
+            if (N < 1) {
+                throw std::invalid_argument("Vector must have at least 1 dimensions");
+            }
+            return _data[0];
         };
         [[nodiscard]]Vector<2> rr() const {
             if (N < 1) {
@@ -2731,11 +2761,17 @@ namespace GLSL {
             }
             return Vector<4>(_data[0], _data[3], _data[3], _data[3]);
         };
-        [[nodiscard]]Vector<1> g() const {
+        [[nodiscard]] double g() const {
             if (N < 2) {
                 throw std::invalid_argument("Vector must have at least 2 dimensions");
             }
-            return Vector<1>(_data[1]);
+            return _data[1];
+        };
+        [[nodiscard]] double &g() {
+            if (N < 2) {
+                throw std::invalid_argument("Vector must have at least 2 dimensions");
+            }
+            return _data[1];
         };
         [[nodiscard]]Vector<2> gr() const {
             if (N < 2) {
@@ -3241,11 +3277,17 @@ namespace GLSL {
             }
             return Vector<4>(_data[1], _data[3], _data[3], _data[3]);
         };
-        [[nodiscard]]Vector<1> b() const {
+        [[nodiscard]] double b() const {
             if (N < 3) {
                 throw std::invalid_argument("Vector must have at least 3 dimensions");
             }
-            return Vector<1>(_data[2]);
+            return _data[2];
+        };
+        [[nodiscard]] double b() {
+            if (N < 3) {
+                throw std::invalid_argument("Vector must have at least 3 dimensions");
+            }
+            return _data[2];
         };
         [[nodiscard]]Vector<2> br() const {
             if (N < 3) {
@@ -3751,11 +3793,17 @@ namespace GLSL {
             }
             return Vector<4>(_data[2], _data[3], _data[3], _data[3]);
         };
-        [[nodiscard]]Vector<1> a() const {
+        [[nodiscard]] double a() const {
             if (N < 4) {
                 throw std::invalid_argument("Vector must have at least 4 dimensions");
             }
-            return Vector<1>(_data[3]);
+            return _data[3];
+        };
+        [[nodiscard]] double &a() {
+            if (N < 4) {
+                throw std::invalid_argument("Vector must have at least 4 dimensions");
+            }
+            return _data[3];
         };
         [[nodiscard]]Vector<2> ar() const {
             if (N < 4) {
