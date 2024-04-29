@@ -123,6 +123,11 @@ Test(Matrix, Get_Row) {
     printf("Get row: OK\n");
 }
 
+Test(Matrix, getRowThrow) {
+    const auto matrix = GLSL::Matrix<1, 1>(0.0);
+    cr_assert_throw(matrix.GetRow(3), std::out_of_range);
+}
+
 Test(Matrix, Get_Column) {
     const auto matrix = GLSL::Matrix<4, 4>(0.0, 1.0, 2.0, 3.0,
                                                 4.0, 5.0, 6.0, 7.0,
@@ -134,6 +139,11 @@ Test(Matrix, Get_Column) {
     cr_assert_eq(column[2], 10.0, "column[2]: %f", column[2]);
     cr_assert_eq(column[3], 14.0, "column[3]: %f", column[3]);
     printf("Get column: OK\n");
+}
+
+Test(Matrix, getColumnThrow) {
+    const auto matrix = GLSL::Matrix<1, 1>(0.0);
+    cr_assert_throw(matrix.GetColumn(3), std::out_of_range);
 }
 
 Test(Matrix, Get_Inverse) {
@@ -222,6 +232,14 @@ Test(Matrix, Set_Row) {
     printf("Set row: OK\n");
 }
 
+Test(Matrix, Set_Row_Throw)
+{
+    auto matrix = GLSL::Matrix<1, 1>(0.0);
+    auto row = GLSL::Vector<1>(0.0);
+    cr_assert_throw(matrix.SetRow(3, row), std::out_of_range);
+
+}
+
 Test(Matrix, Set_Column) {
     auto matrix = GLSL::Matrix<4, 4>(0.0, 1.0, 2.0, 3.0,
                                         4.0, 5.0, 6.0, 7.0,
@@ -234,6 +252,13 @@ Test(Matrix, Set_Column) {
     cr_assert_eq(matrix[2][2], 42.0, "matrix[2][2]: %f", matrix[2][2]);
     cr_assert_eq(matrix[3][2], 42.0, "matrix[3][2]: %f", matrix[3][2]);
     printf("Set column: OK\n");
+}
+
+Test(Matrix, Set_Column_Throw)
+{
+    auto matrix = GLSL::Matrix<1, 1>(0.0);
+    auto column = GLSL::Vector<1>(0.0);
+    cr_assert_throw(matrix.SetColumn(3, column), std::out_of_range);
 }
 
 Test(Matrix, equalOperator)
@@ -453,4 +478,16 @@ Test(MatrixFactory, Scale) {
     cr_assert_eq(scale[3][2], 0.0, "scale[3][2]: %f", scale[3][2]);
     cr_assert_eq(scale[3][3], 1.0, "scale[3][3]: %f", scale[3][3]);
     printf("Scale matrix: OK\n");
+}
+
+Test(Matrix, Operator_Bracket_Throw)
+{
+    const auto matrix = GLSL::Matrix<1, 1>(0.0);
+    cr_assert_throw(matrix[3], std::out_of_range);
+}
+
+Test(Matrix, Operator_Bracket_Throw_2)
+{
+    auto matrix = GLSL::Matrix<1, 1>(0.0);
+    cr_assert_throw(matrix[3], std::out_of_range);
 }
