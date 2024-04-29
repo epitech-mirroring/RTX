@@ -87,6 +87,15 @@ Test(Vector, operator_equal)
     cr_assert_eq(vec, vec2);
 }
 
+Test(Vector, operator_equal_same)
+{
+    GLSL::Vector<3> vec(1.0, 2.0, 3.0);
+    vec = vec;
+    cr_assert_eq(vec[0], 1.0);
+    cr_assert_eq(vec[1], 2.0);
+    cr_assert_eq(vec[2], 3.0);
+}
+
 Test(Vector, operator_not_equal)
 {
     GLSL::Vector<3> vec(1.0, 2.0, 3.0);
