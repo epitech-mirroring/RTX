@@ -6,6 +6,11 @@
 ** You can even have multiple lines if you want !
 */
 
+#include "GLSL/Vector.hpp"
+#include "GLSL/Vertex.hpp"
+
+#include "Camera.hpp"
+
 int main(int argc, char **argv)
 {
     (void)argc;

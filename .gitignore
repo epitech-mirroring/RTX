@@ -109,3 +109,9 @@ Network Trash Folder
 Temporary Items
 .apdisk
 **/.idea
+*.log
+raytracer
+*.xml
+vgcore*
+node_modules/
+*.lockb

@@ -7,9 +7,22 @@
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/main.cpp
+CXX_SOURCES		= 	src/main.cpp					\
+					src/GLSL/Color.cpp				\
+					src/GLSL/Quaternion.cpp			\
+					src/GLSL/Vertex.cpp				\
+					src/objects/Material.cpp		\
+					src/objects/Texture.cpp			\
+					src/Camera.cpp					\
+					src/objects/Object.cpp			\
 
-CXX_TESTS		=
+CXX_TESTS		=	tests/testsColor.cpp			\
+					tests/testsMaterial.cpp			\
+					tests/testsMatrix.cpp			\
+					tests/testsTexture.cpp			\
+					tests/testsVector.cpp 			\
+					tests/testsVertex.cpp 			\
+					tests/testsTransform.cpp		\
 
 # Compiler and linker settings
 NAME 			= 	raytracer
@@ -18,7 +31,7 @@ CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
-LOG				= ./build.log
+LOG				=	./build.log
 
 .PHONY: all clean fclean re tests_run clean_test
 
@@ -110,24 +123,24 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"
 
 tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
-	@printf "$(RUNNING) $(BLUE) 🔗  Linking$(RESET)"
+	@printf "$(RUNNING) $(BLUE) 🔗  Linking for $(shell uname -m)\
+ architecture$(RESET)";
 	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \
-	$(CXX_TESTS_OBJS) $(CXXFLAGS) -lcriterion >> $(LOG) 2>&1 \
+	$(CXX_TESTS_OBJS) $(CXXFLAGS) \
+	$(shell [ `uname -m` != "arm64" ]	\
+	&& echo "-lcriterion" \
+	|| echo "-lcriterion") >> $(LOG) 2>&1 \
 	&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n";
 	@printf "$(RUNNING)$(MAGENTA)  ⚗️  Running tests$(RESET)" \
 	&& ./tests.out --xml=criterion.xml --ignore-warnings >> tests.log 2>&1 \
 	&& printf "\r$(SUCCESS)\n" \
-	|| printf "\r$(FAILURE)\n";
+	|| (printf "\r$(FAILURE)\n" && cat tests.log && exit 1);
 	@cat tests.log;
 	@printf "$(RUNNING)$(YELLOW)  📊  Generating coverage$(RESET)" \
 	&& gcovr --exclude tests/ >> coverage.log 2>&1 \
 	&& printf "\r$(SUCCESS)\n" \
 	|| printf "\r$(FAILURE)\n";
 	@cat coverage.log;
-
-clean_test:
-# Delete all the object files
-
 
 clean_test:
 	@printf "$(RUNNING) $(RED) 🗑️   Deleting tests.out$(RESET)"
