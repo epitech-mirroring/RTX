@@ -11,7 +11,6 @@ CXX_SOURCES		= 	src/main.cpp					\
 					src/GLSL/Color.cpp				\
 					src/GLSL/Quaternion.cpp			\
 					src/GLSL/Vertex.cpp				\
-					src/GLSL/Vector.cpp				\
 					src/objects/Material.cpp		\
 					src/objects/Texture.cpp			\
 					src/Camera.cpp					\
