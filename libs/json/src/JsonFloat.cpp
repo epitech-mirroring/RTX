@@ -6,7 +6,7 @@
 ** You can even have multiple lines if you want !
 */
 
-#include "json/jsonFloat.hpp"
+#include "json/JsonFloat.hpp"
 
 JsonFloat::JsonFloat(const std::string &name, double value) {
     this->_name = name;

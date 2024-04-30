@@ -15,10 +15,13 @@ CXX_SOURCES		= 	src/main.cpp					\
 					src/objects/Texture.cpp			\
 					src/Camera.cpp					\
 					src/objects/Object.cpp			\
+					src/Scene.cpp					\
+					src/SceneParser.cpp				\
 
 CXX_TESTS		=	tests/testsColor.cpp			\
 					tests/testsMaterial.cpp			\
 					tests/testsMatrix.cpp			\
+					tests/testsSceneParser.cpp		\
 					tests/testsTexture.cpp			\
 					tests/testsVector.cpp 			\
 					tests/testsVertex.cpp 			\
@@ -222,7 +225,8 @@ tests_run: fclean tests_libs $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
 	|| echo "-lcriterion") >> $(LOG) 2>&1 \
 	&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && \
 	cat $(LOG) && cat tests.log && exit 1);
-	@printf "$(RUNNING)$(MAGENTA)  ⚗️    Running tests$(RESET)" \
+	@export LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:./libs/json/; \
+	printf "$(RUNNING)$(MAGENTA)  ⚗️    Running tests$(RESET)" \
 	&& ./tests.out --xml=criterion.xml --ignore-warnings >> tests.log 2>&1 \
 	&& printf "\r$(SUCCESS)\n" \
 	|| (printf "\r$(FAILURE)\n" && cat tests.log && exit 1);

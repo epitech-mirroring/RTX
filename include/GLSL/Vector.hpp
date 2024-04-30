@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <cmath>
 #include <cstdarg>
+#include <iostream>
 #include <stdexcept>
 
 namespace GLSL {
