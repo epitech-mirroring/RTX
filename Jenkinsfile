@@ -98,13 +98,15 @@ pipeline {
                 script {
                     def dirs = ['libs/json']
 
-                    for (dir in dirs) {
-                        sh "gcovr --root ${dir} --exclude tests/ --cobertura ${dir}/cobertura.xml"
-                        def coverage_id = dir.replaceAll('/', '-') + "-coverage"
+                    for (d in dirs) {
+                        dir(d) {
+                            sh "gcovr --cobertura cobertura.xml --exclude tests/ --exclude libs/"
+                            def coverage_id = d.replaceAll('/', '-') + "-coverage"
 
-                        recordCoverage(tools: [[parser: 'COBERTURA', reportFile: "${dir}/cobertura.xml"]],
-                            id: coverage_id, name: "${dir} Coverage",
-                            sourceCodeRetention: 'EVERY_BUILD')
+                            recordCoverage(tools: [[parser: 'COBERTURA']], sourceDirectories: [[path: "${d}/**"]],
+                                id: coverage_id, name: "${d} Coverage",
+                                sourceCodeRetention: 'EVERY_BUILD')
+                        }
                     }
                 }
             }
