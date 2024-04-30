@@ -198,26 +198,36 @@ $(RESET)"; \
 re:			fclean all
 
 $(CXX_TESTS_OBJS):	%.o: %.cpp
-		@printf "$(RUNNING) $(BLUE) 🧪  $$(basename $<)$(RESET)"
+		@printf "$(RUNNING) $(BLUE) 🧪   $$(basename $<)$(RESET)"
 		@$(CXX) -o $@ -c $< $(CXXFLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"
 
-tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
-	@printf "$(RUNNING) $(BLUE) 🔗  Linking for $(shell uname -m)\
+tests_libs:
+	@for lib in $(LIBS); do \
+		make -C $$(dirname $$lib) tests_run \
+		&& printf "$(SUCCESS)$(GREEN)  🎉   Tests for $$(basename $$lib) \
+passed successfully$(RESET)\n" \
+		|| (printf "$(FAILURE)$(RED)  🚨   Tests for $$(basename $$lib) \
+failed$(RESET)\n" && exit 1); \
+	done
+
+tests_run: fclean tests_libs $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
+	@printf "$(RUNNING) $(BLUE) 🔗   Linking for $(shell uname -m)\
  architecture$(RESET)";
 	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \
 	$(CXX_TESTS_OBJS) $(CXXFLAGS) \
 	$(shell [ `uname -m` != "arm64" ]	\
 	&& echo "-lcriterion" \
 	|| echo "-lcriterion") >> $(LOG) 2>&1 \
-	&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n";
-	@printf "$(RUNNING)$(MAGENTA)  ⚗️  Running tests$(RESET)" \
+	&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && \
+	cat $(LOG) && cat tests.log && exit 1);
+	@printf "$(RUNNING)$(MAGENTA)  ⚗️    Running tests$(RESET)" \
 	&& ./tests.out --xml=criterion.xml --ignore-warnings >> tests.log 2>&1 \
 	&& printf "\r$(SUCCESS)\n" \
 	|| (printf "\r$(FAILURE)\n" && cat tests.log && exit 1);
 	@cat tests.log;
 	@printf "$(RUNNING)$(YELLOW)  📊  Generating coverage$(RESET)" \
-	&& gcovr --exclude tests/ >> coverage.log 2>&1 \
+	&& gcovr --exclude tests/ --exclude libs/ >> coverage.log 2>&1 \
 	&& printf "\r$(SUCCESS)\n" \
 	|| printf "\r$(FAILURE)\n";
 	@cat coverage.log;
