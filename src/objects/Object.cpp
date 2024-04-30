@@ -7,33 +7,54 @@
 */
 
 #include "Object.hpp"
+#include <GL/glew.h>
 
 Object::Object()
 {
     _material = Material();
     _transform = Transform();
-    _vertices = std::vector<GLSL::Vertex>();
-    _indices = std::vector<std::size_t>();
-    _textures = std::unordered_map<Texture::TextureType, Texture>();
+    _vao = 0;
+    _vbo = 0;
+    _ebo = 0;
 }
 
-Object::Object(Material material, Transform transform, std::vector<GLSL::Vertex> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures)
+Object::~Object()
+{
+    glDeleteVertexArrays(1, &_vao);
+    glDeleteBuffers(1, &_vbo);
+    glDeleteBuffers(1, &_ebo);
+}
+
+Object::Object(const Material& material, const Transform &transform, const std::vector<float> &vertices, const std::vector<std::size_t> &indices, const std::vector<Texture> &textures)
 {
     _material = material;
     _transform = transform;
-    _vertices = vertices;
-    _indices = indices;
-    for (auto &texture : textures)
-        _textures[texture.getType()] = texture;
+    _vao = 0;
+    _vbo = 0;
+    _ebo = 0;
+
+    glGenVertexArrays(1, &_vao);
+    glGenBuffers(1, &_vbo);
+
+    glBindVertexArray(_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<long>(vertices.size() * sizeof(float)), vertices.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 Object::Object(const Object &other)
 {
     _material = other._material;
     _transform = other._transform;
-    _vertices = other._vertices;
-    _indices = other._indices;
-    _textures = other._textures;
+    _vao = other._vao;
+    _vbo = other._vbo;
+    _ebo = other._ebo;
 }
 
 Material Object::getMaterial() const
@@ -56,84 +77,17 @@ Transform &Object::getTransform()
     return _transform;
 }
 
-std::vector<GLSL::Vertex> &Object::getVertices()
-{
-    return _vertices;
-}
-
-std::vector<GLSL::Vertex> Object::getVertices() const
-{
-    return _vertices;
-}
-
-std::vector<std::size_t> &Object::getIndices()
-{
-    return _indices;
-}
-
-std::vector<std::size_t> Object::getIndices() const
-{
-    return _indices;
-}
-
-std::vector<Texture> &Object::getTextures()
-{
-    std::vector<Texture> textures;
-    for (auto &texture : _textures)
-        textures.push_back(texture.second);
-    return textures;
-}
-
-std::vector<Texture> Object::getTextures() const
-{
-    std::vector<Texture> textures;
-    for (auto &texture : _textures)
-        textures.push_back(texture.second);
-    return textures;
-}
-
-Texture Object::getTexture(Texture::TextureType type) const
-{
-    return _textures.at(type);
-}
-
-Texture &Object::getTexture(Texture::TextureType type)
-{
-    return _textures.at(type);
-}
-
-void Object::setMaterial(Material material)
+void Object::setMaterial(const Material &material)
 {
     _material = material;
 }
 
-void Object::setTransform(Transform transform)
+void Object::setTransform(const Transform &transform)
 {
     _transform = transform;
 }
 
-void Object::setVertices(std::vector<GLSL::Vertex> vertices)
+unsigned int Object::getVao() const
 {
-    _vertices = vertices;
-}
-
-void Object::setIndices(std::vector<std::size_t> indices)
-{
-    _indices = indices;
-}
-
-void Object::setTextures(std::vector<Texture> textures)
-{
-    for (auto &texture : textures)
-        _textures[texture.getType()] = texture;
-}
-
-void Object::setTextures(std::unordered_map<Texture::TextureType, Texture> textures)
-{
-    _textures = textures;
-}
-
-void Object::setTexture(Texture texture)
-{
-    _textures[texture.getType()] = texture;
+    return _vao;
 }
