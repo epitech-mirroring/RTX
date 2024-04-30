@@ -28,7 +28,10 @@ LIBS			=   libs/json/libjson.so
 NAME 			= 	raytracer
 CXX				= 	g++
 CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include  \
-				 	-L. -ljson
+				 	-L. -ljson -lGLEW -lglfw
+MACOS_FLAGS		= 	-framework OpenGL -framework Cocoa \
+					-framework IOKit -framework CoreVideo
+CXXFLAGS		+=	$(shell [ `uname -s` = "Darwin" ] && echo $(MACOS_FLAGS))
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
