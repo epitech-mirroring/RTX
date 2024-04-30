@@ -10,7 +10,6 @@
 CXX_SOURCES		= 	src/main.cpp					\
 					src/GLSL/Color.cpp				\
 					src/GLSL/Quaternion.cpp			\
-					src/GLSL/Vertex.cpp				\
 					src/objects/Material.cpp		\
 					src/objects/Texture.cpp			\
 					src/Camera.cpp					\
@@ -21,7 +20,6 @@ CXX_TESTS		=	tests/testsColor.cpp			\
 					tests/testsMatrix.cpp			\
 					tests/testsTexture.cpp			\
 					tests/testsVector.cpp 			\
-					tests/testsVertex.cpp 			\
 					tests/testsTransform.cpp		\
 
 LIBS			=   libs/json/libjson.so
