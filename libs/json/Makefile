@@ -13,6 +13,7 @@ CXX_SOURCES		= 	src/JsonObject.cpp			\
 					src/JsonBoolean.cpp			\
 					src/JsonInt.cpp				\
 					src/JsonString.cpp			\
+					src/JsonFloat.cpp			\
 
 CXX_TESTS		=   tests/json_parser.cpp	\
 					tests/json_save.cpp		\
