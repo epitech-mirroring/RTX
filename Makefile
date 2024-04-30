@@ -8,11 +8,14 @@
 
 # All the source files
 CXX_SOURCES		= 	src/main.cpp					\
-					src/Color.cpp					\
-					src/Material.cpp				\
-					src/Texture.cpp					\
+					src/GLSL/Color.cpp				\
+					src/GLSL/Quaternion.cpp			\
+					src/GLSL/Vertex.cpp				\
+					src/GLSL/Vector.cpp				\
+					src/objects/Material.cpp		\
+					src/objects/Texture.cpp			\
 					src/Camera.cpp					\
-					src/Object.cpp					\
+					src/objects/Object.cpp			\
 
 CXX_TESTS		=	tests/testsColor.cpp			\
 					tests/testsMaterial.cpp			\
