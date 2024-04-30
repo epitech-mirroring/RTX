@@ -45,7 +45,14 @@ SKIPPED = [$(MAGENTA)@$(RESET)]
 
 all:
 # Check if $(NAME) is up to date
-	@if [ ! -f $(NAME) ] || [ "$(CXX_SOURCES)" -nt "$(NAME)" ]; then \
+	@HAS_NEWER_SOURCE=0; \
+	for file in $(CXX_SOURCES); do \
+		if [ "$$file" -nt "$(NAME)" ]; then \
+			HAS_NEWER_SOURCE=1; \
+			break; \
+		fi; \
+	done; \
+	if [ ! -f $(NAME) ] || [ $$HAS_NEWER_SOURCE -eq 1 ]; then \
 		make $(NAME); \
 	else \
 		printf "$(SKIPPED)$(MAGENTA)  🚀  \

@@ -204,3 +204,38 @@ void JsonObject::writeToFile(const std::string &filename) const {
     file << this->stringify();
     file.close();
 }
+
+std::string JsonObject::getString(const std::string &key) const {
+    auto *obj = dynamic_cast<JsonString *>(this->_objects.at(key));
+    if (obj == nullptr)
+        return "";
+    return obj->getValue();
+}
+
+int JsonObject::getInt(const std::string &key) const {
+    auto *obj = dynamic_cast<JsonInt *>(this->_objects.at(key));
+    if (obj == nullptr)
+        return 0;
+    return obj->getValue();
+}
+
+bool JsonObject::getBoolean(const std::string &key) const {
+    auto *obj = dynamic_cast<JsonBoolean *>(this->_objects.at(key));
+    if (obj == nullptr)
+        return false;
+    return obj->getValue();
+}
+
+JsonObject *JsonObject::getObject(const std::string &key) const {
+    auto *obj = dynamic_cast<JsonObject *>(this->_objects.at(key));
+    if (obj == nullptr)
+        return nullptr;
+    return obj;
+}
+
+JsonArray *JsonObject::getArray(const std::string &key) const {
+    auto *obj = dynamic_cast<JsonArray *>(this->_objects.at(key));
+    if (obj == nullptr)
+        return nullptr;
+    return obj;
+}
