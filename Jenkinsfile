@@ -31,7 +31,7 @@ pipeline {
                         def line = error.split(':')[1]
                         def type = error.split(':')[2]
                         def code = error.split(':')[3]
-                        echo "File: ${file}, Line: ${line}, Type: ${type}, Code: ${code}"
+                        unstable "File: ${file}, Line: ${line}, Type: ${type}, Code: ${code}"
                     }
                     // Archive the report
                     archiveArtifacts 'coding-style-reports.log'
@@ -81,7 +81,7 @@ pipeline {
                 sh 'python3 -m pip install -Iv gcovr==6.0'
 
                 script {
-                    def dirs = []
+                    def dirs = ['libs/json']
 
                     for (dir in dirs) {
                         junit(testResults: "${dir}/criterion.xml", allowEmptyResults : true)
@@ -89,11 +89,26 @@ pipeline {
                     junit(testResults: "criterion.xml", allowEmptyResults : true)
                 }
 
-                sh 'gcovr --cobertura cobertura.xml --exclude tests/'
+                sh 'gcovr --cobertura cobertura.xml --exclude tests/ --exclude libs/'
 
                 recordCoverage(tools: [[parser: 'COBERTURA']],
                     id: "coverage", name: "Coverage",
                     sourceCodeRetention: 'EVERY_BUILD')
+
+                script {
+                    def dirs = ['libs/json']
+
+                    for (d in dirs) {
+                        dir(d) {
+                            sh "gcovr --cobertura cobertura.xml --exclude tests/ --exclude libs/"
+                            def coverage_id = d.replaceAll('/', '-') + "-coverage"
+
+                            recordCoverage(tools: [[parser: 'COBERTURA']], sourceDirectories: [[path: "${d}/**"]],
+                                id: coverage_id, name: "${d} Coverage",
+                                sourceCodeRetention: 'EVERY_BUILD')
+                        }
+                    }
+                }
             }
         }
         stage('🪞 Mirror') {
