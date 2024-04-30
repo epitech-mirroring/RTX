@@ -225,17 +225,3 @@ bool JsonObject::getBoolean(const std::string &key) const {
         return false;
     return obj->getValue();
 }
-
-JsonObject *JsonObject::getObject(const std::string &key) const {
-    auto *obj = dynamic_cast<JsonObject *>(this->_objects.at(key));
-    if (obj == nullptr)
-        return nullptr;
-    return obj;
-}
-
-JsonArray *JsonObject::getArray(const std::string &key) const {
-    auto *obj = dynamic_cast<JsonArray *>(this->_objects.at(key));
-    if (obj == nullptr)
-        return nullptr;
-    return obj;
-}
