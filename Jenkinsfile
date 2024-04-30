@@ -81,7 +81,7 @@ pipeline {
                 sh 'python3 -m pip install -Iv gcovr==6.0'
 
                 script {
-                    def dirs = []
+                    def dirs = ['libs/json']
 
                     for (dir in dirs) {
                         junit(testResults: "${dir}/criterion.xml", allowEmptyResults : true)
@@ -89,11 +89,23 @@ pipeline {
                     junit(testResults: "criterion.xml", allowEmptyResults : true)
                 }
 
-                sh 'gcovr --cobertura cobertura.xml --exclude tests/'
+                sh 'gcovr --cobertura cobertura.xml --exclude tests/ --exclude libs/'
 
                 recordCoverage(tools: [[parser: 'COBERTURA']],
                     id: "coverage", name: "Coverage",
                     sourceCodeRetention: 'EVERY_BUILD')
+
+                script {
+                    def dirs = ['libs/json']
+
+                    for (dir in dirs) {
+                        sh "gcovr --root ${dir} --exclude tests/ --cobertura ${dir}/cobertura.xml"
+
+                        recordCoverage(tools: [[parser: 'COBERTURA', reportFile: "${dir}/cobertura.xml"]],
+                            id: "${dir}-coverage", name: "${dir} Coverage",
+                            sourceCodeRetention: 'EVERY_BUILD')
+                    }
+                }
             }
         }
         stage('🪞 Mirror') {

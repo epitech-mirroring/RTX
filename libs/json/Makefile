@@ -88,7 +88,7 @@ clean:
 		done
 # Delete all the tests' object files
 		@for file in $(CXX_TESTS_OBJS); do \
-			printf "$(RUNNING) $(YELLOW) 🧹️    Deleting $$file$(RESET)"; \
+			printf "$(RUNNING) $(YELLOW) 🧹️   Deleting $$file$(RESET)"; \
 			if [ -f $$file ]; then \
 				rm -f $$file >> $(LOG) 2>&1 \
 				&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
@@ -99,7 +99,7 @@ clean:
 
 fclean: clean clean_test
 # Delete the binary
-		@printf "$(RUNNING) $(RED) 🗑️   Deleting $(NAME)$(RESET)"
+		@printf "$(RUNNING) $(RED) 🗑️    Deleting $(NAME)$(RESET)"
 		@if [ -f $(NAME) ]; then \
 			rm -f $(NAME) >> $(LOG) 2>&1 \
 			&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
@@ -107,7 +107,7 @@ fclean: clean clean_test
 			printf "\r$(SKIPPED)\n"; \
 		fi
 # Delete the log file
-		@printf "$(RUNNING) $(RED) 🗑️   Deleting $(LOG)$(RESET)"
+		@printf "$(RUNNING) $(RED) 🗑️    Deleting $(LOG)$(RESET)"
 		@rm -f $(LOG) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"
 
@@ -127,12 +127,12 @@ tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
 	&& echo "-lcriterion" \
 	|| echo "-lcriterion") >> $(LOG) 2>&1 \
 	&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n";
-	@printf "$(RUNNING)$(MAGENTA)  ⚗️  Running tests$(RESET)" \
+	@printf "$(RUNNING)$(MAGENTA)  ⚗️    Running tests$(RESET)" \
 	&& ./tests.out --xml=criterion.xml --ignore-warnings >> tests.log 2>&1 \
 	&& printf "\r$(SUCCESS)\n" \
 	|| (printf "\r$(FAILURE)\n" && cat tests.log && exit 1);
 	@cat tests.log;
-	@printf "$(RUNNING)$(YELLOW)  📊  Generating coverage$(RESET)" \
+	@printf "$(RUNNING)$(YELLOW)  📊   Generating coverage$(RESET)" \
 	&& gcovr --exclude tests/ >> coverage.log 2>&1 \
 	&& printf "\r$(SUCCESS)\n" \
 	|| printf "\r$(FAILURE)\n";
