@@ -91,7 +91,7 @@ $(LIBS): 	%.so:
 	@LIBRARY_SOURCE_DIR=$$(dirname $@)/src; \
 	LIBRARY_SOURCES=$$(find $$LIBRARY_SOURCE_DIR -type f -name "*.cpp"); \
 	SHIPPED_PATH=./$$(basename $@); \
-	if [ ! -f $$SHIPPED_PATH ] || [ "$$LIBRARY_SOURCES" -nt $$SHIPPED_PATH ]; \
+	if [ ! -f $$SHIPPED_PATH ] || [ "$$LIBRARY_SOURCES" -nt $$SHIPPED_PATH ];\
 	then \
 		make -C $$(dirname $@); \
 		if [ -f $@ ]; then \
@@ -174,7 +174,8 @@ fclean: clean clean_test fclean_libs
 
 fclean_libs:
 		@for lib in $(LIBS); do \
-			printf "$(RUNNING) $(RED) 🔥   Deleting $$(basename $$lib)$(RESET)"; \
+			printf "$(RUNNING) $(RED) 🔥   Deleting $$(basename $$lib)\
+$(RESET)"; \
 			SHIPPED_PATH=./$$(basename $$lib); \
 			if [ -f $$SHIPPED_PATH ]; then \
 				rm -f $$SHIPPED_PATH >> $(LOG) 2>&1 \
