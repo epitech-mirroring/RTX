@@ -31,7 +31,7 @@ pipeline {
                         def line = error.split(':')[1]
                         def type = error.split(':')[2]
                         def code = error.split(':')[3]
-                        echo "File: ${file}, Line: ${line}, Type: ${type}, Code: ${code}"
+                        unstable "File: ${file}, Line: ${line}, Type: ${type}, Code: ${code}"
                     }
                     // Archive the report
                     archiveArtifacts 'coding-style-reports.log'
@@ -100,9 +100,10 @@ pipeline {
 
                     for (dir in dirs) {
                         sh "gcovr --root ${dir} --exclude tests/ --cobertura ${dir}/cobertura.xml"
+                        def coverage_id = dir.replaceAll('/', '-') + "-coverage"
 
                         recordCoverage(tools: [[parser: 'COBERTURA', reportFile: "${dir}/cobertura.xml"]],
-                            id: "${dir}-coverage", name: "${dir} Coverage",
+                            id: coverage_id, name: "${dir} Coverage",
                             sourceCodeRetention: 'EVERY_BUILD')
                     }
                 }
