@@ -11,6 +11,7 @@
 #include "json/JsonInt.hpp"
 #include "json/JsonBoolean.hpp"
 #include "json/JsonObject.hpp"
+#include "json/JsonFloat.hpp"
 #include <fstream>
 #include <iostream>
 
@@ -57,9 +58,18 @@ JsonArray::getParser(const std::string &obj, const std::string &key) {
             return json;
         };
     }
-    if (obj[0] >= '0' && obj[0] <= '9') {
+    if ((obj[0] >= '0' && obj[0] <= '9' || obj[0] == '-' || obj[0] == '+')
+        && obj.find('.') == std::string::npos) {
         return [key](const std::string &str) -> IJsonObject * {
             auto *json = new JsonInt(key);
+            json->parse(str);
+            return json;
+        };
+    }
+    if ((obj[0] >= '0' && obj[0] <= '9' || obj[0] == '-' || obj[0] == '+')
+        && obj.find('.') != std::string::npos) {
+        return [key](const std::string &str) -> IJsonObject * {
+            auto *json = new JsonFloat(key);
             json->parse(str);
             return json;
         };

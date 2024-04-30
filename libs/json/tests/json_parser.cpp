@@ -305,3 +305,68 @@ Test(json_parser, empty_root_object) {
     // Delete the file
     std::remove("tests/empty_root_object.json");
 }
+
+Test(json_parser, signed_numbers) {
+    // Create a file that contains signed numbers
+    std::ofstream file("tests/signed_numbers.json");
+    file << "{\"int\": -42, \"positive\": +42 }";
+    file.close();
+
+    // Parse the file
+    JsonObject json = JsonObject::parseFile("tests/signed_numbers.json");
+    // Check if the file is correct
+    cr_assert_eq(json.getType(), "object");
+
+    // Get the first element
+    auto *i = json.getValue<JsonInt>("int");
+    cr_assert_eq(i->getType(), "int");
+    cr_assert_eq(i->getName(), "int");
+    cr_assert_eq(i->getValue(), -42);
+    cr_assert_eq(json.getInt("int"), -42);
+
+    // Get the second element
+    auto *p = json.getValue<JsonInt>("positive");
+    cr_assert_eq(p->getType(), "int");
+    cr_assert_eq(p->getName(), "positive");
+    cr_assert_eq(p->getValue(), 42);
+    cr_assert_eq(json.getInt("positive"), 42);
+
+    // Delete the file
+    std::remove("tests/signed_numbers.json");
+}
+
+Test(json_parser, float_numbers) {
+    // Create a file that contains float numbers
+    std::ofstream file("tests/float_numbers.json");
+    file << "{\"float\": 42.42, \"negative\": -42.42, \"positive\": +42.42 }";
+    file.close();
+
+    // Parse the file
+    JsonObject json = JsonObject::parseFile("tests/float_numbers.json");
+    // Check if the file is correct
+    cr_assert_eq(json.getType(), "object");
+
+    // Get the first element
+    auto *f = json.getValue<JsonFloat>("float");
+    cr_assert_eq(f->getType(), "float");
+    cr_assert_eq(f->getName(), "float");
+    cr_assert_eq(f->getValue(), 42.42);
+    cr_assert_eq(json.getFloat("float"), 42.42);
+
+    // Get the second element
+    auto *n = json.getValue<JsonFloat>("negative");
+    cr_assert_eq(n->getType(), "float");
+    cr_assert_eq(n->getName(), "negative");
+    cr_assert_eq(n->getValue(), -42.42);
+    cr_assert_eq(json.getFloat("negative"), -42.42);
+
+    // Get the third element
+    auto *p = json.getValue<JsonFloat>("positive");
+    cr_assert_eq(p->getType(), "float");
+    cr_assert_eq(p->getName(), "positive");
+    cr_assert_eq(p->getValue(), 42.42);
+    cr_assert_eq(json.getFloat("positive"), 42.42);
+
+    // Delete the file
+    std::remove("tests/float_numbers.json");
+}

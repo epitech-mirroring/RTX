@@ -12,6 +12,7 @@
 #include "json/JsonBoolean.hpp"
 #include "json/JsonInt.hpp"
 #include "json/JsonString.hpp"
+#include "json/JsonFloat.hpp"
 
 std::string JsonObject::getType() const {
     return "object";
@@ -94,7 +95,7 @@ std::size_t JsonObject::findContextStart(const std::string &string, std::size_t 
 
     while (current < string.length() && string[current] != ':')
         current++;
-    while (current < string.length() && string[current] != '{' && string[current] != '[' && string[current] != '"' && string[current] != 't' && string[current] != 'f' && string[current] != 'n' && (string[current] < '0' || string[current] > '9'))
+    while (current < string.length() && string[current] != '{' && string[current] != '[' && string[current] != '"' && string[current] != 't' && string[current] != 'f' && string[current] != 'n' && (string[current] < '0' || string[current] > '9') && string[current] != '-' && string[current] != '+')
         current++;
     return current;
 }
@@ -132,9 +133,18 @@ JsonObject::getParser(const std::string &obj, const std::string &key) {
             return json;
         };
     }
-    if (obj[0] >= '0' && obj[0] <= '9') {
+    if ((obj[0] >= '0' && obj[0] <= '9' || obj[0] == '-' || obj[0] == '+')
+        && obj.find('.') == std::string::npos) {
         return [key](const std::string &str) -> IJsonObject * {
             auto *json = new JsonInt(key);
+            json->parse(str);
+            return json;
+        };
+    }
+    if ((obj[0] >= '0' && obj[0] <= '9' || obj[0] == '-' || obj[0] == '+')
+        && obj.find('.') != std::string::npos) {
+        return [key](const std::string &str) -> IJsonObject * {
+            auto *json = new JsonFloat(key);
             json->parse(str);
             return json;
         };
@@ -223,5 +233,12 @@ bool JsonObject::getBoolean(const std::string &key) const {
     auto *obj = dynamic_cast<JsonBoolean *>(this->_objects.at(key));
     if (obj == nullptr)
         return false;
+    return obj->getValue();
+}
+
+double JsonObject::getFloat(const std::string &key) const {
+    auto *obj = dynamic_cast<JsonFloat *>(this->_objects.at(key));
+    if (obj == nullptr)
+        return 0;
     return obj->getValue();
 }
