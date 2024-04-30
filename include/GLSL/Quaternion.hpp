@@ -18,75 +18,25 @@ namespace GLSL {
         double w = 0;
 
         Quaternion() = default;
-        Quaternion(const double x, const double y, const double z, const double w=1) {
-            this->x = x;
-            this->y = y;
-            this->z = z;
-            this->w = w;
-        }
+        Quaternion(double x, double y, double z, double w=1);
         Quaternion(const Quaternion &q) = default;
         ~Quaternion() = default;
 
         Quaternion &operator=(const Quaternion &q) = default;
-        Quaternion operator*(const Quaternion &q) const {
-            double x = this->w * q.x + this->x * q.w + this->y * q.z - this->z * q.y;
-            double y = this->w * q.y + this->y * q.w + this->z * q.x - this->x * q.z;
-            double z = this->w * q.z + this->z * q.w + this->x * q.y - this->y * q.x;
-            double w = this->w * q.w - this->x * q.x - this->y * q.y - this->z * q.z;
-            return {x, y, z, w};
-        }
-        Quaternion operator*(const double f) const {
-            return {x * f, y * f, z * f, w * f};
-        }
-        Quaternion operator+(const Quaternion &q) const {
-            return {x + q.x, y + q.y, z + q.z, w + q.w};
-        }
-        Quaternion operator-(const Quaternion &q) const {
-            return {x - q.x, y - q.y, z - q.z, w - q.w};
-        }
-        Quaternion operator/(const double f) const {
-            return {x / f, y / f, z / f, w / f};
-        }
-        Quaternion operator-() const {
-            return {-x, -y, -z, -w};
-        }
-        Quaternion &operator*=(const Quaternion &q) {
-            *this = *this * q;
-            return *this;
-        }
-        Quaternion &operator*=(const double f) {
-            *this = *this * f;
-            return *this;
-        }
-        Quaternion &operator+=(const Quaternion &q) {
-            *this = *this + q;
-            return *this;
-        }
-        Quaternion &operator-=(const Quaternion &q) {
-            *this = *this - q;
-            return *this;
-        }
-        Quaternion &operator/=(const double f) {
-            *this = *this / f;
-            return *this;
-        }
-        bool operator==(const Quaternion &q) const {
-            return x == q.x && y == q.y && z == q.z && w == q.w;
-        }
-        bool operator!=(const Quaternion &q) const {
-            return x != q.x || y != q.y || z != q.z || w != q.w;
-        }
-        double &operator[](const int i) {
-            switch (i) {
-                case 0: return x;
-                case 1: return y;
-                case 2: return z;
-                case 3: return w;
-                default: throw std::out_of_range("Quaternion index out of range");
-            }
-        }
-        [[nodiscard]] double length() const {
-            return sqrt(x * x + y * y + z * z + w * w);
-        }
+        Quaternion operator*(const Quaternion &q) const;
+        Quaternion operator*(double f) const;
+        Quaternion operator+(const Quaternion &q) const;
+        Quaternion operator-(const Quaternion &q) const;
+        Quaternion operator/(double f) const;
+        Quaternion operator-() const;
+        Quaternion &operator*=(const Quaternion &q);
+        Quaternion &operator*=(double f);
+        Quaternion &operator+=(const Quaternion &q);
+        Quaternion &operator-=(const Quaternion &q);
+        Quaternion &operator/=(double f);
+        bool operator==(const Quaternion &q) const;
+        bool operator!=(const Quaternion &q) const;
+        double &operator[](int i);
+        [[nodiscard]] double length() const;
     };
 }
