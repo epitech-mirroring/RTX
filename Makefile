@@ -100,8 +100,8 @@ $(LIBS): 	%.so:
 			&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
 			FOLDER_NAME=$$(echo $$(dirname $@) | sed 's:.*/::' \
 			| tr '[:upper:]' '[:lower:]'); \
-			printf "$(RUNNING) $(BLUE) 🖇️    Linking include/$$FOLDER_NAME\
-$(RESET)"; \
+			printf "$(RUNNING) $(BLUE) 🖇️    Linking include/\
+$$FOLDER_NAME$(RESET)"; \
 			cp -fr $$(dirname $@)/include/* include/ >> $(LOG) 2>&1 \
 			&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
 		else \
@@ -185,8 +185,8 @@ $(RESET)"; \
 			fi; \
 			LOWERCASE_DIR=$$(echo $$(dirname $$lib) | sed 's:.*/::' \
             	| tr '[:upper:]' '[:lower:]') ; \
-			printf "$(RUNNING) $(RED) 💥   Deleting include/$${LOWERCASE_DIR}\
-$(RESET)"; \
+			printf "$(RUNNING) $(RED) 💥   Deleting include/\
+$${LOWERCASE_DIR}$(RESET)"; \
 			if [ -e include/$${LOWERCASE_DIR} ]; then \
 				rm -rf include/$${LOWERCASE_DIR} >> $(LOG) 2>&1 \
 				&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
