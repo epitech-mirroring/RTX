@@ -43,6 +43,12 @@ public:
     void setNull(const std::string &name, bool is_null);
     void setNull(bool is_null);
 
+    std::string getString(const std::string &key) const;
+    int getInt(const std::string &key) const;
+    bool getBoolean(const std::string &key) const;
+    JsonObject *getObject(const std::string &key) const;
+    JsonArray *getArray(const std::string &key) const;
+
     static JsonObject parseFile(const std::string &filename);
     void writeToFile(const std::string &filename) const;
 };
