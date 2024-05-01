@@ -6,7 +6,7 @@
 ** You can even have multiple lines if you want !
 */
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <fstream>
 #include <iostream>
@@ -21,7 +21,6 @@ int main(int argc, char **argv)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
@@ -32,6 +31,15 @@ int main(int argc, char **argv)
         glfwTerminate();
         return 84;
     }
+    glfwMakeContextCurrent(window);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Error: Failed to initialize GLAD" << std::endl;
+        glfwTerminate();
+        return 84;
+    } else {
+        std::cout << "GLAD initialized successfully" << std::endl;
+    }
 
     // Load the fragment shader
     std::ifstream fragmentShaderFile("shaders/fragment.glsl");
@@ -39,7 +47,10 @@ int main(int argc, char **argv)
         std::cerr << "Error: Failed to open fragment shader file" << std::endl;
         glfwTerminate();
         return 84;
+    } else {
+        std::cout << "Fragment shader file opened successfully" << std::endl;
     }
+
     std::string fragmentShaderSource((std::istreambuf_iterator<char>(fragmentShaderFile)), std::istreambuf_iterator<char>());
     fragmentShaderFile.close();
 
@@ -55,6 +66,8 @@ int main(int argc, char **argv)
         std::cerr << "Error: Failed to compile fragment shader\n" << infoLog << std::endl;
         glfwTerminate();
         return 84;
+    } else {
+        std::cout << "Fragment shader compiled successfully" << std::endl;
     }
 
     // Load shader program
@@ -67,13 +80,14 @@ int main(int argc, char **argv)
         std::cerr << "Error: Failed to link shader program\n" << infoLog << std::endl;
         glfwTerminate();
         return 84;
+    } else {
+        std::cout << "Shader program linked successfully" << std::endl;
     }
     glDeleteShader(fragmentShader);
 
     Material screenMaterial;
     auto screen = Object(screenMaterial, Transform(), {0.5f, 0.5f, 0.0f, 0.5f, -0.5f, 0.0f, -0.5f, 0.5f, 0.0f}, {0, 1, 2}, {});
 
-    glfwMakeContextCurrent(window);
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);

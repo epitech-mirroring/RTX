@@ -14,6 +14,7 @@ CXX_SOURCES		= 	src/main.cpp					\
 					src/objects/Texture.cpp			\
 					src/Camera.cpp					\
 					src/objects/Object.cpp			\
+					src/glad.cpp					\
 
 CXX_TESTS		=	tests/testsColor.cpp			\
 					tests/testsMaterial.cpp			\
@@ -31,7 +32,9 @@ CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include  \
 				 	-L. -ljson -lGLEW -lglfw
 MACOS_FLAGS		= 	-framework OpenGL -framework Cocoa \
 					-framework IOKit -framework CoreVideo
+LINUX_FLAGS		= 	-lGL -lGLU -lGLEW
 CXXFLAGS		+=	$(shell [ `uname -s` = "Darwin" ] && echo $(MACOS_FLAGS))
+CXXFLAGS		+=	$(shell [ `uname -s` = "Linux" ] && echo $(LINUX_FLAGS))
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
@@ -63,7 +66,7 @@ all: $(LIBS)
 		fi; \
 	done; \
 	if [ ! -f $(NAME) ] || [ $$HAS_NEWER_SOURCE -eq 1 ]; then \
-		make $(NAME); \
+		make $(NAME) --no-print-directory; \
 	else \
 		printf "$(SKIPPED)$(MAGENTA)  🚀  \
 $(NAME) already up to date$(RESET)\n"; \
@@ -94,9 +97,10 @@ $(LIBS): 	%.so:
 	SHIPPED_PATH=./$$(basename $@); \
 	if [ ! -f $$SHIPPED_PATH ] || [ "$$LIBRARY_SOURCES" -nt $$SHIPPED_PATH ];\
 	then \
-		make -C $$(dirname $@); \
+		make -C $$(dirname $@) --no-print-directory \
+		>> $(LOG) 2>&1; \
 		if [ -f $@ ]; then \
-			printf "$(RUNNING) $(BLUE) 🚚   Shipping $@$(RESET)"; \
+			printf "$(RUNNING)$(BLUE) 🚚   Shipping $@$(RESET)"; \
 			cp $@ . >> $(LOG) 2>&1 \
 			&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
 			FOLDER_NAME=$$(echo $$(dirname $@) | sed 's:.*/::' \
@@ -151,7 +155,8 @@ clean_libs:
 		if [ -n "$$LIBRARY_OBJECTS" ]; then \
 			printf "$(RUNNING) $(YELLOW) 🧹   Cleaning $$(basename $$lib)\
 $(RESET)"; \
-			make -C $$(dirname $$lib) clean >> $(LOG) 2>&1 \
+			make -C $$(dirname $$lib) clean --no-print-directory \
+			>> $(LOG) 2>&1 \
 			&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
 		else \
 			printf "$(SKIPPED)$(MAGENTA)  ✨  \
@@ -194,7 +199,8 @@ $${LOWERCASE_DIR}$(RESET)"; \
 			else \
 				printf "\r$(SKIPPED)\n"; \
 			fi; \
-			make -C $$(dirname $$lib) fclean >> $(LOG) 2>&1; \
+			make -C $$(dirname $$lib) fclean --no-print-directory \
+			>> $(LOG) 2>&1; \
 		done
 
 re:			fclean all
@@ -206,7 +212,8 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 
 tests_libs:
 	@for lib in $(LIBS); do \
-		make -C $$(dirname $$lib) tests_run \
+		make -C $$(dirname $$lib) tests_run --no-print-directory \
+		>> $(LOG) 2>&1; \
 		&& printf "$(SUCCESS)$(GREEN)  🎉   Tests for $$(basename $$lib) \
 passed successfully$(RESET)\n" \
 		|| (printf "$(FAILURE)$(RED)  🚨   Tests for $$(basename $$lib) \
