@@ -5,7 +5,7 @@
 ** myObjParser
 */
 
-#include "myObjParser.hpp"
+#include "../include/myObjParser.hpp"
 
 void MyObjParser::loadMaterialFile(const std::string& filename,
     std::unordered_map<std::string, objMaterial>& materials) {

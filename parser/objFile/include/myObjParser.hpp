@@ -12,7 +12,7 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
-#include "../include/Object.hpp"
+#include "Object.hpp"
 
 #pragma once
 
@@ -51,7 +51,8 @@ struct Mesh {
 
 class MyObjParser {
     public:
-        static void loadMaterialFile(const std::string& filename, std::unordered_map<std::string, objMaterial>& materials);
+        static void loadMaterialFile(const std::string& filename,
+            std::unordered_map<std::string, objMaterial>& materials);
         static Mesh loadObjFile(const std::string& filename);
         Object parseObjFile(const std::string& filename);
 };
