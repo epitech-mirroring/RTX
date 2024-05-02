@@ -1,4 +1,4 @@
-#version 410 core
+#version 430
 out vec4 FragColor;
 uniform vec2 iResolution;
 uniform vec3 iViewPlaneParams;
@@ -38,19 +38,14 @@ struct Hit {
     vec3 position;
 };
 
-#define MAX_TRIANGLES 100
-#define MAX_SPHERES 100
-#define MAX_MESHES 100
-layout (binding = 1) buffer Triangles {
-    Triangle iTriangles[MAX_TRIANGLES];
-};
-layout (binding = 2) buffer Meshes {
-    Mesh iMeshes[MAX_MESHES];
-};
 uniform uint iNumTriangles;
 uniform uint iNumMeshes;
-Sphere iSpheres[MAX_SPHERES];
-uint iNumSpheres;
+layout(binding = 1) readonly buffer Triangles {
+    Triangle iTriangles[];
+};
+layout(binding = 2) readonly buffer Meshes {
+    Mesh iMeshes[];
+};
 
 bool isRayBoundingBoxIntersect(Ray ray, vec3 boxMin, vec3 boxMax)
 {
@@ -136,14 +131,6 @@ Hit ComputeHit(Ray ray) {
             }
         }
     }
-
-    for (uint i = 0; i < iNumSpheres; i++) {
-        Sphere sphere = iSpheres[i];
-        Hit hit = hitSphere(ray, sphere);
-        if (hit.hit && hit.distance < closestHit.distance) {
-            closestHit = hit;
-        }
-    }
     return closestHit;
 }
 
@@ -169,10 +156,6 @@ void main() {
 
     vec3 viewPointLocal = vec3(uv - 0.5, 1.0) * iViewPlaneParams;
     vec3 viewPointWorld = (iCameraMatrix * vec4(viewPointLocal, 1.0)).xyz;
-
-    iNumSpheres = 0;
-    iSpheres[0].center = vec3(0.0, 0.0, 10.0);
-    iSpheres[0].radius = 0.5;
 
     Ray ray;
     ray.origin = iCameraPosition;

@@ -18,10 +18,15 @@
 
 struct Triangle {
     glm::vec3 v0;
+    float pad0 = 0.0f;
     glm::vec3 v1;
+    float pad1 = 0.0f;
     glm::vec3 v2;
+    float pad2 = 0.0f;
     glm::vec3 normalV0;
+    float pad3 = 0.0f;
     glm::vec3 normalV1;
+    float pad4 = 0.0f;
     glm::vec3 normalV2;
 };
 
@@ -29,6 +34,7 @@ struct Mesh {
     unsigned int startIdx;
     unsigned int endIdx;
     glm::vec3 boundingBoxMin;
+    float pad0 = 0.0f;
     glm::vec3 boundingBoxMax;
 };
 
@@ -127,10 +133,15 @@ int main(int argc, char **argv)
     Triangle triangles[] = {
             {
                     {0.0f, 0.0f, 10.0f},
+                    0,
                     {-2.5f, 0.0f, 5.0f},
+                    0,
                     {2.5f, 0.0f, 5.0f},
+                    0,
                     {0.0f, 1.0f, 0.0f},
+                    0,
                     {0.0f, 1.0f, 0.0f},
+                    0,
                     {0.0f, 1.0f, 0.0f}
             }
     };
@@ -140,19 +151,20 @@ int main(int argc, char **argv)
                     0,
                     1,
                     {-2.5f, 0.0f, 5.0f},
+                    0,
                     {2.5f, 0.0f, 10.0f}
             }
     };
 
     GLuint triangleBuffer;
     glGenBuffers(1, &triangleBuffer);
-    glBindBuffer(GL_UNIFORM_BUFFER, triangleBuffer);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(Triangle) * 1, triangles, GL_STATIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangleBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Triangle) * 1, triangles, GL_STATIC_DRAW);
 
     GLuint meshBuffer;
     glGenBuffers(1, &meshBuffer);
-    glBindBuffer(GL_UNIFORM_BUFFER, meshBuffer);
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(Mesh) * 1, meshes, GL_STATIC_DRAW);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, meshBuffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Mesh) * 1, meshes, GL_STATIC_DRAW);
 
 
     glViewport(0, 0, (int) WIDTH * 2, (int) HEIGHT * 2);
@@ -169,8 +181,8 @@ int main(int argc, char **argv)
             fragmentShader.setUInt("iNumTriangles", 1);
             fragmentShader.setUInt("iNumMeshes", 1);
 
-            glBindBufferBase(GL_UNIFORM_BUFFER, 1, triangleBuffer);
-            glBindBufferBase(GL_UNIFORM_BUFFER, 2, meshBuffer);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, triangleBuffer);
+            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, meshBuffer);
         });
 
         glfwSwapBuffers(window);
