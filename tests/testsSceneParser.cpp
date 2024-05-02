@@ -7,8 +7,9 @@
 */
 
 #include <criterion/criterion.h>
-#include "SceneParser.hpp"
 #include <iostream>
+#include "SceneParser.hpp"
+#include "primitives/Cube.hpp"
 
 #define TEST_JSON "scenes/tests/test.json"
 
@@ -130,7 +131,7 @@ Test(SceneParser, Cameras)
     std::string path = "scenes/tests/testCameras.json";
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
-    std::vector<Camera> cameras = parser.parseCameras(root);
+    std::vector<Camera> cameras = SceneParser::parseCameras(root);
 
     cr_assert_eq(cameras.size(), 2);
     cr_assert_eq(cameras[0].getFov(), 90.0);
@@ -163,4 +164,23 @@ Test(SceneParser, noCameras)
     JsonObject root = JsonObject::parseFile(path);
 
     cr_assert_throw(parser.parseCameras(root), std::invalid_argument);
+}
+
+Test(SceneParser, Cube)
+{
+    std::string path = "scenes/tests/testCube.json";
+    JsonObject root = JsonObject::parseFile(path);
+    auto *objectsJson = root.getValue<JsonArray>("objects");
+    auto *cubeJson = objectsJson->getValue<JsonObject>(0);
+    Cube cube(cubeJson);
+
+    cr_assert_eq(cube.getMaterial().getColor(), GLSL::Color(1.0, 0.0, 0.0, 1.0));
+    cr_assert_eq(cube.getMaterial().getEmission(), GLSL::Color(0.0, 0.0, 0.0, 1.0));
+    cr_assert_eq(cube.getMaterial().getBrightness(), 0.0);
+    cr_assert_eq(cube.getMaterial().getRoughness(), 1.0);
+    cr_assert_eq(cube.getTransform().getPosition(), GLSL::Vector<3>(1.0, 1.0, 1.0));
+    cr_assert_eq(cube.getTransform().getRotation(), GLSL::Quaternion(1.0, 1.0, 1.0, 1.0));
+    cr_assert_eq(cube.getTransform().getScale(), GLSL::Vector<3>(1.0, 1.0, 1.0));
+    cr_assert_eq(cube.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
+    cr_assert_eq(cube.getProperties().getSize() , 10.0);
 }

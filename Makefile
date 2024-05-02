@@ -18,6 +18,7 @@ CXX_SOURCES		= 	src/main.cpp					\
 					src/Scene.cpp					\
 					src/SceneParser.cpp				\
 					src/primitives/Cube.cpp			\
+					src/primitives/objectsFactory.cpp\
 
 CXX_TESTS		=	tests/testsColor.cpp			\
 					tests/testsMaterial.cpp			\

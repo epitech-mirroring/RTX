@@ -85,3 +85,13 @@ Camera &Scene::getMainCamera()
 {
     return _cameras.at(0);
 }
+
+void Scene::setObjects(std::vector<Object> objects)
+{
+    _objects = objects;
+}
+
+void Scene::setCameras(std::vector<Camera> cameras)
+{
+    _cameras = cameras;
+}

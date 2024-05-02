@@ -16,7 +16,7 @@ namespace GLSL {
         Color();
         Color(double r, double g, double b, double a=255.0);
         Color(const Color &color);
-        Color(JsonObject *obj);
+        explicit Color(JsonObject *obj);
         ~Color() = default;
         [[nodiscard]] double getR() const;
         [[nodiscard]] double &getR();

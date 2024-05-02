@@ -31,4 +31,6 @@ class Scene {
         [[nodiscard]] Camera &getCamera(int index);
         [[nodiscard]] Camera getMainCamera() const;
         [[nodiscard]] Camera &getMainCamera();
+        void setObjects(std::vector<Object> objects);
+        void setCameras(std::vector<Camera> cameras);
 };
