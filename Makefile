@@ -17,6 +17,7 @@ CXX_SOURCES		= 	src/main.cpp					\
 					src/objects/Object.cpp			\
 					src/Scene.cpp					\
 					src/SceneParser.cpp				\
+					src/primitives/Cube.cpp			\
 
 CXX_TESTS		=	tests/testsColor.cpp			\
 					tests/testsMaterial.cpp			\
@@ -39,7 +40,7 @@ CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
 LOG				=	./build.log
 
-.PHONY: all clean fclean re tests_run clean_test $(LIBS) clean_libs fclean_libs
+.PHONY: all clean fclean re tests_run clean_test $(LIBS) clean_libs fclean_libs clion
 
 # Colors and formatting
 GREEN =		\033[1;32m
@@ -86,6 +87,8 @@ $(NAME):	$(CXX_OBJS)
 			cat $(LOG); \
 			exit 1; \
 		fi
+
+clion: $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
 
 $(LIBS): 	%.so:
 # If lib is already shipped (.so present in the directory)

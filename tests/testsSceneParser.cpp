@@ -17,8 +17,8 @@ Test(SceneParser, Color)
     std::string path = TEST_JSON;
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
-    JsonObject *colorJson = root.getValue<JsonObject>("color");
-    GLSL::Color color = parser.parseColor(colorJson);
+    auto *colorJson = root.getValue<JsonObject>("color");
+    GLSL::Color color(colorJson);
 
     cr_assert_eq(color.getR(), 1.0);
     cr_assert_eq(color.getG(), 1.0);
@@ -31,8 +31,8 @@ Test(SceneParser, Quaternion)
     std::string path = TEST_JSON;
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
-    JsonObject *quaternionJson = root.getValue<JsonObject>("quaternion");
-    GLSL::Quaternion quaternion = parser.parseQuaternion(quaternionJson);
+    auto *quaternionJson = root.getValue<JsonObject>("quaternion");
+    GLSL::Quaternion quaternion(quaternionJson);
 
     cr_assert_eq(quaternion.x, 2.0);
     cr_assert_eq(quaternion.y, 2.0);
@@ -45,8 +45,8 @@ Test(SceneParser, Vector)
     std::string path = TEST_JSON;
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
-    JsonObject *vectorJson = root.getValue<JsonObject>("vector");
-    GLSL::Vector<3> vector = parser.parseVector(vectorJson);
+    auto *vectorJson = root.getValue<JsonArray>("vector");
+    GLSL::Vector<3> vector(vectorJson);
 
     cr_assert_eq(vector[0], 1.0);
     cr_assert_eq(vector[1], 1.0);
@@ -58,11 +58,11 @@ Test(SceneParser, Material)
     std::string path = TEST_JSON;
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
-    JsonObject *materialJson = root.getValue<JsonObject>("material");
-    Material material = parser.parseMaterial(materialJson);
+    auto *materialJson = root.getValue<JsonObject>("material");
+    Material material(materialJson);
 
-    cr_assert_eq(material.getColor(), GLSL::Color(1, 0, 0, 1));
-    cr_assert_eq(material.getEmission(), GLSL::Color(0, 0, 0, 1));
+    cr_assert_eq(material.getColor(), GLSL::Color(1.0, 0.0, 0.0, 1.0));
+    cr_assert_eq(material.getEmission(), GLSL::Color(0.0, 0.0, 0.0, 1.0));
     cr_assert_eq(material.getBrightness(), 0.0);
     cr_assert_eq(material.getRoughness(), 1.0);
 }
@@ -72,8 +72,8 @@ Test(SceneParser, Texture)
     std::string path = TEST_JSON;
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
-    JsonObject *textureJson = root.getValue<JsonObject>("texture");
-    Texture texture = parser.parseTexture(textureJson);
+    auto *textureJson = root.getValue<JsonObject>("texture");
+    Texture texture(textureJson);
 
     cr_assert_eq(texture.getPath(), "test_texture.png");
     cr_assert_eq(texture.getType(), Texture::TextureType::NORMAL);
@@ -84,8 +84,8 @@ Test(SceneParser, Transform)
     std::string path = TEST_JSON;
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
-    JsonObject *transformJson = root.getValue<JsonObject>("transform");
-    Transform transform = parser.parseTransform(transformJson);
+    auto *transformJson = root.getValue<JsonObject>("transform");
+    Transform transform(transformJson);
 
     cr_assert_eq(transform.getPosition(), GLSL::Vector<3>(1.0, 1.0, 1.0));
     cr_assert_eq(transform.getRotation(), GLSL::Quaternion(1.0, 1.0, 1.0, 1.0));
@@ -97,11 +97,11 @@ Test(SceneParser, Camera)
     std::string path = TEST_JSON;
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
-    JsonObject *cameraJson = root.getValue<JsonObject>("camera");
-    Camera camera = parser.parseCamera(cameraJson);
+    auto *cameraJson = root.getValue<JsonObject>("camera");
+    Camera camera(cameraJson);
 
     cr_assert_eq(camera.getFov(), 90.0);
-    cr_assert_eq(camera.getNear(), 2);
+    cr_assert_eq(camera.getNear(), 2.0);
     cr_assert_eq(camera.getAspect(), 1.0);
     cr_assert_eq(camera.getTransform().getPosition(), GLSL::Vector<3>(1.0, 1.0, 1.0));
     cr_assert_eq(camera.getTransform().getRotation(), GLSL::Quaternion(1.0, 1.0, 1.0, 1.0));

@@ -8,6 +8,7 @@
 
 #pragma once
 #include "GLSL/Color.hpp"
+#include "json/Json.hpp"
 
 class Material {
 protected:
@@ -19,6 +20,7 @@ public:
     Material();
     Material(const GLSL::Color &color, const GLSL::Color &emission, double brightness, double roughness);
     Material(const Material &material);
+    explicit Material(JsonObject *obj);
     ~Material() = default;
     [[nodiscard]] GLSL::Color getColor() const;
     [[nodiscard]] GLSL::Color getEmission() const;

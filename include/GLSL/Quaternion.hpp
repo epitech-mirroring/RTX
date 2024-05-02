@@ -8,6 +8,7 @@
 
 #pragma once
 #include <stdexcept>
+#include "json/Json.hpp"
 
 namespace GLSL {
     class Quaternion {
@@ -20,6 +21,7 @@ namespace GLSL {
         Quaternion() = default;
         Quaternion(double x, double y, double z, double w=1);
         Quaternion(const Quaternion &q) = default;
+        Quaternion(JsonObject *obj);
         ~Quaternion() = default;
 
         Quaternion &operator=(const Quaternion &q) = default;

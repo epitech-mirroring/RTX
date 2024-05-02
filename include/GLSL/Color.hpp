@@ -8,6 +8,7 @@
 
 #pragma once
 #include "GLSL/Vector.hpp"
+#include "json/Json.hpp"
 
 namespace GLSL {
     class Color : public Vector<4> {
@@ -15,6 +16,7 @@ namespace GLSL {
         Color();
         Color(double r, double g, double b, double a=255.0);
         Color(const Color &color);
+        Color(JsonObject *obj);
         ~Color() = default;
         [[nodiscard]] double getR() const;
         [[nodiscard]] double &getR();

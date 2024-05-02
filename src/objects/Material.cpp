@@ -32,6 +32,14 @@ Material::Material(const Material &material)
     _roughness = material._roughness;
 }
 
+Material::Material(JsonObject *obj)
+{
+    _color = GLSL::Color(obj->getValue<JsonObject>("color"));
+    _emission = GLSL::Color(obj->getValue<JsonObject>("emission"));
+    _brightness = obj->getFloat("brightness");
+    _roughness = obj->getFloat("roughness");
+}
+
 GLSL::Color Material::getColor() const
 {
     return _color;

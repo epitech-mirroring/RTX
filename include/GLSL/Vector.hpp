@@ -12,6 +12,7 @@
 #include <cstdarg>
 #include <iostream>
 #include <stdexcept>
+#include "json/Json.hpp"
 
 namespace GLSL {
     template <std::size_t N>
@@ -32,6 +33,14 @@ namespace GLSL {
                 _data[i] = va_arg(args, double);
             }
             va_end(args);
+        };
+        explicit Vector(const JsonArray *json) {
+            if (json->size() != N) {
+                throw std::invalid_argument("Invalid number of elements in JSON array");
+            }
+            for (std::size_t i = 0; i < N; i++) {
+                _data[i] = json->getValue<JsonFloat>(i)->getValue();
+            }
         };
         Vector(const Vector &other) {
             for (std::size_t i = 0; i < N; i++) {

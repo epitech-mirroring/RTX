@@ -10,6 +10,7 @@
 #include "GLSL/Vector.hpp"
 #include "GLSL/Matrix.hpp"
 #include "GLSL/Quaternion.hpp"
+#include "json/Json.hpp"
 
 class Transform {
 protected:
@@ -31,6 +32,11 @@ public:
         _position = other.getPosition();
         _rotation = other.getRotation();
         _scale = other.getScale();
+    }
+    explicit Transform(JsonObject *obj) {
+        _position = GLSL::Vector<3>(obj->getValue<JsonArray>("position"));
+        _rotation = GLSL::Quaternion(obj->getValue<JsonObject>("rotation"));
+        _scale = GLSL::Vector<3>(obj->getValue<JsonArray>("scale"));
     }
     ~Transform() = default;
 

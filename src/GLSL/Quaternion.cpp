@@ -17,6 +17,13 @@ Quaternion::Quaternion(const double x, const double y, const double z, const dou
     this->w = w;
 }
 
+Quaternion::Quaternion(JsonObject *obj) {
+    x = obj->getFloat("x");
+    y = obj->getFloat("y");
+    z = obj->getFloat("z");
+    w = obj->getFloat("w");
+}
+
 Quaternion Quaternion::operator*(const Quaternion &q) const {
     double _x = this->w * q.x + this->x * q.w + this->y * q.z - this->z * q.y;
     double _y = this->w * q.y + this->y * q.w + this->z * q.x - this->x * q.z;

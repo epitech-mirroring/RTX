@@ -8,6 +8,7 @@
 
 #pragma once
 #include "GLSL/Color.hpp"
+#include "json/Json.hpp"
 #include <string>
 
 class Texture {
@@ -25,6 +26,7 @@ public:
     Texture();
     Texture(const Texture &texture);
     Texture(const std::string &path, TextureType type);
+    Texture(JsonObject *obj);
     ~Texture() = default;
     void setPath(const std::string &path);
     void setType(TextureType type);

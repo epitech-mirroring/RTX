@@ -30,6 +30,14 @@ double GLSL::Color::getR() const
     return this->r();
 }
 
+GLSL::Color::Color(JsonObject *obj)
+{
+    _data[0] = obj->getFloat("r");
+    _data[1] = obj->getFloat("g");
+    _data[2] = obj->getFloat("b");
+    _data[3] = obj->getFloat("a");
+}
+
 double &GLSL::Color::getR()
 {
     return this->_data[0];
