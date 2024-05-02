@@ -15,6 +15,7 @@ CXX_SOURCES		= 	src/main.cpp					\
 					src/objects/Texture.cpp			\
 					src/Camera.cpp					\
 					src/objects/Object.cpp			\
+					objParser/myObjParser.cpp		\	
 
 CXX_TESTS		=	tests/testsColor.cpp			\
 					tests/testsMaterial.cpp			\

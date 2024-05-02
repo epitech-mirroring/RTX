@@ -47,7 +47,8 @@ void MyObjParser::loadMaterialFile(const std::string& filename, std::unordered_m
     file.close();
 }
 
-void MyObjParser::loadObjFile(const std::string& filename, Mesh& mesh) {
+Mesh MyObjParser::loadObjFile(const std::string& filename) {
+    Mesh mesh;
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open OBJ file: " << filename << std::endl;
@@ -62,15 +63,15 @@ void MyObjParser::loadObjFile(const std::string& filename, Mesh& mesh) {
         if (command == "#") {
             std::cout << "Comment: " << line << std::endl;
         } else if (command == "v") {
-            Vector3 vertex;
+            GLSL::Vector<3> vertex;
             iss >> vertex.x >> vertex.y >> vertex.z;
             mesh.vertices.push_back(vertex);
         } else if (command == "vt") {
-            Vector3 texCoord;
+            GLSL::Vector<3> texCoord;
             iss >> texCoord.x >> texCoord.y;
             mesh.textureCoords.push_back(texCoord);
         } else if (command == "vn") {
-            Vector3 normal;
+            GLSL::Vector<3> normal;
             iss >> normal.x >> normal.y >> normal.z;
             mesh.normals.push_back(normal);
         } else if (command == "o") {
@@ -109,4 +110,36 @@ void MyObjParser::loadObjFile(const std::string& filename, Mesh& mesh) {
         }
     }
     file.close();
+    return mesh;
+}
+
+Object MyObjParser::parseObjFile(const std::string& filename) {
+    Mesh myObj = loadObjFile(filename);
+    GLSL::Color color(1.0f, 1.0f, 1.0f);
+    GLSL::Color emission(0.0f, 0.0f, 0.0f);
+    double brightness = 1.0;
+    double roughness = 0.0;
+    Material material(color, emission, brightness, roughness);
+    GLSL::Vector<3> position(0.0f, 0.0f, 0.0f);
+    GLSL::Quaternion rotation(0.0f, 0.0f, 0.0f, 1.0f);
+    GLSL::Vector<3> scale(1.0f, 1.0f, 1.0f);
+    Transform transform(position, rotation, scale);
+    std::vector<GLSL::Vertex> vertices;
+    std::vector<std::size_t> indices;
+    std::vector<Texture> textures;
+    for (auto face : myObj.faces) {
+        for (int i = 0; i < face.vertexIndices.size(); i++) {
+            GLSL::Vertex vertex;
+            vertex.setPosition(myObj.vertices[face.vertexIndices[i] - 1]);
+            if (face.normalIndices.size() > 0) {
+                vertex.setNormal(myObj.normals[face.normalIndices[i] - 1]);
+            }
+            // if (myObj.textureCoords.size() > 0) {
+            //     vertex.TexCoords = myObj.textureCoords[face.vertexIndices[i] - 1];
+            // }
+            vertices.push_back(vertex);
+            indices.push_back(indices.size());
+        }
+    }
+    return Object(material, transform, vertices, indices, textures);
 }

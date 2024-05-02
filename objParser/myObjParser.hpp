@@ -12,18 +12,19 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include "../include/Object.hpp"
 
 #pragma once
 
-struct Vector3 {
+struct GLSL::Vector<3> {
     float x, y, z;
 };
 
 struct Material {
     std::string name;
-    Vector3 ambient;
-    Vector3 diffuse;
-    Vector3 specular;
+    GLSL::Vector<3> ambient;
+    GLSL::Vector<3> diffuse;
+    GLSL::Vector<3> specular;
     float shininess;
     std::string diffuseMap;
     float transparency;
@@ -37,10 +38,10 @@ struct Face {
 };
 
 struct Mesh {
-    std::vector<Vector3> vertices;
-    std::vector<Vector3> normals;
+    std::vector<GLSL::Vector<3>> vertices;
+    std::vector<GLSL::Vector<3>> normals;
     std::vector<Face> faces;
-    std::vector<Vector3> textureCoords;
+    std::vector<GLSL::Vector<3>> textureCoords;
     std::string objectName;
     std::string groupName;
     bool smoothShading = false;
@@ -51,5 +52,6 @@ struct Mesh {
 class MyObjParser {
     public:
         static void loadMaterialFile(const std::string& filename, std::unordered_map<std::string, Material>& materials);
-        static void loadObjFile(const std::string& filename, Mesh& mesh);
+        static Mesh loadObjFile(const std::string& filename);
+        Object parseObjFile(const std::string& filename);
 };
