@@ -7,14 +7,15 @@
 
 #include "myObjParser.hpp"
 
-void MyObjParser::loadMaterialFile(const std::string& filename, std::unordered_map<std::string, Material>& materials) {
+void MyObjParser::loadMaterialFile(const std::string& filename,
+    std::unordered_map<std::string, objMaterial>& materials) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open material file: '" << filename << "'" << std::endl;
         return;
     }
 
-    Material currentMaterial;
+    objMaterial currentMaterial;
     std::string line;
     while (getline(file, line)) {
         std::istringstream iss(line);
@@ -83,7 +84,7 @@ Mesh MyObjParser::loadObjFile(const std::string& filename) {
             iss >> smooth;
             mesh.smoothShading = smooth == "on";
         } else if (command == "f") {
-            Face face;
+            objFace face;
             std::string vertex;
             while (iss >> vertex) {
                 for (int i = 0; i < vertex.size(); i++) {
@@ -120,7 +121,7 @@ Object MyObjParser::parseObjFile(const std::string& filename) {
     double brightness = 1.0;
     double roughness = 0.0;
     Material material(color, emission, brightness, roughness);
-    GLSL::Vector<3> position(0.0f, 0.0f, 0.0f);
+    GLSL::Vector<3> position = {0.0f, 0.0f, 0.0f};
     GLSL::Quaternion rotation(0.0f, 0.0f, 0.0f, 1.0f);
     GLSL::Vector<3> scale(1.0f, 1.0f, 1.0f);
     Transform transform(position, rotation, scale);
@@ -128,7 +129,7 @@ Object MyObjParser::parseObjFile(const std::string& filename) {
     std::vector<std::size_t> indices;
     std::vector<Texture> textures;
     for (auto face : myObj.faces) {
-        for (int i = 0; i < face.vertexIndices.size(); i++) {
+        for (std::vector<int>::size_type i = 0; i < face.vertexIndices.size(); i++) {
             GLSL::Vertex vertex;
             vertex.setPosition(myObj.vertices[face.vertexIndices[i] - 1]);
             if (face.normalIndices.size() > 0) {
