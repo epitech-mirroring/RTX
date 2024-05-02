@@ -121,7 +121,7 @@ Object MyObjParser::parseObjFile(const std::string& filename) {
     double brightness = 1.0;
     double roughness = 0.0;
     Material material(color, emission, brightness, roughness);
-    GLSL::Vector<3> position = {0.0f, 0.0f, 0.0f};
+    GLSL::Vector<3> position(0.0f, 0.0f, 0.0f);
     GLSL::Quaternion rotation(0.0f, 0.0f, 0.0f, 1.0f);
     GLSL::Vector<3> scale(1.0f, 1.0f, 1.0f);
     Transform transform(position, rotation, scale);
