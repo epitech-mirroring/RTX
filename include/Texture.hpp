@@ -7,7 +7,6 @@
 */
 
 #pragma once
-#include "GLSL/Color.hpp"
 #include <string>
 
 class Texture {

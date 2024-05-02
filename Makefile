@@ -8,20 +8,15 @@
 
 # All the source files
 CXX_SOURCES		= 	src/main.cpp					\
-					src/GLSL/Color.cpp				\
-					src/GLSL/Quaternion.cpp			\
 					src/objects/Material.cpp		\
 					src/objects/Texture.cpp			\
 					src/Camera.cpp					\
 					src/objects/Object.cpp			\
 					src/glad.cpp					\
+					src/GLSL/Shader.cpp				\
+					src/Transform.cpp				\
 
-CXX_TESTS		=	tests/testsColor.cpp			\
-					tests/testsMaterial.cpp			\
-					tests/testsMatrix.cpp			\
-					tests/testsTexture.cpp			\
-					tests/testsVector.cpp 			\
-					tests/testsTransform.cpp		\
+CXX_TESTS		=
 
 LIBS			=   libs/json/libjson.so
 
@@ -40,7 +35,8 @@ CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
 LOG				=	./build.log
 
-.PHONY: all clean fclean re tests_run clean_test $(LIBS) clean_libs fclean_libs
+.PHONY: all clean fclean re tests_run clean_test $(LIBS) \
+	clean_libs fclean_libs clion
 
 # Colors and formatting
 GREEN =		\033[1;32m
@@ -88,6 +84,8 @@ $(NAME):	$(CXX_OBJS)
 			exit 1; \
 		fi
 
+clion: $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
+
 $(LIBS): 	%.so:
 # If lib is already shipped (.so present in the directory)
 # We check if it older than any source present in the directory > src of the
@@ -100,7 +98,7 @@ $(LIBS): 	%.so:
 		make -C $$(dirname $@) --no-print-directory \
 		>> $(LOG) 2>&1; \
 		if [ -f $@ ]; then \
-			printf "$(RUNNING)$(BLUE) 🚚   Shipping $@$(RESET)"; \
+			printf "$(RUNNING)$(BLUE)  🚚   Shipping $@$(RESET)"; \
 			cp $@ . >> $(LOG) 2>&1 \
 			&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
 			FOLDER_NAME=$$(echo $$(dirname $@) | sed 's:.*/::' \
@@ -213,7 +211,6 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 tests_libs:
 	@for lib in $(LIBS); do \
 		make -C $$(dirname $$lib) tests_run --no-print-directory \
-		>> $(LOG) 2>&1; \
 		&& printf "$(SUCCESS)$(GREEN)  🎉   Tests for $$(basename $$lib) \
 passed successfully$(RESET)\n" \
 		|| (printf "$(FAILURE)$(RED)  🚨   Tests for $$(basename $$lib) \

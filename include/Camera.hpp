@@ -8,6 +8,9 @@
 
 #pragma once
 #include "Transform.hpp"
+#include <cmath>
+
+#define DEG_TO_RAD(x) (x * M_PI / 180)
 
 class Camera {
 protected:
@@ -35,4 +38,5 @@ public:
     void setAspect(float aspect);
     void setNear(float near);
     void setTransform(const Transform& transform);
+    [[nodiscard]] glm::vec3 getViewParams() const;
 };

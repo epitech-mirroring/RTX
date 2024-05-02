@@ -7,10 +7,12 @@
 */
 
 #pragma once
+#include <vector>
+#include "GLSL/Shader.hpp"
 #include "Material.hpp"
 #include "Texture.hpp"
 #include "Transform.hpp"
-#include <vector>
+#include <functional>
 
 class Object {
 protected:
@@ -19,9 +21,10 @@ protected:
     unsigned int _vao;
     unsigned int _vbo;
     unsigned int _ebo;
+    unsigned int _faceCount;
 public:
     Object();
-    Object(const Material& material, const Transform &transform, const std::vector<float> &vertices, const std::vector<std::size_t> &indices, const std::vector<Texture> &textures);
+    Object(const Material& material, const Transform &transform, const std::vector<glm::vec3> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture> &textures);
     Object(const Object &other);
     ~Object();
 
@@ -34,4 +37,9 @@ public:
 
     void setTransform(const Transform &transform);
     void setMaterial(const Material &material);
+
+    void bind() const;
+    void unbind() const;
+    void draw() const;
+    void draw(const GLSL::Shader &vertexShader, const GLSL::Shader &fragmentShader, std::function<void(const GLSL::Shader &vertexShader, const GLSL::Shader &fragmentShader)> uniforms = nullptr) const;
 };
