@@ -16,15 +16,15 @@
 
 #pragma once
 
-struct GLSL::Vector<3> {
+struct objVector3 {
     float x, y, z;
 };
 
 struct objMaterial {
     std::string name;
-    GLSL::Vector<3> ambient;
-    GLSL::Vector<3> diffuse;
-    GLSL::Vector<3> specular;
+    objVector3 ambient;
+    objVector3 diffuse;
+    objVector3 specular;
     float shininess;
     std::string diffuseMap;
     float transparency;

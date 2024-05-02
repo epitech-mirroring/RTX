@@ -53,7 +53,7 @@ Mesh MyObjParser::loadObjFile(const std::string& filename) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Failed to open OBJ file: " << filename << std::endl;
-        return;
+        return mesh;
     }
 
     std::string line;
@@ -64,16 +64,19 @@ Mesh MyObjParser::loadObjFile(const std::string& filename) {
         if (command == "#") {
             std::cout << "Comment: " << line << std::endl;
         } else if (command == "v") {
-            GLSL::Vector<3> vertex;
-            iss >> vertex.x >> vertex.y >> vertex.z;
+            objVector3 objvertex;
+            iss >> objvertex.x >> objvertex.y >> objvertex.z;
+            GLSL::Vector<3> vertex(objvertex.x, objvertex.y, objvertex.z);
             mesh.vertices.push_back(vertex);
         } else if (command == "vt") {
-            GLSL::Vector<3> texCoord;
-            iss >> texCoord.x >> texCoord.y;
+            objVector3 objtexCoord;
+            iss >> objtexCoord.x >> objtexCoord.y;
+            GLSL::Vector<3> texCoord(objtexCoord.x, objtexCoord.y, 0.0f);
             mesh.textureCoords.push_back(texCoord);
         } else if (command == "vn") {
-            GLSL::Vector<3> normal;
-            iss >> normal.x >> normal.y >> normal.z;
+            objVector3 objNormal;
+            iss >> objNormal.x >> objNormal.y >> objNormal.z;
+            GLSL::Vector<3> normal(objNormal.x, objNormal.y, objNormal.z);
             mesh.normals.push_back(normal);
         } else if (command == "o") {
             iss >> mesh.objectName;
@@ -87,7 +90,7 @@ Mesh MyObjParser::loadObjFile(const std::string& filename) {
             objFace face;
             std::string vertex;
             while (iss >> vertex) {
-                for (int i = 0; i < vertex.size(); i++) {
+                for (long unsigned int i = 0; i < vertex.size(); i++) {
                     if (vertex[i] == '/') {
                         vertex[i] = ' ';
                     }
@@ -121,7 +124,7 @@ Object MyObjParser::parseObjFile(const std::string& filename) {
     double brightness = 1.0;
     double roughness = 0.0;
     Material material(color, emission, brightness, roughness);
-    GLSL::Vector<3> position(0.0f, 0.0f, 0.0f);
+    GLSL::Vector<3> position(0.0, 0.0, 0.0);
     GLSL::Quaternion rotation(0.0f, 0.0f, 0.0f, 1.0f);
     GLSL::Vector<3> scale(1.0f, 1.0f, 1.0f);
     Transform transform(position, rotation, scale);
@@ -129,7 +132,7 @@ Object MyObjParser::parseObjFile(const std::string& filename) {
     std::vector<std::size_t> indices;
     std::vector<Texture> textures;
     for (auto face : myObj.faces) {
-        for (std::vector<int>::size_type i = 0; i < face.vertexIndices.size(); i++) {
+        for (long unsigned int i = 0; i < face.vertexIndices.size(); i++) {
             GLSL::Vertex vertex;
             vertex.setPosition(myObj.vertices[face.vertexIndices[i] - 1]);
             if (face.normalIndices.size() > 0) {
