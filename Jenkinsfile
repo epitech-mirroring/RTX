@@ -52,12 +52,31 @@ pipeline {
                 }
             }
         }
-        stage('🔨 Build') {
-            steps {
-                // Build the project using the makefile inside epitest docker
-                sh 'docker run --rm --security-opt "label:disable" -v /etc/passwd:/etc/passwd:ro -v "$(pwd)":"/mnt/delivery" -w "/mnt/delivery" -u "$(id -u):$(id -g)" epitechcontent/epitest-docker:latest make re'
-            }
-        }
+        stage('🏗️ Build') {
+                    steps {
+                        ansiColor('xterm') {
+                            // Clean before building
+                            sh 'make fclean'
+
+                            // Run the build
+                            sh 'make'
+
+                            // Check file presence (e.g. binary, library, etc.)
+                            script {
+                                def BIN_NAMES = ['raytracer']
+
+                                for (BIN_NAME in BIN_NAMES) {
+                                    if (!fileExists(BIN_NAME)) {
+                                        error "The binary file ${BIN_NAME} does not exist"
+                                    } else {
+                                        echo "The binary file ${BIN_NAME} exists"
+                                        archiveArtifacts artifacts: "${BIN_NAME}", fingerprint: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
         stage ('🔎 Verify') {
             steps {
                 script {
