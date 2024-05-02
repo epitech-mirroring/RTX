@@ -10,6 +10,11 @@
 #include "Scene.hpp"
 #include "json/Json.hpp"
 
+typedef struct {
+    std::string type,
+    (Object::*objectParser)(Object &obj, JsonObject *json);
+} ObjectParser;
+
 class SceneParser {
     public:
         SceneParser();
@@ -28,6 +33,9 @@ class SceneParser {
         Transform parseTransform(JsonObject *obj);
         Camera parseCamera(JsonObject *obj);
         Object parseObject(JsonObject *obj);
+        std::vector<Camera> parseCameras(JsonObject &obj);
+        std::vector<Object> parseObjects(JsonObject &obj);
+        Cube parseCube(Object &obj, JsonObject *json);
     private:
         std::string _path;
         Scene _Scene;

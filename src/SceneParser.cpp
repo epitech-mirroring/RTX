@@ -11,6 +11,10 @@
 #include <iostream>
 #include <fstream>
 
+const ObjectParser _parsers[] = {
+    {"cube", &SceneParser::parseCube},
+};
+
 SceneParser::SceneParser()
 {
     _Scene = Scene();
@@ -43,10 +47,53 @@ void SceneParser::parse()
 
     if (!file.is_open()) {
         throw std::invalid_argument("Error: can't open Scene file");
-        return;
     }
     file.close();
     JsonObject root = JsonObject::parseFile(this->_path);
+    this->_Scene.getCameras() = this->parseCameras(root);
+    // this->_Scene.getObjects() = this->parseObjects(root);
+}
+
+std::vector<Camera> SceneParser::parseCameras(JsonObject &root)
+{
+    JsonArray *cameras;
+    std::vector<Camera> camerasVector;
+
+    try {
+        cameras = root.getValue<JsonArray>("cameras");
+    } catch (std::exception &e) {
+        throw std::invalid_argument("Error: No cameras array in Scene file");
+    }
+    if (cameras->size() == 0) {
+        throw std::invalid_argument("Error: Empty cameras array in Scene file");
+    }
+    for (std::size_t i = 0; i < cameras->size() ; i++) {
+        JsonObject *cameraJson = cameras->getValue<JsonObject>(i);
+        Camera camera = this->parseCamera(cameraJson);
+        camerasVector.push_back(camera);
+    }
+    return camerasVector;
+}
+
+std::vector<Object> SceneParser::parseObjects(JsonObject &root)
+{
+    JsonArray *objects;
+    std::vector<Object> objectsVector;
+
+    try {
+        objects = root.getValue<JsonArray>("objects");
+    } catch (std::exception &e) {
+        throw std::invalid_argument("Error: No objects array in Scene file");
+    }
+    if (objects->size() == 0) {
+        throw std::invalid_argument("Error: Empty objects array in Scene file");
+    }
+    for (std::size_t i = 0; i < objects->size() ; i++) {
+        JsonObject *objectJson = objects->getValue<JsonObject>(i);
+        Object object = this->parseObject(objectJson);
+        objectsVector.push_back(object);
+    }
+    return objectsVector;
 }
 
 Scene &SceneParser::getScene()

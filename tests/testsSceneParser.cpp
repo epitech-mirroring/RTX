@@ -10,7 +10,7 @@
 #include "SceneParser.hpp"
 #include <iostream>
 
-#define TEST_JSON "scenes/test.json"
+#define TEST_JSON "scenes/tests/test.json"
 
 Test(SceneParser, Color)
 {
@@ -123,4 +123,44 @@ Test(SceneParser, Wrong_File)
 
     parser.setPath(path);
     cr_assert_throw(parser.parse(), std::invalid_argument);
+}
+
+Test(SceneParser, Cameras)
+{
+    std::string path = "scenes/tests/testCameras.json";
+    SceneParser parser = SceneParser(path);
+    JsonObject root = JsonObject::parseFile(path);
+    std::vector<Camera> cameras = parser.parseCameras(root);
+
+    cr_assert_eq(cameras.size(), 2);
+    cr_assert_eq(cameras[0].getFov(), 90.0);
+    cr_assert_eq(cameras[0].getAspect(), 1.0);
+    cr_assert_eq(cameras[0].getNear(), 2.0);
+    cr_assert_eq(cameras[0].getTransform().getPosition(), GLSL::Vector<3>(1.0, 1.0, 1.0));
+    cr_assert_eq(cameras[0].getTransform().getRotation(), GLSL::Quaternion(1.0, 1.0, 1.0, 1.0));
+    cr_assert_eq(cameras[0].getTransform().getScale(), GLSL::Vector<3>(1.0, 1.0, 1.0));
+    cr_assert_eq(cameras[1].getFov(), 50.0);
+    cr_assert_eq(cameras[1].getAspect(), 3.0);
+    cr_assert_eq(cameras[1].getNear(), 3.0);
+    cr_assert_eq(cameras[1].getTransform().getPosition(), GLSL::Vector<3>(3.0, 3.0, 3.0));
+    cr_assert_eq(cameras[1].getTransform().getRotation(), GLSL::Quaternion(3.0, 3.0, 3.0, 3.0));
+    cr_assert_eq(cameras[1].getTransform().getScale(), GLSL::Vector<3>(3.0, 3.0, 3.0));
+}
+
+Test(SceneParser, noCamera)
+{
+    std::string path = "scenes/tests/testNoCamera.json";
+    SceneParser parser = SceneParser(path);
+    JsonObject root = JsonObject::parseFile(path);
+
+    cr_assert_throw(parser.parseCameras(root), std::invalid_argument);
+}
+
+Test(SceneParser, noCameras)
+{
+    std::string path = "scenes/tests/testNoCameras.json";
+    SceneParser parser = SceneParser(path);
+    JsonObject root = JsonObject::parseFile(path);
+
+    cr_assert_throw(parser.parseCameras(root), std::invalid_argument);
 }

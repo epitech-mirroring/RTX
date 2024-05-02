@@ -1,0 +1,50 @@
+{
+    "cameras": [
+        {
+            "transform": {
+                "position": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1
+                },
+                "rotation": {
+                    "x": 1,
+                    "y": 1,
+                    "z": 1,
+                    "w": 1
+                }
+            },
+            "fov": 90,
+            "aspect": 1,
+            "near": 2
+        },
+        {
+            "transform": {
+                "position": {
+                    "x": 3,
+                    "y": 3,
+                    "z": 3
+                },
+                "scale": {
+                    "x": 3,
+                    "y": 3,
+                    "z": 3
+                },
+                "rotation": {
+                    "x": 3,
+                    "y": 3,
+                    "z": 3,
+                    "w": 3
+                }
+            },
+            "fov": 50,
+            "aspect": 3,
+            "near": 3
+        }
+    ]
+}
