@@ -35,7 +35,8 @@ CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
 LOG				=	./build.log
 
-.PHONY: all clean fclean re tests_run clean_test $(LIBS) clean_libs fclean_libs clion
+.PHONY: all clean fclean re tests_run \
+	clean_test $(LIBS) clean_libs fclean_libs clion
 
 # Colors and formatting
 GREEN =		\033[1;32m
