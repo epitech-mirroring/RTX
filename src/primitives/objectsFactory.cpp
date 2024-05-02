@@ -7,6 +7,7 @@
 */
 
 #include "primitives/objectsFactory.hpp"
+#include <stdexcept>
 #include "primitives/Cube.hpp"
 
 Object ObjectsFactory::createObject(JsonObject *obj)

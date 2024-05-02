@@ -10,13 +10,13 @@
 
 Material::Material()
 {
-    _color = GLSL::Color(0.0, 0.0, 0.0);
-    _emission = GLSL::Color(0.0, 0.0, 0.0);
+    _color = glm::vec3(0.0, 0.0, 0.0);
+    _emission = glm::vec3(0.0, 0.0, 0.0);
     _brightness = 0.0;
     _roughness = 0.0;
 }
 
-Material::Material(const GLSL::Color &color, const GLSL::Color &emission, const double brightness, const double roughness)
+Material::Material(const glm::vec3 &color, const glm::vec3 &emission, const double brightness, const double roughness)
 {
     _color = color;
     _emission = emission;
@@ -34,28 +34,28 @@ Material::Material(const Material &material)
 
 Material::Material(JsonObject *obj)
 {
-    _color = GLSL::Color(obj->getValue<JsonObject>("color"));
-    _emission = GLSL::Color(obj->getValue<JsonObject>("emission"));
+    _color = GlmParser::parseColor(obj->getValue<JsonObject>("color"));
+    _emission = GlmParser::parseColor(obj->getValue<JsonObject>("emission"));
     _brightness = obj->getFloat("brightness");
     _roughness = obj->getFloat("roughness");
 }
 
-GLSL::Color Material::getColor() const
+glm::vec3 Material::getColor() const
 {
     return _color;
 }
 
-GLSL::Color Material::getEmission() const
+glm::vec3 Material::getEmission() const
 {
     return _emission;
 }
 
-GLSL::Color &Material::getColor()
+glm::vec3 &Material::getColor()
 {
     return _color;
 }
 
-GLSL::Color &Material::getEmission()
+glm::vec3 &Material::getEmission()
 {
     return _emission;
 }
@@ -80,12 +80,12 @@ double &Material::getRoughness()
     return _roughness;
 }
 
-void Material::setColor(const GLSL::Color &color)
+void Material::setColor(const glm::vec3 &color)
 {
     _color = color;
 }
 
-void Material::setEmission(const GLSL::Color &emission)
+void Material::setEmission(const glm::vec3 &emission)
 {
     _emission = emission;
 }

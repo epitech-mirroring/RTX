@@ -13,13 +13,13 @@ Object::Object()
 {
     _material = Material();
     _transform = Transform();
-    _vertices = std::vector<GLSL::Vertex>();
+    _vertices = std::vector<glm::vec3>();
     _indices = std::vector<std::size_t>();
     _textures = std::unordered_map<Texture::TextureType, Texture>();
     _properties = abstractProperties();
 }
 
-Object::Object(const Material& material, const Transform& transform, std::vector<GLSL::Vertex> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures, abstractProperties properties)
+Object::Object(const Material& material, const Transform& transform, std::vector<glm::vec3> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures, abstractProperties properties)
 {
     _material = material;
     _transform = transform;
@@ -45,7 +45,7 @@ Object::Object(JsonObject *obj)
 {
     _material = Material(obj->getValue<JsonObject>("material"));
     _transform = Transform(obj->getValue<JsonObject>("transform"));
-    _vertices = std::vector<GLSL::Vertex>();
+    _vertices = std::vector<glm::vec3>();
     _indices = std::vector<std::size_t>();
     auto textures = obj->getValue<JsonArray>("textures");
     for (std::size_t i = 0; i < textures->size(); i++) {
@@ -75,12 +75,12 @@ Transform &Object::getTransform()
     return _transform;
 }
 
-std::vector<GLSL::Vertex> &Object::getVertices()
+std::vector<glm::vec3> &Object::getVertices()
 {
     return _vertices;
 }
 
-std::vector<GLSL::Vertex> Object::getVertices() const
+std::vector<glm::vec3> Object::getVertices() const
 {
     return _vertices;
 }
@@ -125,7 +125,7 @@ void Object::setTransform(const Transform& transform)
     _transform = transform;
 }
 
-void Object::setVertices(std::vector<GLSL::Vertex> vertices)
+void Object::setVertices(std::vector<glm::vec3> vertices)
 {
     _vertices = std::move(vertices);
 }

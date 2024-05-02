@@ -7,31 +7,32 @@
 */
 
 #pragma once
-#include "GLSL/Color.hpp"
 #include "json/Json.hpp"
+#include "glm/glm.hpp"
+#include "GlmParser.hpp"
 
 class Material {
 protected:
-    GLSL::Color _color;
-    GLSL::Color _emission;
+    glm::vec3 _color;
+    glm::vec3 _emission;
     double _brightness;
     double _roughness;
 public:
     Material();
-    Material(const GLSL::Color &color, const GLSL::Color &emission, double brightness, double roughness);
+    Material(const glm::vec3 &color, const glm::vec3 &emission, double brightness, double roughness);
     Material(const Material &material);
     explicit Material(JsonObject *obj);
     ~Material() = default;
-    [[nodiscard]] GLSL::Color getColor() const;
-    [[nodiscard]] GLSL::Color getEmission() const;
-    [[nodiscard]] GLSL::Color &getColor();
-    [[nodiscard]] GLSL::Color &getEmission();
+    [[nodiscard]] glm::vec3 getColor() const;
+    [[nodiscard]] glm::vec3 getEmission() const;
+    [[nodiscard]] glm::vec3 &getColor();
+    [[nodiscard]] glm::vec3 &getEmission();
     [[nodiscard]] double getBrightness() const;
     [[nodiscard]] double &getBrightness();
     [[nodiscard]] double getRoughness() const;
     [[nodiscard]] double &getRoughness();
-    void setColor(const GLSL::Color &color);
-    void setEmission(const GLSL::Color &emission);
+    void setColor(const glm::vec3 &color);
+    void setEmission(const glm::vec3 &emission);
     void setBrightness(double brightness);
     void setRoughness(double roughness);
     //TODO: Diffraction

@@ -7,6 +7,7 @@
 */
 
 #include "Texture.hpp"
+#include <stdexcept>
 
 Texture::Texture()
 {

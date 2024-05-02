@@ -15,12 +15,12 @@ Cube::Cube()
     _properties = cubeProperties();
 }
 
-Cube::Cube(const Material& material, const Transform& transform, std::vector<GLSL::Vertex> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures, std::size_t size) : Object(material, transform, std::move(vertices), std::move(indices), std::move(textures))
+Cube::Cube(const Material& material, const Transform& transform, std::vector<glm::vec3> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures, std::size_t size) : Object(material, transform, std::move(vertices), std::move(indices), std::move(textures))
 {
     _properties.setSize(size);
 }
 
-Cube::Cube(const Material& material, const Transform& transform, std::vector<GLSL::Vertex> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures, cubeProperties properties) : Object(material, transform, std::move(vertices), std::move(indices), std::move(textures))
+Cube::Cube(const Material& material, const Transform& transform, std::vector<glm::vec3> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures, cubeProperties properties) : Object(material, transform, std::move(vertices), std::move(indices), std::move(textures))
 {
     _properties = properties;
 }

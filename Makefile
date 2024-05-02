@@ -7,27 +7,21 @@
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/main.cpp					\
-					src/GLSL/Color.cpp				\
-					src/GLSL/Quaternion.cpp			\
-					src/GLSL/Vertex.cpp				\
-					src/objects/Material.cpp		\
-					src/objects/Texture.cpp			\
-					src/Camera.cpp					\
-					src/objects/Object.cpp			\
-					src/Scene.cpp					\
-					src/SceneParser.cpp				\
-					src/primitives/Cube.cpp			\
-					src/primitives/objectsFactory.cpp\
+CXX_SOURCES		= 	src/main.cpp						\
+					src/GlmParser.cpp					\
+					src/Transform.cpp					\
+					src/objects/Material.cpp			\
+					src/objects/Texture.cpp				\
+					src/Camera.cpp						\
+					src/objects/Object.cpp				\
+					src/Scene.cpp						\
+					src/SceneParser.cpp					\
+					src/primitives/Cube.cpp				\
+					src/primitives/objectsFactory.cpp	\
 
-CXX_TESTS		=	tests/testsColor.cpp			\
-					tests/testsMaterial.cpp			\
-					tests/testsMatrix.cpp			\
-					tests/testsSceneParser.cpp		\
+CXX_TESTS		=	tests/testsMaterial.cpp			\
 					tests/testsTexture.cpp			\
-					tests/testsVector.cpp 			\
-					tests/testsVertex.cpp 			\
-					tests/testsTransform.cpp		\
+					tests/testsSceneParser.cpp		\
 
 LIBS			=   libs/json/libjson.so
 
