@@ -8,9 +8,11 @@
 
 #include "Scene.hpp"
 
+#include <utility>
+
 Scene::Scene()
 {
-    _objects = std::vector<Object>();
+    _objects = std::vector<Object *>();
     _cameras = std::vector<Camera>();
 }
 
@@ -26,7 +28,7 @@ Scene::~Scene()
     _cameras.clear();
 }
 
-void Scene::addObject(Object &object)
+void Scene::addObject(Object *object)
 {
     _objects.push_back(object);
 }
@@ -36,12 +38,12 @@ void Scene::addCamera(Camera &camera)
     _cameras.push_back(camera);
 }
 
-std::vector<Object> Scene::getObjects() const
+std::vector<Object *> Scene::getObjects() const
 {
     return _objects;
 }
 
-std::vector<Object> &Scene::getObjects()
+std::vector<Object *> &Scene::getObjects()
 {
     return _objects;
 }
@@ -56,12 +58,12 @@ std::vector<Camera> &Scene::getCameras()
     return _cameras;
 }
 
-Object Scene::getObject(int index) const
+Object *Scene::getObject(int index) const
 {
     return _objects.at(index);
 }
 
-Object &Scene::getObject(int index)
+Object *Scene::getObject(int index)
 {
     return _objects.at(index);
 }
@@ -86,12 +88,12 @@ Camera &Scene::getMainCamera()
     return _cameras.at(0);
 }
 
-void Scene::setObjects(std::vector<Object> objects)
+void Scene::setObjects(std::vector<Object *> objects)
 {
-    _objects = objects;
+    _objects = std::move(objects);
 }
 
 void Scene::setCameras(std::vector<Camera> cameras)
 {
-    _cameras = cameras;
+    _cameras = std::move(cameras);
 }

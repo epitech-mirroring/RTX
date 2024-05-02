@@ -11,11 +11,9 @@
 #include "SceneParser.hpp"
 #include "primitives/Cube.hpp"
 
-#define TEST_JSON "scenes/tests/test.json"
-
 Test(SceneParser, Color)
 {
-    std::string path = TEST_JSON;
+    std::string path = "scenes/tests/test.json";
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *colorJson = root.getValue<JsonObject>("color");
@@ -28,7 +26,7 @@ Test(SceneParser, Color)
 
 Test(SceneParser, Quaternion)
 {
-    std::string path = TEST_JSON;
+    std::string path = "scenes/tests/test.json";
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *quaternionJson = root.getValue<JsonObject>("quaternion");
@@ -42,7 +40,7 @@ Test(SceneParser, Quaternion)
 
 Test(SceneParser, Vector)
 {
-    std::string path = TEST_JSON;
+    std::string path = "scenes/tests/test.json";
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *vectorJson = root.getValue<JsonObject>("vector");
@@ -55,7 +53,7 @@ Test(SceneParser, Vector)
 
 Test(SceneParser, Material)
 {
-    std::string path = TEST_JSON;
+    std::string path = "scenes/tests/test.json";
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *materialJson = root.getValue<JsonObject>("material");
@@ -69,7 +67,7 @@ Test(SceneParser, Material)
 
 Test(SceneParser, Texture)
 {
-    std::string path = TEST_JSON;
+    std::string path = "scenes/tests/test.json";
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *textureJson = root.getValue<JsonObject>("texture");
@@ -81,7 +79,7 @@ Test(SceneParser, Texture)
 
 Test(SceneParser, Transform)
 {
-    std::string path = TEST_JSON;
+    std::string path = "scenes/tests/test.json";
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *transformJson = root.getValue<JsonObject>("transform");
@@ -94,7 +92,7 @@ Test(SceneParser, Transform)
 
 Test(SceneParser, Camera)
 {
-    std::string path = TEST_JSON;
+    std::string path = "scenes/tests/test.json";
     SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *cameraJson = root.getValue<JsonObject>("camera");
@@ -171,7 +169,8 @@ Test(SceneParser, Cube)
     JsonObject root = JsonObject::parseFile(path);
     auto *objectsJson = root.getValue<JsonArray>("objects");
     auto *cubeJson = objectsJson->getValue<JsonObject>(0);
-    Cube cube(cubeJson);
+    auto properties = CubeProperties(cubeJson);
+    Cube cube(properties);
 
     cr_assert_eq(cube.getMaterial().getColor(), glm::vec3(1.0, 0.0, 0.0));
     cr_assert_eq(cube.getMaterial().getEmission(), glm::vec3(0.0, 0.0, 0.0));
@@ -182,4 +181,35 @@ Test(SceneParser, Cube)
     cr_assert_eq(cube.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(cube.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
     cr_assert_eq(cube.getProperties().getSize() , 10.0);
+}
+
+Test(SceneParser, ParseScene)
+{
+    std::string path = "scenes/tests/testScene.json";
+    SceneParser parser = SceneParser(path);
+    parser.parse();
+    auto scene = parser.getScene();
+
+    cr_assert_eq(scene.getObjects().size(), 1);
+    cr_assert_eq(scene.getObjects()[0]->getMaterial().getColor(), glm::vec3(1.0, 0.0, 0.0));
+    cr_assert_eq(scene.getObjects()[0]->getMaterial().getEmission(), glm::vec3(0.0, 0.0, 0.0));
+    cr_assert_eq(scene.getObjects()[0]->getMaterial().getBrightness(), 0.0);
+    cr_assert_eq(scene.getObjects()[0]->getMaterial().getRoughness(), 1.0);
+    cr_assert_eq(scene.getObjects()[0]->getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
+    cr_assert_eq(scene.getObjects()[0]->getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
+    cr_assert_eq(scene.getObjects()[0]->getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
+    cr_assert_eq(scene.getObjects()[0]->getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
+    cr_assert_eq(scene.getCameras().size(), 2);
+    cr_assert_eq(scene.getCameras()[0].getFov(), 90.0);
+    cr_assert_eq(scene.getCameras()[0].getAspect(), 1.0);
+    cr_assert_eq(scene.getCameras()[0].getNear(), 2.0);
+    cr_assert_eq(scene.getCameras()[0].getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
+    cr_assert_eq(scene.getCameras()[0].getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
+    cr_assert_eq(scene.getCameras()[0].getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
+    cr_assert_eq(scene.getCameras()[1].getFov(), 50.0);
+    cr_assert_eq(scene.getCameras()[1].getAspect(), 3.0);
+    cr_assert_eq(scene.getCameras()[1].getNear(), 3.0);
+    cr_assert_eq(scene.getCameras()[1].getTransform().getPosition(), glm::vec3(3.0, 3.0, 3.0));
+    cr_assert_eq(scene.getCameras()[1].getTransform().getRotation(), glm::dquat (3.0, 3.0, 3.0, 3.0));
+    cr_assert_eq(scene.getCameras()[1].getTransform().getScale(), glm::vec3(3.0, 3.0, 3.0));
 }

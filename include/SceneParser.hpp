@@ -8,8 +8,9 @@
 
 #pragma once
 #include "Scene.hpp"
-#include "primitives/objectsFactory.hpp"
 #include "json/Json.hpp"
+#include "primitives/ObjectsFactory.hpp"
+#include "primitives/Properties/PropertiesFactory.hpp"
 
 class SceneParser {
     public:
@@ -21,9 +22,11 @@ class SceneParser {
         [[nodiscard]] Scene &getScene();
         [[nodiscard]] Scene getScene() const;
         static std::vector<Camera> parseCameras(JsonObject &obj);
-        static std::vector<Object> parseObjects(JsonObject &obj);
+        std::vector<Object *> parseObjects(JsonObject &obj);
     private:
         std::string _path;
         Scene _scene;
+        ObjectsFactory _objectsFactory;
+        PropertiesFactory _propertiesFactory;
 
 };

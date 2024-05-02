@@ -7,15 +7,16 @@
 */
 
 #pragma once
-#include "primitives/Properties/abstractProperties.hpp"
 #include <cstddef>
+#include "primitives/Properties/AbstractProperties.hpp"
+#include "json/Json.hpp"
 
-class cubeProperties : public abstractProperties {
+class CubeProperties : public AbstractProperties {
     public:
-        cubeProperties() = default;
-        explicit cubeProperties(std::size_t size) : _size(size) {};
-        explicit cubeProperties(JsonObject *obj) { _size = obj->getInt("size");};
-        ~cubeProperties() = default;
+        CubeProperties() { _size = 1; };
+        explicit CubeProperties(std::size_t size) : _size(size) {};
+        explicit CubeProperties(JsonObject *obj) : AbstractProperties(obj) { _size = obj->getInt("size");};
+        ~CubeProperties() override = default;
         [[nodiscard]] std::size_t getSize() const { return _size; }
         [[nodiscard]] std::size_t &getSize() { return _size; }
         void setSize(std::size_t size) { _size = size; }

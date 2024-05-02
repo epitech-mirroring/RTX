@@ -7,17 +7,19 @@
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/main.cpp						\
-					src/GlmParser.cpp					\
-					src/Transform.cpp					\
-					src/objects/Material.cpp			\
-					src/objects/Texture.cpp				\
-					src/Camera.cpp						\
-					src/objects/Object.cpp				\
-					src/Scene.cpp						\
-					src/SceneParser.cpp					\
-					src/primitives/Cube.cpp				\
-					src/primitives/objectsFactory.cpp	\
+CXX_SOURCES		= 	src/main.cpp										\
+					src/GlmParser.cpp									\
+					src/Transform.cpp									\
+					src/objects/Material.cpp							\
+					src/objects/Texture.cpp								\
+					src/Camera.cpp										\
+					src/objects/Object.cpp								\
+					src/Scene.cpp										\
+					src/SceneParser.cpp									\
+					src/primitives/Cube.cpp								\
+					src/primitives/ObjectsFactory.cpp					\
+					src/primitives/Properties/AbstractProperties.cpp	\
+					src/primitives/Properties/PropertiesFactory.cpp		\
 
 CXX_TESTS		=	tests/testsMaterial.cpp			\
 					tests/testsTexture.cpp			\

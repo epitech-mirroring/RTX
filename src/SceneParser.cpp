@@ -13,12 +13,16 @@
 SceneParser::SceneParser()
 {
     _scene = Scene();
+    _propertiesFactory = PropertiesFactory();
+    _objectsFactory = ObjectsFactory();
 }
 
 SceneParser::SceneParser(std::string &path)
 {
     _scene = Scene();
-    if (path.substr(path.find_last_of(".") + 1) != "json") {
+    _propertiesFactory = PropertiesFactory();
+    _objectsFactory = ObjectsFactory();
+    if (path.substr(path.find_last_of('.') + 1) != "json") {
         std::cerr << &"Error: Invalid file format, need .json and get " [  path.find_last_of(".")] << std::endl;
         path = "";
         return;
@@ -28,7 +32,7 @@ SceneParser::SceneParser(std::string &path)
 
 void SceneParser::setPath(std::string &path)
 {
-    if (path.substr(path.find_last_of(".") + 1) != "json") {
+    if (path.substr(path.find_last_of('.') + 1) != "json") {
         throw std::invalid_argument(&"Error: Invalid file format, need .json and get " [  path.find_last_of(".")]);
         path = "";
         return;
@@ -46,7 +50,7 @@ void SceneParser::parse()
     file.close();
     JsonObject root = JsonObject::parseFile(this->_path);
     this->_scene.setCameras(SceneParser::parseCameras(root));
-    this->_scene.setObjects(SceneParser::parseObjects(root));
+    this->_scene.setObjects(this->parseObjects(root));
 }
 
 std::vector<Camera> SceneParser::parseCameras(JsonObject &root)
@@ -70,10 +74,10 @@ std::vector<Camera> SceneParser::parseCameras(JsonObject &root)
     return camerasVector;
 }
 
-std::vector<Object> SceneParser::parseObjects(JsonObject &root)
+std::vector<Object *> SceneParser::parseObjects(JsonObject &root)
 {
     JsonArray *objects;
-    std::vector<Object> objectsVector;
+    std::vector<Object *> objectsVector;
 
     try {
         objects = root.getValue<JsonArray>("objects");
@@ -85,7 +89,7 @@ std::vector<Object> SceneParser::parseObjects(JsonObject &root)
     }
     for (std::size_t i = 0; i < objects->size() ; i++) {
         auto *objectJson = objects->getValue<JsonObject>(i);
-        Object object = ObjectsFactory::createObject(objectJson);
+        Object *object = _objectsFactory.createObject(objectJson->getString("type"), *_propertiesFactory.createProperties(objectJson->getString("type"), objectJson));
         objectsVector.push_back(object);
     }
     return objectsVector;
