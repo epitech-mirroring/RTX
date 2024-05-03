@@ -29,6 +29,9 @@ class Rectangle : public Object {
         void setLength(std::size_t length) { _properties.setLength(length); }
         void setWidth(std::size_t width) { _properties.setWidth(width); }
         void setHeight(std::size_t height) { _properties.setHeight(height); }
+
+        static std::vector<glm::vec3> generateVertices(const RectangleProperties &properties);
+        static std::vector<unsigned int> generateIndices();
     protected:
         RectangleProperties _properties{};
 };
