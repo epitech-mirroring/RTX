@@ -53,22 +53,65 @@ std::vector<glm::vec3> Rectangle::generateVertices(const RectangleProperties &pr
     std::vector<glm::vec3> vertices;
     glm::vec3 position = properties.getTransform().getPosition();
 
-    //0
-    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    //1
+    //102
     vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    //2
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
     vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    //3
+
+    //302
     vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    //4
-    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    //5
-    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    //6
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+
+    //651
     vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    //7
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+
+    //251
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+
+    //764
     vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+
+    //564
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+
+    //037
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+
+    //437
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+
+    //235
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+
+    //435
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+
+    //160
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
+
+    //760
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
+    vertices.emplace_back((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
 
     return vertices;
 }
