@@ -7,82 +7,44 @@
 */
 
 #pragma once
-#include "GLSL/Vector.hpp"
-#include "GLSL/Matrix.hpp"
-#include "GLSL/Quaternion.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include "json/Json.hpp"
+#include "GlmParser.hpp"
 
 class Transform {
 protected:
-    GLSL::Vector<3> _position;
-    GLSL::Quaternion _rotation;
-    GLSL::Vector<3> _scale;
+    glm::vec3 _position{};
+    glm::dquat _rotation{};
+    glm::vec3 _scale{};
 public:
-    Transform() {
-        _position = GLSL::Vector<3>(0.0, 0.0, 0.0);
-        _rotation = GLSL::Quaternion(0.0, 0.0, 0.0, 1.0);
-        _scale = GLSL::Vector<3>(1.0, 1.0, 1.0);
-    }
-    Transform(const GLSL::Vector<3>& position, const GLSL::Quaternion &rotation, const GLSL::Vector<3>& scale) {
-        _position = position;
-        _rotation = rotation;
-        _scale = scale;
-    }
-    Transform(const Transform &other) {
-        _position = other.getPosition();
-        _rotation = other.getRotation();
-        _scale = other.getScale();
-    }
+    Transform();
+    Transform(const glm::vec3 &position, const glm::dquat &rotation, const glm::vec3 &scale);
+    Transform(const Transform &other);
+    explicit Transform(JsonObject *obj);
     ~Transform() = default;
 
-    [[nodiscard]] GLSL::Vector<3> getPosition() const { return _position; }
-    [[nodiscard]] GLSL::Quaternion getRotation() const { return _rotation; }
-    [[nodiscard]] GLSL::Vector<3> getScale() const { return _scale; }
+    [[nodiscard]] glm::vec3 getPosition() const;
+    [[nodiscard]] glm::dquat getRotation() const;
+    [[nodiscard]] glm::vec3 getScale() const;
 
-    [[nodiscard]] GLSL::Vector<3> &getPosition() { return _position; }
-    [[nodiscard]] GLSL::Quaternion &getRotation() { return _rotation; }
-    [[nodiscard]] GLSL::Vector<3> &getScale() { return _scale; }
+    [[nodiscard]] glm::vec3 &getPosition();
+    [[nodiscard]] glm::dquat &getRotation();
+    [[nodiscard]] glm::vec3 &getScale();
 
-    void setPosition(const GLSL::Vector<3> &position) { _position = position; }
-    void setRotation(const GLSL::Quaternion &rotation) { _rotation = rotation; }
-    void setScale(const GLSL::Vector<3> &scale) { _scale = scale; }
+    void setPosition(const glm::vec3 &position);
+    void setRotation(const glm::dquat &rotation);
+    void setScale(const glm::vec3 &scale);
 
-    void translate(const GLSL::Vector<3> &translation) { _position += translation; }
-    void rotate(const GLSL::Quaternion &rotation) {
-        _rotation *= rotation;
-    }
-    void scale(const GLSL::Vector<3> &scale) { _scale.x() *= scale.x(); _scale.y() *= scale.y(); _scale.z() *= scale.z(); }
-    void translate(const float x, const float y, const float z) { _position += GLSL::Vector<3>(x, y, z); }
-    void rotate(const float x, const float y, const float z) {
-        _rotation *= GLSL::Quaternion(x, y, z);
-    }
-    void scale(const float x, const float y, const float z) { _scale.x() *= x; _scale.y() *= y; _scale.z() *= z; }
+    void translate(const glm::vec3 &translation);
+    void rotate(const glm::dquat &rotation);
+    void scale(const glm::vec3 &scale);
+    void translate(float x, float y, float z);
+    void rotate(float x, float y, float z);
+    void scale(float x, float y, float z);
 
-    [[nodiscard]] GLSL::Matrix<4, 4> getTransformationMatrix() const {
-        GLSL::Matrix<4, 4> translationMatrix = GLSL::Matrix<4, 4>::Identity();
-        translationMatrix[0][3] = _position.x();
-        translationMatrix[1][3] = _position.y();
-        translationMatrix[2][3] = _position.z();
-        const double &q0 = _rotation.w;
-        const double &q1 = _rotation.x;
-        const double &q2 = _rotation.y;
-        const double &q3 = _rotation.z;
-
-        GLSL::Matrix<4, 4> rotationMatrix = GLSL::Matrix<4, 4>::Identity();
-        rotationMatrix[0][0] = 2 * (q0 * q0 + q1 * q1) - 1;
-        rotationMatrix[0][1] = 2 * (q1 * q2 - q0 * q3);
-        rotationMatrix[0][2] = 2 * (q1 * q3 + q0 * q2);
-        rotationMatrix[1][0] = 2 * (q1 * q2 + q0 * q3);
-        rotationMatrix[1][1] = 2 * (q0 * q0 + q2 * q2) - 1;
-        rotationMatrix[1][2] = 2 * (q2 * q3 - q0 * q1);
-        rotationMatrix[2][0] = 2 * (q1 * q3 - q0 * q2);
-        rotationMatrix[2][1] = 2 * (q2 * q3 + q0 * q1);
-        rotationMatrix[2][2] = 2 * (q0 * q0 + q3 * q3) - 1;
-
-        GLSL::Matrix<4, 4> scaleMatrix = GLSL::Matrix<4, 4>::Identity();
-        scaleMatrix[0][0] = _scale.x();
-        scaleMatrix[1][1] = _scale.y();
-        scaleMatrix[2][2] = _scale.z();
-
-        return translationMatrix * rotationMatrix * scaleMatrix;
-    }
+    [[nodiscard]] glm::mat4 getTranslationMatrix() const;
+    [[nodiscard]] glm::mat4 getRotationMatrix() const;
+    [[nodiscard]] glm::mat4 getScaleMatrix() const;
+    [[nodiscard]] glm::mat4 getTransformationMatrix() const;
 };

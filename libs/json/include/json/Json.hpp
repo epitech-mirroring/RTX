@@ -12,4 +12,5 @@
 #include "JsonBoolean.hpp"
 #include "JsonInt.hpp"
 #include "JsonString.hpp"
+#include "JsonFloat.hpp"
 #include "IJsonObject.hpp"

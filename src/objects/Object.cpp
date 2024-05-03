@@ -7,133 +7,134 @@
 */
 
 #include "Object.hpp"
+#include <utility>
 
 Object::Object()
 {
-    _material = Material();
-    _transform = Transform();
-    _vertices = std::vector<GLSL::Vertex>();
-    _indices = std::vector<std::size_t>();
-    _textures = std::unordered_map<Texture::TextureType, Texture>();
+    _properties = AbstractProperties();
 }
 
-Object::Object(Material material, Transform transform, std::vector<GLSL::Vertex> vertices, std::vector<std::size_t> indices, std::vector<Texture> textures)
+Object::Object(const Material& material, const Transform& transform, const std::vector<glm::vec3> &vertices, const std::vector<unsigned  int> &indices, const std::vector<Texture>& textures)
 {
-    _material = material;
-    _transform = transform;
+    _properties = AbstractProperties();
+    _properties.setMaterial(material);
+    _properties.setTransform(transform);
+    _properties.setTextures(textures);
     _vertices = vertices;
     _indices = indices;
-    for (auto &texture : textures)
-        _textures[texture.getType()] = texture;
 }
 
 Object::Object(const Object &other)
 {
-    _material = other._material;
-    _transform = other._transform;
-    _vertices = other._vertices;
-    _indices = other._indices;
-    _textures = other._textures;
+    _properties = other._properties;
+}
+
+Object::Object(JsonObject *obj)
+{
+    _properties = AbstractProperties();
+}
+
+Object::Object(AbstractProperties &properties)
+{
+    _properties = properties;
 }
 
 Material Object::getMaterial() const
 {
-    return _material;
+    return _properties.getMaterial();
 }
 
 Material &Object::getMaterial()
 {
-    return _material;
+    return _properties.getMaterial();
 }
 
 Transform Object::getTransform() const
 {
-    return _transform;
+    return _properties.getTransform();
 }
 
 Transform &Object::getTransform()
 {
-    return _transform;
+    return _properties.getTransform();
 }
 
-std::vector<GLSL::Vertex> &Object::getVertices()
+std::vector<glm::vec3> &Object::getVertices()
 {
     return _vertices;
 }
 
-std::vector<GLSL::Vertex> Object::getVertices() const
+std::vector<glm::vec3> Object::getVertices() const
 {
     return _vertices;
 }
 
-std::vector<std::size_t> &Object::getIndices()
+std::vector<unsigned int> &Object::getIndices()
 {
     return _indices;
 }
 
-std::vector<std::size_t> Object::getIndices() const
+std::vector<unsigned int> Object::getIndices() const
 {
     return _indices;
 }
 
-std::vector<Texture> &Object::getTextures()
+std::unordered_map<Texture::TextureType, Texture> &Object::getTextures()
 {
-    std::vector<Texture> textures;
-    for (auto &texture : _textures)
-        textures.push_back(texture.second);
-    return textures;
+    return _properties.getTextures();
 }
 
-std::vector<Texture> Object::getTextures() const
+std::unordered_map<Texture::TextureType, Texture> Object::getTextures() const
 {
-    std::vector<Texture> textures;
-    for (auto &texture : _textures)
-        textures.push_back(texture.second);
-    return textures;
+    return _properties.getTextures();
 }
 
 Texture Object::getTexture(Texture::TextureType type) const
 {
-    return _textures.at(type);
+    return _properties.getTextures().at(type);
 }
 
 Texture &Object::getTexture(Texture::TextureType type)
 {
-    return _textures.at(type);
+    return _properties.getTextures().at(type);
 }
 
-void Object::setMaterial(Material material)
+void Object::setMaterial(const Material& material)
 {
-    _material = material;
+    _properties.setMaterial(material);
 }
 
-void Object::setTransform(Transform transform)
+void Object::setTransform(const Transform& transform)
 {
-    _transform = transform;
+    _properties.setTransform(transform);
 }
 
-void Object::setVertices(std::vector<GLSL::Vertex> vertices)
+void Object::setVertices(std::vector<glm::vec3> vertices)
 {
-    _vertices = vertices;
+    _vertices = std::move(vertices);
 }
 
-void Object::setIndices(std::vector<std::size_t> indices)
+void Object::setIndices(std::vector<unsigned int> indices)
 {
-    _indices = indices;
+    _indices = std::move(indices);
 }
 
 void Object::setTextures(std::vector<Texture> textures)
 {
-    for (auto &texture : textures)
-        _textures[texture.getType()] = texture;
+    _properties.setTextures(std::move(textures));
 }
 
 void Object::setTextures(std::unordered_map<Texture::TextureType, Texture> textures)
 {
-    _textures = textures;
+    _properties.setTextures(std::move(textures));
 }
 
 void Object::setTexture(Texture texture)
 {
-    _textures[texture.getType()] = texture;
+    _properties.setTextures({{texture.getType(), texture}});
+}
+
+void Object::setProperties(const AbstractProperties& properties)
+{
+    _properties = properties;
 }
