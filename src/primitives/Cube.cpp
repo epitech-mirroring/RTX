@@ -14,12 +14,12 @@ Cube::Cube()
     _properties = CubeProperties();
 }
 
-Cube::Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t size) : Object(material, transform, textures)
+Cube::Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t size) : Object(material, transform, std::vector<glm::vec3>(), std::vector<unsigned int>(), textures)
 {
     _properties.setSize(size);
 }
 
-Cube::Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const CubeProperties& properties) : Object(material, transform, textures)
+Cube::Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const CubeProperties& properties) : Object(material, transform, std::vector<glm::vec3>(), std::vector<unsigned int>(), textures)
 {
     _properties = properties;
 }

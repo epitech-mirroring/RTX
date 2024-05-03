@@ -14,12 +14,14 @@ Object::Object()
     _properties = AbstractProperties();
 }
 
-Object::Object(const Material& material, const Transform& transform, const std::vector<Texture>& textures)
+Object::Object(const Material& material, const Transform& transform, std::vector<glm::vec3> vertices, std::vector<unsigned  int> indices, const std::vector<Texture>& textures)
 {
     _properties = AbstractProperties();
     _properties.setMaterial(material);
     _properties.setTransform(transform);
     _properties.setTextures(textures);
+    _vertices = std::move(vertices);
+    _indices = std::move(indices);
 }
 
 Object::Object(const Object &other)
@@ -67,12 +69,12 @@ std::vector<glm::vec3> Object::getVertices() const
     return _vertices;
 }
 
-std::vector<std::size_t> &Object::getIndices()
+std::vector<unsigned int> &Object::getIndices()
 {
     return _indices;
 }
 
-std::vector<std::size_t> Object::getIndices() const
+std::vector<unsigned int> Object::getIndices() const
 {
     return _indices;
 }
@@ -112,7 +114,7 @@ void Object::setVertices(std::vector<glm::vec3> vertices)
     _vertices = std::move(vertices);
 }
 
-void Object::setIndices(std::vector<std::size_t> indices)
+void Object::setIndices(std::vector<unsigned int> indices)
 {
     _indices = std::move(indices);
 }

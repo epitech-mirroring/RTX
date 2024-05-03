@@ -15,10 +15,10 @@ class Object {
 protected:
     AbstractProperties _properties;
     std::vector<glm::vec3> _vertices;
-    std::vector<std::size_t> _indices;
+    std::vector<unsigned int> _indices;
 public:
     Object();
-    Object(const Material& material, const Transform& transform, const std::vector<Texture>& textures);
+    Object(const Material& material, const Transform& transform, std::vector<glm::vec3> vertices, std::vector<unsigned  int> indices, const std::vector<Texture>& textures);
     Object(const Object &other);
     explicit Object(JsonObject *obj);
     explicit Object(AbstractProperties &properties);
@@ -30,8 +30,8 @@ public:
     Material getMaterial() const;
     std::vector<glm::vec3> &getVertices();
     std::vector<glm::vec3> getVertices() const;
-    std::vector<std::size_t> &getIndices();
-    std::vector<std::size_t> getIndices() const;
+    std::vector<unsigned int> &getIndices();
+    std::vector<unsigned int> getIndices() const;
     std::unordered_map<Texture::TextureType, Texture> &getTextures();
     std::unordered_map<Texture::TextureType, Texture> getTextures() const;
     Texture &getTexture(Texture::TextureType type);
@@ -40,7 +40,7 @@ public:
     void setTransform(const Transform& transform);
     void setMaterial(const Material& material);
     void setVertices(std::vector<glm::vec3> vertices);
-    void setIndices(std::vector<std::size_t> indices);
+    void setIndices(std::vector<unsigned int> indices);
     void setTextures(std::vector<Texture> textures);
     void setTextures(std::unordered_map<Texture::TextureType, Texture> textures);
     void setTexture(Texture texture);
