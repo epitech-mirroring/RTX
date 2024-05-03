@@ -88,7 +88,9 @@
           "type": "normal"
         }
       ],
-      "size": 10
+      "length": 1,
+      "width": 1,
+      "height": 1
     }
   ]
 }

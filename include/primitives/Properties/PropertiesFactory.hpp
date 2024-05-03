@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include "json/Json.hpp"
 #include "primitives/Properties/AbstractProperties.hpp"
-#include "primitives/Properties/CubeProperties.hpp"
+#include "primitives/Properties/RectangleProperties.hpp"
 
 class PropertiesFactory {
 public:

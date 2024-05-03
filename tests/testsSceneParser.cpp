@@ -9,7 +9,7 @@
 #include <criterion/criterion.h>
 #include <iostream>
 #include "SceneParser.hpp"
-#include "primitives/Cube.hpp"
+#include "primitives/Rectangle.hpp"
 
 Test(SceneParser, Color)
 {
@@ -168,8 +168,8 @@ Test(SceneParser, Cube)
     JsonObject root = JsonObject::parseFile(path);
     auto *objectsJson = root.getValue<JsonArray>("objects");
     auto *cubeJson = objectsJson->getValue<JsonObject>(0);
-    auto properties = CubeProperties(cubeJson);
-    Cube cube(properties);
+    auto properties = RectangleProperties(cubeJson);
+    Rectangle cube(properties);
 
     cr_assert_eq(cube.getMaterial().getColor(), glm::vec3(1.0, 0.0, 0.0));
     cr_assert_eq(cube.getMaterial().getEmission(), glm::vec3(0.0, 0.0, 0.0));
@@ -179,7 +179,9 @@ Test(SceneParser, Cube)
     cr_assert_eq(cube.getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
     cr_assert_eq(cube.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(cube.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
-    cr_assert_eq(cube.getProperties().getSize() , 10.0);
+    cr_assert_eq(cube.getLength(), 1);
+    cr_assert_eq(cube.getWidth(), 1);
+    cr_assert_eq(cube.getHeight(), 1);
 }
 
 Test(SceneParser, ParseScene)
@@ -187,8 +189,8 @@ Test(SceneParser, ParseScene)
     std::string path = "scenes/tests/testScene.json";
     PropertiesFactory factory = PropertiesFactory();
     ObjectsFactory objFactory = ObjectsFactory();
-    factory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
-    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
+    factory.registerProperties("cube", [](JsonObject *obj) { return new RectangleProperties(obj); });
+    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
     SceneParser parser = SceneParser(path, factory, objFactory);
     parser.parse();
 
