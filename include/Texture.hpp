@@ -7,7 +7,9 @@
 */
 
 #pragma once
+#include "json/Json.hpp"
 #include <string>
+#include "GlmParser.hpp"
 
 class Texture {
 public:
@@ -24,6 +26,7 @@ public:
     Texture();
     Texture(const Texture &texture);
     Texture(const std::string &path, TextureType type);
+    explicit Texture(JsonObject *obj);
     ~Texture() = default;
     void setPath(const std::string &path);
     void setType(TextureType type);

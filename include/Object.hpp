@@ -7,39 +7,42 @@
 */
 
 #pragma once
-#include <vector>
-#include "GLSL/Shader.hpp"
-#include "Material.hpp"
-#include "Texture.hpp"
-#include "Transform.hpp"
-#include <functional>
+#include <glm/glm.hpp>
+#include "json/Json.hpp"
+#include "primitives/Properties/AbstractProperties.hpp"
 
 class Object {
 protected:
-    Material _material;
-    Transform _transform;
-    unsigned int _vao;
-    unsigned int _vbo;
-    unsigned int _ebo;
-    unsigned int _faceCount;
+    AbstractProperties _properties;
+    std::vector<glm::vec3> _vertices;
+    std::vector<unsigned int> _indices;
 public:
     Object();
-    Object(const Material& material, const Transform &transform, const std::vector<glm::vec3> &vertices, const std::vector<unsigned int> &indices, const std::vector<Texture> &textures);
+    Object(const Material& material, const Transform& transform, const std::vector<glm::vec3> &vertices, const std::vector<unsigned  int> &indices, const std::vector<Texture>& textures);
     Object(const Object &other);
-    ~Object();
+    explicit Object(JsonObject *obj);
+    explicit Object(AbstractProperties &properties);
+    virtual ~Object() = default;
 
     Transform &getTransform();
     [[nodiscard]] Transform getTransform() const;
     Material &getMaterial();
-    [[nodiscard]] Material getMaterial() const;
+    Material getMaterial() const;
+    std::vector<glm::vec3> &getVertices();
+    std::vector<glm::vec3> getVertices() const;
+    std::vector<unsigned int> &getIndices();
+    std::vector<unsigned int> getIndices() const;
+    std::unordered_map<Texture::TextureType, Texture> &getTextures();
+    std::unordered_map<Texture::TextureType, Texture> getTextures() const;
+    Texture &getTexture(Texture::TextureType type);
+    Texture getTexture(Texture::TextureType type) const;
 
-    [[nodiscard]] unsigned int getVao() const;
-
-    void setTransform(const Transform &transform);
-    void setMaterial(const Material &material);
-
-    void bind() const;
-    void unbind() const;
-    void draw() const;
-    void draw(const GLSL::Shader &vertexShader, const GLSL::Shader &fragmentShader, std::function<void(const GLSL::Shader &vertexShader, const GLSL::Shader &fragmentShader)> uniforms = nullptr) const;
+    void setTransform(const Transform& transform);
+    void setMaterial(const Material& material);
+    void setVertices(std::vector<glm::vec3> vertices);
+    void setIndices(std::vector<unsigned int> indices);
+    void setTextures(std::vector<Texture> textures);
+    void setTextures(std::unordered_map<Texture::TextureType, Texture> textures);
+    void setTexture(Texture texture);
+    void setProperties(const AbstractProperties& properties);
 };

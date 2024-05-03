@@ -7,6 +7,7 @@
 */
 
 #include "Texture.hpp"
+#include <stdexcept>
 
 Texture::Texture()
 {
@@ -24,6 +25,24 @@ Texture::Texture(const std::string &path, const TextureType type)
 {
     _path = path;
     _type = type;
+}
+
+Texture::Texture(JsonObject *obj)
+{
+    std::string type = obj->getString("type");
+
+    this->_path = obj->getString("path");
+    if (type == "diffuse")
+        this->_type = Texture::TextureType::DIFFUSE;
+    else if (type == "specular")
+        this->_type = Texture::TextureType::SPECULAR;
+    else if (type == "normal")
+        this->_type = Texture::TextureType::NORMAL;
+    else if (type == "height")
+        this->_type = Texture::TextureType::HEIGHT;
+    else {
+        throw std::invalid_argument("Error: Invalid texture type");
+    }
 }
 
 void Texture::setPath(const std::string &path)

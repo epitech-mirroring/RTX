@@ -9,6 +9,8 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "json/Json.hpp"
+#include "GlmParser.hpp"
 
 class Transform {
 protected:
@@ -19,6 +21,7 @@ public:
     Transform();
     Transform(const glm::vec3 &position, const glm::dquat &rotation, const glm::vec3 &scale);
     Transform(const Transform &other);
+    explicit Transform(JsonObject *obj);
     ~Transform() = default;
 
     [[nodiscard]] glm::vec3 getPosition() const;
@@ -36,9 +39,9 @@ public:
     void translate(const glm::vec3 &translation);
     void rotate(const glm::dquat &rotation);
     void scale(const glm::vec3 &scale);
-    void translate(const float x, const float y, const float z);
-    void rotate(const float x, const float y, const float z);
-    void scale(const float x, const float y, const float z);
+    void translate(float x, float y, float z);
+    void rotate(float x, float y, float z);
+    void scale(float x, float y, float z);
 
     [[nodiscard]] glm::mat4 getTranslationMatrix() const;
     [[nodiscard]] glm::mat4 getRotationMatrix() const;

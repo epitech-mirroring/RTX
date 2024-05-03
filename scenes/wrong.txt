@@ -1,0 +1,78 @@
+{
+    "color": {
+        "r": 1,
+        "g": 1,
+        "b": 1,
+        "a": 1
+    },
+    "quaternion": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+    },
+    "vector": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+    },
+    "Material": {
+        "color": {
+            "r": 1,
+            "g": 0,
+            "b": 0,
+            "a": 1
+        },
+        "emission": {
+            "r": 0,
+            "g": 0,
+            "b": 0
+        },
+        "brightness": 0,
+        "rougghness": 0.5
+    },
+    "Texture": {
+        "path": "test_texture.png",
+        "type": "normal"
+    },
+    "Transform": {
+        "position": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "scale": {
+            "x": 1,
+            "y": 1,
+            "z": 1
+        },
+        "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 0
+        }
+    },
+    "camera": {
+        "transform": {
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            }
+        },
+        "fov": 90,
+        "aspect": 1,
+        "near": 0.1
+    }
+}

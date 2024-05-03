@@ -32,22 +32,30 @@ Material::Material(const Material &material)
     _roughness = material._roughness;
 }
 
+Material::Material(JsonObject *obj)
+{
+    _color = GlmParser::parseColor(obj->getValue<JsonObject>("color"));
+    _emission = GlmParser::parseColor(obj->getValue<JsonObject>("emission"));
+    _brightness = obj->getFloat("brightness");
+    _roughness = obj->getFloat("roughness");
+}
+
 glm::vec3 Material::getColor() const
 {
     return _color;
 }
 
-glm::vec3  Material::getEmission() const
+glm::vec3 Material::getEmission() const
 {
     return _emission;
 }
 
-glm::vec3  &Material::getColor()
+glm::vec3 &Material::getColor()
 {
     return _color;
 }
 
-glm::vec3  &Material::getEmission()
+glm::vec3 &Material::getEmission()
 {
     return _emission;
 }

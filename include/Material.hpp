@@ -7,18 +7,21 @@
 */
 
 #pragma once
-#include <glm/glm.hpp>
+#include "json/Json.hpp"
+#include "glm/glm.hpp"
+#include "GlmParser.hpp"
 
 class Material {
 protected:
-    glm::vec3 _color{};
-    glm::vec3 _emission{};
+    glm::vec3 _color;
+    glm::vec3 _emission;
     double _brightness;
     double _roughness;
 public:
     Material();
     Material(const glm::vec3 &color, const glm::vec3 &emission, double brightness, double roughness);
     Material(const Material &material);
+    explicit Material(JsonObject *obj);
     ~Material() = default;
     [[nodiscard]] glm::vec3 getColor() const;
     [[nodiscard]] glm::vec3 getEmission() const;

@@ -15,8 +15,8 @@ Camera::Camera()
     this->_near = 0;
 }
 
-Camera::Camera(const Transform &transform, const float fov, const float aspect,
-               const float near)
+Camera::Camera(const Transform &transform, const double fov, const double aspect,
+               const double near)
 {
     this->_transform = transform;
     this->_fov = fov;
@@ -32,32 +32,40 @@ Camera::Camera(const Camera &other)
     this->_near = other._near;
 }
 
-float Camera::getFov() const
+Camera::Camera(JsonObject *obj)
+{
+    this->_transform = Transform(obj->getValue<JsonObject>("transform"));
+    this->_fov = obj->getFloat("fov");
+    this->_aspect = obj->getFloat("aspect");
+    this->_near = obj->getFloat("near");
+}
+
+double Camera::getFov() const
 {
     return this->_fov;
 }
 
-float &Camera::getFov()
+double &Camera::getFov()
 {
     return this->_fov;
 }
 
-float Camera::getAspect() const
+double Camera::getAspect() const
 {
     return this->_aspect;
 }
 
-float &Camera::getAspect()
+double &Camera::getAspect()
 {
     return this->_aspect;
 }
 
-float Camera::getNear() const
+double Camera::getNear() const
 {
     return this->_near;
 }
 
-float &Camera::getNear()
+double &Camera::getNear()
 {
     return this->_near;
 }
@@ -72,17 +80,17 @@ Transform &Camera::getTransform()
     return this->_transform;
 }
 
-void Camera::setFov(const float fov)
+void Camera::setFov(const double fov)
 {
     this->_fov = fov;
 }
 
-void Camera::setAspect(const float aspect)
+void Camera::setAspect(const double aspect)
 {
     this->_aspect = aspect;
 }
 
-void Camera::setNear(const float near)
+void Camera::setNear(const double near)
 {
     this->_near = near;
 }
