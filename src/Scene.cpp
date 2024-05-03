@@ -8,7 +8,6 @@
 
 #include "Scene.hpp"
 #include <utility>
-#include <iostream>
 
 Scene::Scene()
 {
