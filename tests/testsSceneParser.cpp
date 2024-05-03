@@ -10,6 +10,7 @@
 #include <iostream>
 #include "SceneParser.hpp"
 #include "primitives/Cube.hpp"
+#include "primitives/Sphere.hpp"
 
 Test(SceneParser, Color)
 {
@@ -214,4 +215,25 @@ Test(SceneParser, ParseScene)
     cr_assert_eq(parser.getScene().getCameras()[1].getTransform().getPosition(), glm::vec3(3.0, 3.0, 3.0));
     cr_assert_eq(parser.getScene().getCameras()[1].getTransform().getRotation(), glm::dquat (3.0, 3.0, 3.0, 3.0));
     cr_assert_eq(parser.getScene().getCameras()[1].getTransform().getScale(), glm::vec3(3.0, 3.0, 3.0));
+}
+
+Test(SceneParser, ParseSphere)
+{
+    std::string path = "scenes/tests/testSphere.json";
+    JsonObject root = JsonObject::parseFile(path);
+    auto *objectsJson = root.getValue<JsonArray>("objects");
+    auto *sphereJson = objectsJson->getValue<JsonObject>(0);
+    auto properties = SphereProperties(sphereJson);
+    Sphere sphere(properties);
+
+    cr_assert_eq(sphere.getMaterial().getColor(), glm::vec3(1.0, 0.0, 0.0));
+    cr_assert_eq(sphere.getMaterial().getEmission(), glm::vec3(0.0, 0.0, 0.0));
+    cr_assert_eq(sphere.getMaterial().getBrightness(), 0.0);
+    cr_assert_eq(sphere.getMaterial().getRoughness(), 1.0);
+    cr_assert_eq(sphere.getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
+    cr_assert_eq(sphere.getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
+    cr_assert_eq(sphere.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
+    cr_assert_eq(sphere.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
+    cr_assert_eq(sphere.getProperties().getRadius() , 10);
+    cr_assert_eq(sphere.getVertices().size(), 12);
 }
