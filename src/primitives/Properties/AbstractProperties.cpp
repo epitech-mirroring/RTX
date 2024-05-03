@@ -14,8 +14,6 @@ AbstractProperties::AbstractProperties()
 {
     _material = Material();
     _transform = Transform();
-    _vertices = std::vector<glm::vec3>();
-    _indices = std::vector<std::size_t>();
     _textures = std::unordered_map<Texture::TextureType, Texture>();
 }
 
@@ -37,26 +35,6 @@ Transform &AbstractProperties::getTransform()
 Transform AbstractProperties::getTransform() const
 {
     return _transform;
-}
-
-std::vector<glm::vec3> &AbstractProperties::getVertices()
-{
-    return _vertices;
-}
-
-std::vector<glm::vec3> AbstractProperties::getVertices() const
-{
-    return _vertices;
-}
-
-std::vector<std::size_t> &AbstractProperties::getIndices()
-{
-    return _indices;
-}
-
-std::vector<std::size_t> AbstractProperties::getIndices() const
-{
-    return _indices;
 }
 
 std::unordered_map<Texture::TextureType, Texture> &AbstractProperties::getTextures()
@@ -89,16 +67,6 @@ void AbstractProperties::setTransform(const Transform &transform)
     _transform = transform;
 }
 
-void AbstractProperties::setVertices(std::vector<glm::vec3> vertices)
-{
-    _vertices = std::move(vertices);
-}
-
-void AbstractProperties::setIndices(std::vector<std::size_t> indices)
-{
-    _indices = std::move(indices);
-}
-
 void AbstractProperties::setTextures(std::vector<Texture> textures)
 {
     for (auto &texture : textures) {
@@ -116,12 +84,10 @@ void AbstractProperties::setTexture(Texture texture)
     _textures[texture.getType()] = texture;
 }
 
-AbstractProperties::AbstractProperties(const Material &material, const Transform &transform, std::vector<glm::vec3> vertices, std::vector<std::size_t> indices, std::unordered_map<Texture::TextureType, Texture> textures)
+AbstractProperties::AbstractProperties(const Material &material, const Transform &transform, std::unordered_map<Texture::TextureType, Texture> textures)
 {
     _material = material;
     _transform = transform;
-    _vertices = std::move(vertices);
-    _indices = std::move(indices);
     _textures = std::move(textures);
 }
 
@@ -129,8 +95,6 @@ AbstractProperties::AbstractProperties(const AbstractProperties &other)
 {
     _material = other.getMaterial();
     _transform = other.getTransform();
-    _vertices = other.getVertices();
-    _indices = other.getIndices();
     _textures = other.getTextures();
 }
 

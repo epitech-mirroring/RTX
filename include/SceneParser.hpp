@@ -15,7 +15,7 @@
 class SceneParser {
     public:
         SceneParser();
-        explicit SceneParser(std::string &path);
+        explicit SceneParser(std::string &path, PropertiesFactory &propertiesFactory, ObjectsFactory &objectsFactory);
         ~SceneParser() = default;
         void setPath(std::string &path);
         void parse();

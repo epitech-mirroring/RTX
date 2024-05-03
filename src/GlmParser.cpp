@@ -7,7 +7,6 @@
 */
 
 #include "GlmParser.hpp"
-#include <iostream>
 
 glm::vec3 GlmParser::parseVec3(JsonObject *obj)
 {

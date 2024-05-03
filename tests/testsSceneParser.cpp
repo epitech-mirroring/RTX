@@ -14,7 +14,6 @@
 Test(SceneParser, Color)
 {
     std::string path = "scenes/tests/test.json";
-    SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *colorJson = root.getValue<JsonObject>("color");
     glm::vec3 color = GlmParser::parseColor(colorJson);
@@ -27,7 +26,6 @@ Test(SceneParser, Color)
 Test(SceneParser, Quaternion)
 {
     std::string path = "scenes/tests/test.json";
-    SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *quaternionJson = root.getValue<JsonObject>("quaternion");
     glm::dquat quaternion = GlmParser::parseQuat(quaternionJson);
@@ -41,7 +39,6 @@ Test(SceneParser, Quaternion)
 Test(SceneParser, Vector)
 {
     std::string path = "scenes/tests/test.json";
-    SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *vectorJson = root.getValue<JsonObject>("vector");
     glm::vec3 vector = GlmParser::parseVec3(vectorJson);
@@ -54,7 +51,6 @@ Test(SceneParser, Vector)
 Test(SceneParser, Material)
 {
     std::string path = "scenes/tests/test.json";
-    SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *materialJson = root.getValue<JsonObject>("material");
     Material material(materialJson);
@@ -68,7 +64,6 @@ Test(SceneParser, Material)
 Test(SceneParser, Texture)
 {
     std::string path = "scenes/tests/test.json";
-    SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *textureJson = root.getValue<JsonObject>("texture");
     Texture texture(textureJson);
@@ -80,7 +75,6 @@ Test(SceneParser, Texture)
 Test(SceneParser, Transform)
 {
     std::string path = "scenes/tests/test.json";
-    SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *transformJson = root.getValue<JsonObject>("transform");
     Transform transform(transformJson);
@@ -93,7 +87,6 @@ Test(SceneParser, Transform)
 Test(SceneParser, Camera)
 {
     std::string path = "scenes/tests/test.json";
-    SceneParser parser = SceneParser(path);
     JsonObject root = JsonObject::parseFile(path);
     auto *cameraJson = root.getValue<JsonObject>("camera");
     Camera camera(cameraJson);
@@ -126,7 +119,9 @@ Test(SceneParser, Wrong_File)
 Test(SceneParser, Cameras)
 {
     std::string path = "scenes/tests/testCameras.json";
-    SceneParser parser = SceneParser(path);
+    PropertiesFactory factory = PropertiesFactory();
+    ObjectsFactory objFactory = ObjectsFactory();
+    SceneParser parser = SceneParser(path, factory, objFactory);
     JsonObject root = JsonObject::parseFile(path);
     std::vector<Camera> cameras = SceneParser::parseCameras(root);
 
@@ -148,7 +143,9 @@ Test(SceneParser, Cameras)
 Test(SceneParser, noCamera)
 {
     std::string path = "scenes/tests/testNoCamera.json";
-    SceneParser parser = SceneParser(path);
+    PropertiesFactory factory = PropertiesFactory();
+    ObjectsFactory objFactory = ObjectsFactory();
+    SceneParser parser = SceneParser(path, factory, objFactory);
     JsonObject root = JsonObject::parseFile(path);
 
     cr_assert_throw(parser.parseCameras(root), std::invalid_argument);
@@ -157,7 +154,9 @@ Test(SceneParser, noCamera)
 Test(SceneParser, noCameras)
 {
     std::string path = "scenes/tests/testNoCameras.json";
-    SceneParser parser = SceneParser(path);
+    PropertiesFactory factory = PropertiesFactory();
+    ObjectsFactory objFactory = ObjectsFactory();
+    SceneParser parser = SceneParser(path, factory, objFactory);
     JsonObject root = JsonObject::parseFile(path);
 
     cr_assert_throw(parser.parseCameras(root), std::invalid_argument);
@@ -186,7 +185,11 @@ Test(SceneParser, Cube)
 Test(SceneParser, ParseScene)
 {
     std::string path = "scenes/tests/testScene.json";
-    SceneParser parser = SceneParser(path);
+    PropertiesFactory factory = PropertiesFactory();
+    ObjectsFactory objFactory = ObjectsFactory();
+    factory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
+    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
+    SceneParser parser = SceneParser(path, factory, objFactory);
     parser.parse();
     auto scene = parser.getScene();
 

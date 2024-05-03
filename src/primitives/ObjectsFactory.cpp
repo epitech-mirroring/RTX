@@ -11,13 +11,6 @@
 #include <utility>
 #include "primitives/Cube.hpp"
 
-ObjectsFactory::ObjectsFactory()
-{
-    registerObject("cube", [](AbstractProperties &properties) -> Object * {
-        return new Cube(dynamic_cast<CubeProperties &>(properties));
-    });
-}
-
 Object *ObjectsFactory::createObject(const std::string& type, AbstractProperties &properties)
 {
     if (_map.find(type) == _map.end())

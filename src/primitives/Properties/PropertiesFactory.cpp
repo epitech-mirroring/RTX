@@ -8,11 +8,6 @@
 
 #include "primitives/Properties/PropertiesFactory.hpp"
 
-PropertiesFactory::PropertiesFactory()
-{
-    registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
-}
-
 AbstractProperties *PropertiesFactory::createProperties(const std::string &type, JsonObject *obj)
 {
     if (_creators.find(type) == _creators.end())

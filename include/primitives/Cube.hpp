@@ -14,8 +14,8 @@
 class Cube : public Object {
     public:
         Cube();
-        Cube(const Material& material, const Transform& transform, const std::vector<glm::vec3>& vertices, const std::vector<std::size_t>& indices, const std::vector<Texture>& textures, std::size_t size);
-        Cube(const Material& material, const Transform& transform, const std::vector<glm::vec3>& vertices, const std::vector<std::size_t>& indices, const std::vector<Texture>& textures, const CubeProperties& properties);
+        Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t size);
+        Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const CubeProperties& properties);
         Cube(const Cube &other);
         explicit Cube(JsonObject *obj);
         explicit Cube(CubeProperties &properties);

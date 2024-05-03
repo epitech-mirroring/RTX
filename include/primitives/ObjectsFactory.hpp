@@ -14,7 +14,7 @@
 
 class ObjectsFactory {
 public:
-    ObjectsFactory();
+    ObjectsFactory() = default;
     Object *createObject(const std::string& type, AbstractProperties &properties);
     void registerObject(const std::string& type, std::function<Object *(AbstractProperties&)> creator);
 private:

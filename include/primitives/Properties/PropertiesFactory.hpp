@@ -14,7 +14,7 @@
 
 class PropertiesFactory {
 public:
-    PropertiesFactory();
+    PropertiesFactory() = default;
     AbstractProperties *createProperties(const std::string &type, JsonObject *obj);
     void registerProperties(const std::string &type, std::function<AbstractProperties *(JsonObject *)> creator);
 

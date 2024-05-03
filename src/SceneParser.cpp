@@ -17,11 +17,11 @@ SceneParser::SceneParser()
     _objectsFactory = ObjectsFactory();
 }
 
-SceneParser::SceneParser(std::string &path)
+SceneParser::SceneParser(std::string &path, PropertiesFactory &propertiesFactory, ObjectsFactory &objectsFactory)
 {
     _scene = Scene();
-    _propertiesFactory = PropertiesFactory();
-    _objectsFactory = ObjectsFactory();
+    _propertiesFactory = propertiesFactory;
+    _objectsFactory = objectsFactory;
     if (path.substr(path.find_last_of('.') + 1) != "json") {
         std::cerr << &"Error: Invalid file format, need .json and get " [  path.find_last_of(".")] << std::endl;
         path = "";

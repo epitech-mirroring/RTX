@@ -14,13 +14,11 @@ Object::Object()
     _properties = AbstractProperties();
 }
 
-Object::Object(const Material& material, const Transform& transform, const std::vector<glm::vec3>& vertices, const std::vector<std::size_t>& indices, const std::vector<Texture>& textures)
+Object::Object(const Material& material, const Transform& transform, const std::vector<Texture>& textures)
 {
     _properties = AbstractProperties();
     _properties.setMaterial(material);
     _properties.setTransform(transform);
-    _properties.setVertices(vertices);
-    _properties.setIndices(indices);
     _properties.setTextures(textures);
 }
 
@@ -61,22 +59,22 @@ Transform &Object::getTransform()
 
 std::vector<glm::vec3> &Object::getVertices()
 {
-    return _properties.getVertices();
+    return _vertices;
 }
 
 std::vector<glm::vec3> Object::getVertices() const
 {
-    return _properties.getVertices();
+    return _vertices;
 }
 
 std::vector<std::size_t> &Object::getIndices()
 {
-    return _properties.getIndices();
+    return _indices;
 }
 
 std::vector<std::size_t> Object::getIndices() const
 {
-    return _properties.getIndices();
+    return _indices;
 }
 
 std::unordered_map<Texture::TextureType, Texture> &Object::getTextures()
@@ -111,12 +109,12 @@ void Object::setTransform(const Transform& transform)
 
 void Object::setVertices(std::vector<glm::vec3> vertices)
 {
-    _properties.setVertices(std::move(vertices));
+    _vertices = std::move(vertices);
 }
 
 void Object::setIndices(std::vector<std::size_t> indices)
 {
-    _properties.setIndices(std::move(indices));
+    _indices = std::move(indices);
 }
 
 void Object::setTextures(std::vector<Texture> textures)

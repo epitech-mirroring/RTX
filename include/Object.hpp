@@ -14,9 +14,11 @@
 class Object {
 protected:
     AbstractProperties _properties;
+    std::vector<glm::vec3> _vertices;
+    std::vector<std::size_t> _indices;
 public:
     Object();
-    Object(const Material& material, const Transform& transform, const std::vector<glm::vec3>& vertices, const std::vector<std::size_t>& indices, const std::vector<Texture>& textures);
+    Object(const Material& material, const Transform& transform, const std::vector<Texture>& textures);
     Object(const Object &other);
     explicit Object(JsonObject *obj);
     explicit Object(AbstractProperties &properties);
