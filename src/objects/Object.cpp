@@ -14,14 +14,14 @@ Object::Object()
     _properties = AbstractProperties();
 }
 
-Object::Object(const Material& material, const Transform& transform, std::vector<glm::vec3> vertices, std::vector<unsigned  int> indices, const std::vector<Texture>& textures)
+Object::Object(const Material& material, const Transform& transform, const std::vector<glm::vec3> &vertices, const std::vector<unsigned  int> &indices, const std::vector<Texture>& textures)
 {
     _properties = AbstractProperties();
     _properties.setMaterial(material);
     _properties.setTransform(transform);
     _properties.setTextures(textures);
-    _vertices = std::move(vertices);
-    _indices = std::move(indices);
+    _vertices = vertices;
+    _indices = indices;
 }
 
 Object::Object(const Object &other)

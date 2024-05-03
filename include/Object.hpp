@@ -18,7 +18,7 @@ protected:
     std::vector<unsigned int> _indices;
 public:
     Object();
-    Object(const Material& material, const Transform& transform, std::vector<glm::vec3> vertices, std::vector<unsigned  int> indices, const std::vector<Texture>& textures);
+    Object(const Material& material, const Transform& transform, const std::vector<glm::vec3> &vertices, const std::vector<unsigned  int> &indices, const std::vector<Texture>& textures);
     Object(const Object &other);
     explicit Object(JsonObject *obj);
     explicit Object(AbstractProperties &properties);
