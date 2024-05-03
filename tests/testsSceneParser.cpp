@@ -235,5 +235,5 @@ Test(SceneParser, ParseSphere)
     cr_assert_eq(sphere.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(sphere.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
     cr_assert_eq(sphere.getProperties().getRadius() , 10);
-    cr_assert_eq(sphere.getVertices().size(), 12);
+    cr_assert_eq(sphere.getVertices().size(), 3840);
 }

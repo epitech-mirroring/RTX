@@ -74,11 +74,140 @@ std::vector<glm::vec3> Sphere::generateVertices(const SphereProperties &properti
     vertices.emplace_back(properties.getTransform().getPosition().x - ((double)properties.getRadius() * phi), properties.getTransform().getPosition().y + (double)properties.getRadius(), properties.getTransform().getPosition().z);
     vertices.emplace_back(properties.getTransform().getPosition().x - ((double)properties.getRadius() * phi), properties.getTransform().getPosition().y - (double)properties.getRadius(), properties.getTransform().getPosition().z);
 
-    return vertices;
+    std::vector<glm::vec3> triangles;
+
+    triangles.emplace_back(vertices.at(0));
+    triangles.emplace_back(vertices.at(1));
+    triangles.emplace_back(vertices.at(2));
+
+    triangles.emplace_back(vertices.at(0));
+    triangles.emplace_back(vertices.at(2));
+    triangles.emplace_back(vertices.at(3));
+
+    triangles.emplace_back(vertices.at(0));
+    triangles.emplace_back(vertices.at(3));
+    triangles.emplace_back(vertices.at(4));
+
+    triangles.emplace_back(vertices.at(0));
+    triangles.emplace_back(vertices.at(4));
+    triangles.emplace_back(vertices.at(5));
+
+    triangles.emplace_back(vertices.at(0));
+    triangles.emplace_back(vertices.at(5));
+    triangles.emplace_back(vertices.at(1));
+
+    triangles.emplace_back(vertices.at(1));
+    triangles.emplace_back(vertices.at(6));
+    triangles.emplace_back(vertices.at(2));
+
+    triangles.emplace_back(vertices.at(2));
+    triangles.emplace_back(vertices.at(7));
+    triangles.emplace_back(vertices.at(3));
+
+    triangles.emplace_back(vertices.at(3));
+    triangles.emplace_back(vertices.at(8));
+    triangles.emplace_back(vertices.at(4));
+
+    triangles.emplace_back(vertices.at(4));
+    triangles.emplace_back(vertices.at(9));
+    triangles.emplace_back(vertices.at(5));
+
+    triangles.emplace_back(vertices.at(5));
+    triangles.emplace_back(vertices.at(10));
+    triangles.emplace_back(vertices.at(1));
+
+    triangles.emplace_back(vertices.at(6));
+    triangles.emplace_back(vertices.at(2));
+    triangles.emplace_back(vertices.at(7));
+
+    triangles.emplace_back(vertices.at(7));
+    triangles.emplace_back(vertices.at(3));
+    triangles.emplace_back(vertices.at(8));
+
+    triangles.emplace_back(vertices.at(8));
+    triangles.emplace_back(vertices.at(4));
+    triangles.emplace_back(vertices.at(9));
+
+    triangles.emplace_back(vertices.at(9));
+    triangles.emplace_back(vertices.at(5));
+    triangles.emplace_back(vertices.at(10));
+
+    triangles.emplace_back(vertices.at(10));
+    triangles.emplace_back(vertices.at(1));
+    triangles.emplace_back(vertices.at(6));
+
+    triangles.emplace_back(vertices.at(11));
+    triangles.emplace_back(vertices.at(6));
+    triangles.emplace_back(vertices.at(7));
+
+    triangles.emplace_back(vertices.at(11));
+    triangles.emplace_back(vertices.at(7));
+    triangles.emplace_back(vertices.at(8));
+
+    triangles.emplace_back(vertices.at(11));
+    triangles.emplace_back(vertices.at(8));
+    triangles.emplace_back(vertices.at(9));
+
+    triangles.emplace_back(vertices.at(11));
+    triangles.emplace_back(vertices.at(9));
+    triangles.emplace_back(vertices.at(10));
+
+    triangles.emplace_back(vertices.at(11));
+    triangles.emplace_back(vertices.at(10));
+    triangles.emplace_back(vertices.at(6));
+
+    return Sphere::duplicateTriangles(triangles);
 }
 
 std::vector<unsigned int> Sphere::generateIndices(const SphereProperties &properties) {
     std::vector<unsigned int> indices;
 
     return indices;
+}
+
+std::vector<glm::vec3> Sphere::duplicateTriangles(std::vector<glm::vec3>& vertex)
+{
+    std::vector<glm::vec3> triangles;
+    std::vector<glm::vec3> newTriangle;
+
+    for (std::size_t j = 0; j < 3; j++) {
+        for (std::size_t i = 0; i < vertex.size(); i += 3) {
+            newTriangle.clear();
+            newTriangle.emplace_back(vertex.at(i));
+            newTriangle.emplace_back(vertex.at(i + 1));
+            newTriangle.emplace_back(vertex.at(i + 2));
+            newTriangle.emplace_back(
+                    (newTriangle.at(0).x + newTriangle.at(1).x) / 2,
+                    (newTriangle.at(0).y + newTriangle.at(1).y) / 2,
+                    (newTriangle.at(0).z + newTriangle.at(1).z / 2));
+            newTriangle.emplace_back(
+                    (newTriangle.at(0).x + newTriangle.at(2).x) / 2,
+                    (newTriangle.at(0).y + newTriangle.at(2).y) / 2,
+                    (newTriangle.at(0).z + newTriangle.at(2).z / 2));
+            newTriangle.emplace_back(
+                    (newTriangle.at(2).x + newTriangle.at(1).x) / 2,
+                    (newTriangle.at(2).y + newTriangle.at(1).y) / 2,
+                    (newTriangle.at(2).z + newTriangle.at(1).z / 2));
+
+            triangles.emplace_back(newTriangle.at(0));
+            triangles.emplace_back(newTriangle.at(3));
+            triangles.emplace_back(newTriangle.at(4));
+
+            triangles.emplace_back(newTriangle.at(3));
+            triangles.emplace_back(newTriangle.at(1));
+            triangles.emplace_back(newTriangle.at(5));
+
+            triangles.emplace_back(newTriangle.at(4));
+            triangles.emplace_back(newTriangle.at(5));
+            triangles.emplace_back(newTriangle.at(2));
+
+            triangles.emplace_back(newTriangle.at(3));
+            triangles.emplace_back(newTriangle.at(5));
+            triangles.emplace_back(newTriangle.at(4));
+        }
+        vertex.clear();
+        vertex = triangles;
+        triangles.clear();
+    }
+    return vertex;
 }

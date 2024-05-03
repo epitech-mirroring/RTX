@@ -25,6 +25,7 @@ class Sphere : public Object {
 
         static std::vector<glm::vec3> generateVertices(const SphereProperties &properties);
         static std::vector<unsigned int> generateIndices(const SphereProperties &properties);
+        static std::vector<glm::vec3> duplicateTriangles(std::vector<glm::vec3>& vertex);
     protected:
         SphereProperties _properties;
         void setProperties(const SphereProperties &properties);
