@@ -1,3 +1,4 @@
+
 /*
 ** EPITECH PROJECT, 2024
 ** RTX
@@ -7,6 +8,7 @@
 */
 
 #include "Object.hpp"
+#include <GLFW/glfw3.h>
 #include <utility>
 
 Object::Object()
@@ -14,14 +16,13 @@ Object::Object()
     _properties = AbstractProperties();
 }
 
-Object::Object(const Material& material, const Transform& transform, const std::vector<glm::vec3> &vertices, const std::vector<unsigned  int> &indices, const std::vector<Texture>& textures)
+Object::Object(const Material& material, const Transform& transform, const std::vector<Triangle> &triangles, const std::vector<Texture>& textures)
 {
     _properties = AbstractProperties();
     _properties.setMaterial(material);
     _properties.setTransform(transform);
     _properties.setTextures(textures);
-    _vertices = vertices;
-    _indices = indices;
+    _triangles = triangles;
 }
 
 Object::Object(const Object &other)
@@ -59,24 +60,14 @@ Transform &Object::getTransform()
     return _properties.getTransform();
 }
 
-std::vector<glm::vec3> &Object::getVertices()
+std::vector<Triangle> Object::getTriangles() const
 {
-    return _vertices;
+    return _triangles;
 }
 
-std::vector<glm::vec3> Object::getVertices() const
+std::vector<Triangle> &Object::getTriangles()
 {
-    return _vertices;
-}
-
-std::vector<unsigned int> &Object::getIndices()
-{
-    return _indices;
-}
-
-std::vector<unsigned int> Object::getIndices() const
-{
-    return _indices;
+    return _triangles;
 }
 
 std::unordered_map<Texture::TextureType, Texture> &Object::getTextures()
@@ -109,29 +100,9 @@ void Object::setTransform(const Transform& transform)
     _properties.setTransform(transform);
 }
 
-void Object::setVertices(std::vector<glm::vec3> vertices)
+void Object::setTriangles(std::vector<Triangle> triangles)
 {
-    _vertices = std::move(vertices);
-}
-
-void Object::setIndices(std::vector<unsigned int> indices)
-{
-    _indices = std::move(indices);
-}
-
-void Object::unbind() const
-{
-    _properties.setTextures(std::move(textures));
-}
-
-void Object::draw() const
-{
-    _properties.setTextures(std::move(textures));
-}
-
-void Object::draw(const GLSL::Shader &vertexShader, const GLSL::Shader &fragmentShader, std::function<void(const GLSL::Shader &vertexShader, const GLSL::Shader &fragmentShader)> uniforms) const
-{
-    _properties.setTextures({{texture.getType(), texture}});
+    _triangles = std::move(triangles);
 }
 
 void Object::setProperties(const AbstractProperties& properties)

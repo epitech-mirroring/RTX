@@ -1,10 +1,14 @@
-#version 430
-out vec4 FragColor;
-uniform vec2 iResolution;
-uniform vec3 iViewPlaneParams;
-uniform vec3 iCameraPosition;
-uniform mat4 iCameraMatrix;
-
+#version 450
+// Output
+layout(location = 0) out vec4 FragColor;
+// View
+layout(binding = 0) uniform View {
+    vec2 iResolution;
+    vec3 iViewPlaneParams;
+    vec3 iCameraPosition;
+    mat4 iCameraMatrix;
+};
+// Scene
 struct Triangle {
     vec3 a;
     vec3 b;
@@ -14,17 +18,33 @@ struct Triangle {
     vec3 cNormal;
 };
 
-struct Sphere {
-    vec3 center;
-    float radius;
-};
-
 struct Mesh {
     uint startIdx;
     uint endIdx;
     vec3 boundingBoxMin;
     vec3 boundingBoxMax;
 };
+
+struct Sphere {
+    vec3 center;
+    float radius;
+};
+uint iNumSpheres;
+Sphere iSpheres[50];
+
+layout(binding = 1) uniform Scene {
+    uint iNumMeshes;
+    uint iNumTriangles;
+};
+
+layout(binding = 2) buffer Triangles {
+    Triangle iTriangles[];
+};
+
+layout(binding = 3) buffer Meshes {
+    Mesh iMeshes[];
+};
+
 
 struct Ray {
     vec3 origin;
@@ -36,15 +56,6 @@ struct Hit {
     float distance;
     vec3 normal;
     vec3 position;
-};
-
-uniform uint iNumTriangles;
-uniform uint iNumMeshes;
-layout(binding = 1) readonly buffer Triangles {
-    Triangle iTriangles[];
-};
-layout(binding = 2) readonly buffer Meshes {
-    Mesh iMeshes[];
 };
 
 bool isRayBoundingBoxIntersect(Ray ray, vec3 boxMin, vec3 boxMax)
@@ -85,7 +96,8 @@ Hit RayTriangle(Ray ray, Triangle tri)
     return hit;
 }
 
-Hit hitSphere(Ray ray, Sphere sphere) {
+Hit RaySphere(Ray ray, Sphere sphere)
+{
     Hit hit;
     hit.hit = false;
     vec3 centeredRayOrigin = ray.origin - sphere.center;
@@ -131,6 +143,13 @@ Hit ComputeHit(Ray ray) {
             }
         }
     }
+    for (uint i = 0; i < iNumSpheres; i++) {
+        Sphere sphere = iSpheres[i];
+        Hit hit = RaySphere(ray, sphere);
+        if (hit.hit && hit.distance < closestHit.distance) {
+            closestHit = hit;
+        }
+    }
     return closestHit;
 }
 
@@ -161,8 +180,8 @@ void main() {
     ray.origin = iCameraPosition;
     ray.direction = normalize(viewPointWorld - iCameraPosition);
 
-    FragColor = vec4(iMeshes[0].boundingBoxMax, 1.0);
-    /*
+    iNumSpheres = 0;
+
     Hit hit = ComputeHit(ray);
-    FragColor = hit.hit ? vec4(1.0, 0.0, 0.0, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);*/
+    FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
 }

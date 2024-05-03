@@ -8,13 +8,12 @@
 
 #include "GLSL/Shader.hpp"
 #include <fstream>
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 using namespace GLSL;
 
 static int shaderTypeToGLSLType(Shader::Type type) {
-    switch (type) {
+    /*switch (type) {
         case Shader::Type::VERTEX:
             return GL_VERTEX_SHADER;
         case Shader::Type::FRAGMENT:
@@ -23,14 +22,14 @@ static int shaderTypeToGLSLType(Shader::Type type) {
             return GL_COMPUTE_SHADER;
         default:
             throw std::runtime_error("Error: Invalid shader type");
-    }
+    }*/
 }
 
 Shader::Shader(Shader::Type type, const std::string &path) {
     _type = type;
     _id = 0;
     _shader = 0;
-    // Load the fragment shader
+    /*// Load the fragment shader
     std::ifstream shaderFile(path);
     if (!shaderFile.is_open()) {
         throw std::runtime_error("Error: Failed to open shader file");
@@ -62,7 +61,7 @@ Shader::Shader(Shader::Type type, const std::string &path) {
     if (!success) {
         glGetProgramInfoLog(_id, 512, nullptr, infoLog);
         throw std::runtime_error("Error: Failed to link shader program\n" + std::string(infoLog));
-    }
+    }*/
 }
 
 Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
@@ -70,9 +69,9 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     Shader fragment(Shader::Type::FRAGMENT, fragmentPath);
 
     _type = Shader::Type::VERTEX_FRAGMENT;
-    _id = glCreateProgram();
+    _id = 0;
     _shader = 0;
-    glAttachShader(_id, vertex.getShader());
+    /*glAttachShader(_id, vertex.getShader());
     glAttachShader(_id, fragment.getShader());
     glLinkProgram(_id);
     int success;
@@ -81,13 +80,13 @@ Shader::Shader(const std::string &vertexPath, const std::string &fragmentPath) {
     if (!success) {
         glGetProgramInfoLog(_id, 512, nullptr, infoLog);
         throw std::runtime_error("Error: Failed to link shader program\n" + std::string(infoLog));
-    }
+    }*/
 }
 
 Shader::~Shader() {
-    if (_type != Shader::Type::VERTEX_FRAGMENT)
+    /*if (_type != Shader::Type::VERTEX_FRAGMENT)
         glDeleteShader(_shader);
-    glDeleteProgram(_id);
+    glDeleteProgram(_id);*/
 }
 
 unsigned int Shader::getId() const {
@@ -103,61 +102,61 @@ unsigned int Shader::getShader() const {
 }
 
 void Shader::use() const {
-    glUseProgram(_id);
+    //glUseProgram(_id);
 }
 
 void Shader::setBool(const std::string &name, bool value) const {
-    glUniform1i(glGetUniformLocation(_id, name.c_str()), (int) value);
+    //glUniform1i(glGetUniformLocation(_id, name.c_str()), (int) value);
 }
 
 void Shader::setInt(const std::string &name, int value) const {
-    glUniform1i(glGetUniformLocation(_id, name.c_str()), value);
+    //glUniform1i(glGetUniformLocation(_id, name.c_str()), value);
 }
 
 void Shader::setFloat(const std::string &name, float value) const {
-    glUniform1f(glGetUniformLocation(_id, name.c_str()), value);
+    //glUniform1f(glGetUniformLocation(_id, name.c_str()), value);
 }
 
 void Shader::setVec2(const std::string &name, const glm::vec2 &value) const {
-    const float data[2] = {(float) value[0], (float) value[1]};
+    /*const float data[2] = {(float) value[0], (float) value[1]};
     int location = glGetUniformLocation(_id, name.c_str());
-    glUniform2fv(location, 1, data);
+    glUniform2fv(location, 1, data);*/
 }
 
 void Shader::setVec3(const std::string &name, const glm::vec3 &value) const {
-    const float data[3] = {(float) value[0], (float) value[1], (float) value[2]};
-    glUniform3fv(glGetUniformLocation(_id, name.c_str()), 1, data);
+    /*const float data[3] = {(float) value[0], (float) value[1], (float) value[2]};
+    glUniform3fv(glGetUniformLocation(_id, name.c_str()), 1, data);*/
 }
 
 void Shader::setVec4(const std::string &name, const glm::vec4 &value) const {
-    const float data[4] = {(float) value[0], (float) value[1], (float) value[2], (float) value[3]};
-    glUniform4fv(glGetUniformLocation(_id, name.c_str()), 1, data);
+    /*const float data[4] = {(float) value[0], (float) value[1], (float) value[2], (float) value[3]};
+    glUniform4fv(glGetUniformLocation(_id, name.c_str()), 1, data);*/
 }
 
 void Shader::setMat2(const std::string &name, const glm::mat2 &value) const {
-    const float data[4] = {(float) value[0][0], (float) value[0][1], (float) value[1][0], (float) value[1][1]};
-    glUniformMatrix2fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, data);
+    /*const float data[4] = {(float) value[0][0], (float) value[0][1], (float) value[1][0], (float) value[1][1]};
+    glUniformMatrix2fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, data);*/
 }
 
 void Shader::setMat3(const std::string &name, const glm::mat3 &value) const {
-    const float data[9] = {
+    /*const float data[9] = {
             (float) value[0][0], (float) value[0][1], (float) value[0][2],
             (float) value[1][0], (float) value[1][1], (float) value[1][2],
             (float) value[2][0], (float) value[2][1], (float) value[2][2]
     };
-    glUniformMatrix3fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, data);
+    glUniformMatrix3fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, data);*/
 }
 
 void Shader::setMat4(const std::string &name, const glm::mat4 &value) const {
-    const float data[16] = {
+    /*const float data[16] = {
             (float) value[0][0], (float) value[0][1], (float) value[0][2], (float) value[0][3],
             (float) value[1][0], (float) value[1][1], (float) value[1][2], (float) value[1][3],
             (float) value[2][0], (float) value[2][1], (float) value[2][2], (float) value[2][3],
             (float) value[3][0], (float) value[3][1], (float) value[3][2], (float) value[3][3]
     };
-    glUniformMatrix4fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, data);
+    glUniformMatrix4fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, data);*/
 }
 
 void Shader::setUInt(const std::string &name, unsigned int value) const {
-    glUniform1ui(glGetUniformLocation(_id, name.c_str()), value);
+    //glUniform1ui(glGetUniformLocation(_id, name.c_str()), value);
 }
