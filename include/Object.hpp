@@ -22,7 +22,7 @@ public:
     Object(const Object &other);
     explicit Object(JsonObject *obj);
     explicit Object(AbstractProperties &properties);
-    ~Object() = default;
+    virtual ~Object() = default;
 
     Transform &getTransform();
     Transform getTransform() const;

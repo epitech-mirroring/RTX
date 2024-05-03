@@ -7,8 +7,8 @@
 */
 
 #include "Scene.hpp"
-
 #include <utility>
+#include <iostream>
 
 Scene::Scene()
 {
@@ -24,8 +24,9 @@ Scene::Scene(Scene const &other)
 
 Scene::~Scene()
 {
-    for (auto &object : _objects)
-        delete object;
+    for (auto & _object : _objects) {
+        delete _object;
+    }
     _objects.clear();
     _cameras.clear();
 }

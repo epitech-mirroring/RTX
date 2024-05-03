@@ -19,7 +19,7 @@ class Cube : public Object {
         Cube(const Cube &other);
         explicit Cube(JsonObject *obj);
         explicit Cube(CubeProperties &properties);
-        ~Cube() = default;
+        ~Cube() override = default;
 
         [[nodiscard]] CubeProperties getProperties() const;
         [[nodiscard]] CubeProperties &getProperties();
