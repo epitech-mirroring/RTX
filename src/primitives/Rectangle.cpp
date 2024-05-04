@@ -8,120 +8,116 @@
 
 #include "primitives/Rectangle.hpp"
 #include <utility>
-
+#include <iostream>
 
 static std::vector<Triangle> generateTriangles(const RectangleProperties &properties)
 {
-    std::vector<Triangle> triangles = std::vector<Triangle>();
-    glm::vec3 position = properties.getTransform().getPosition();
+    float offsetX = (float) properties.getLength() / 2.f;
+    float offsetY = (float) properties.getHeight() / 2.f;
+    float offsetZ = (float) properties.getWidth() / 2.f;
+    std::vector<Triangle> triangles;
     Triangle triangle{};
 
-    //102
-    triangle.v0 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    //front
+    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
+    triangle.v2 = glm::vec3(offsetX, offsetY, -offsetZ);
+    triangle.normalV0 = {0, 0, -1};
+    triangle.normalV1 = {0, 0, -1};
+    triangle.normalV2 = {0, 0, -1};
     triangles.push_back(triangle);
 
-    //302
-    triangle.v0 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
+    triangle.v2 = glm::vec3(offsetX, -offsetY, -offsetZ);
+    triangle.normalV0 = {0, 0, -1};
+    triangle.normalV1 = {0, 0, -1};
+    triangle.normalV2 = {0, 0, -1};
     triangles.push_back(triangle);
 
-    //651
-    triangle.v0 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    //right
+    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(offsetX, offsetY, -offsetZ);
+    triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
+    triangle.normalV0 = {1, 0, 0};
+    triangle.normalV1 = {1, 0, 0};
+    triangle.normalV2 = {1, 0, 0};
     triangles.push_back(triangle);
 
-    //251
-    triangle.v0 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
+    triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
+    triangle.normalV0 = {1, 0, 0};
+    triangle.normalV1 = {1, 0, 0};
+    triangle.normalV2 = {1, 0, 0};
     triangles.push_back(triangle);
 
-    //764
-    triangle.v0 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    //back
+    triangle.v0 = glm::vec3(offsetX, -offsetY, offsetZ);
+    triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
+    triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
+    triangle.normalV0 = {0, 0, 1};
+    triangle.normalV1 = {0, 0, 1};
+    triangle.normalV2 = {0, 0, 1};
     triangles.push_back(triangle);
 
-    //564
-    triangle.v0 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    triangle.v0 = glm::vec3(-offsetX, -offsetY, offsetZ);
+    triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
+    triangle.v2 = glm::vec3(-offsetX, offsetY, offsetZ);
+    triangle.normalV0 = {0, 0, 1};
+    triangle.normalV1 = {0, 0, 1};
+    triangle.normalV2 = {0, 0, 1};
     triangles.push_back(triangle);
 
-    //037
-    triangle.v0 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    //left
+    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(-offsetX, -offsetY, -offsetZ);
+    triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
+    triangle.normalV0 = {-1, 0, 0};
+    triangle.normalV1 = {-1, 0, 0};
+    triangle.normalV2 = {-1, 0, 0};
     triangles.push_back(triangle);
 
-    //437
-    triangle.v0 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
+    triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
+    triangle.normalV0 = {-1, 0, 0};
+    triangle.normalV1 = {-1, 0, 0};
+    triangle.normalV2 = {-1, 0, 0};
     triangles.push_back(triangle);
 
-    //235
-    triangle.v0 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    //top
+    triangle.v0 = glm::vec3(offsetX, offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
+    triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
+    triangle.normalV0 = {0, 1, 0};
+    triangle.normalV1 = {0, 1, 0};
+    triangle.normalV2 = {0, 1, 0};
     triangles.push_back(triangle);
 
-    //435
-    triangle.v0 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y + properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    triangle.v0 = glm::vec3(-offsetX, offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
+    triangle.v2 = glm::vec3(-offsetX, offsetY, offsetZ);
+    triangle.normalV0 = {0, 1, 0};
+    triangle.normalV1 = {0, 1, 0};
+    triangle.normalV2 = {0, 1, 0};
     triangles.push_back(triangle);
 
-    //160
-    triangle.v0 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
-    triangles.push_back(triangle);
+    //bottom
+    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(offsetX, -offsetY, offsetZ);
+    triangle.v2 = glm::vec3(-offsetX, -offsetY, offsetZ);
+    triangle.normalV0 = {0, 1, 0};
+    triangle.normalV1 = {0, 1, 0};
+    triangle.normalV2 = {0, 1, 0};
+    triangles.emplace_back(triangle);
 
-    //760
-    triangle.v0 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v1 = glm::vec3((std::size_t)position.x + properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z + properties.getWidth() / 2);
-    triangle.v2 = glm::vec3((std::size_t)position.x - properties.getLength() / 2, (std::size_t)position.y - properties.getHeight() / 2, (std::size_t)position.z - properties.getWidth() / 2);
-    triangle.normalV0 = triangle.v0 * triangle.v1;
-    triangle.normalV1 = triangle.v1 * triangle.v2;
-    triangle.normalV2 = triangle.v2 * triangle.v0;
+    triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
+    triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
+    triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
+    triangle.normalV0 = {0, -1, 0};
+    triangle.normalV1 = {0, -1, 0};
+    triangle.normalV2 = {0, -1, 0};
     triangles.push_back(triangle);
 
     return triangles;

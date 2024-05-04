@@ -37,6 +37,7 @@ int main(int argc, char **argv)
     app.run([&scene]() {
         for (auto &object : scene.getObjects()) {
             object->getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.05f);
+//            scene.getCameras().at(0).getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.05f);
         }
     });
     return 0;

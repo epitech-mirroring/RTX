@@ -180,8 +180,18 @@ void main() {
     ray.origin = iCameraPosition;
     ray.direction = normalize(viewPointWorld - iCameraPosition);
 
-    iNumSpheres = 0;
+    iNumSpheres = iNumTriangles * 3;
+    for (uint i = 0; i < iNumTriangles; i++) {
+        iSpheres[i*3].center = iTriangles[i].a;
+        iSpheres[i*3].radius = 0.1;
+
+        iSpheres[i*3 + 1].center = iTriangles[i].b;
+        iSpheres[i*3 + 1].radius = 0.1;
+
+        iSpheres[i*3 + 2].center = iTriangles[i].c;
+        iSpheres[i*3 + 2].radius = 0.10;
+    }
 //    FragColor = vec4(ray.direction, 1.0);
     Hit hit = ComputeHit(ray);
-    FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
+    FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(ray.direction, 1.0);
 }
