@@ -20,19 +20,31 @@ CXX_SOURCES		= 	src/main.cpp										\
 					src/primitives/ObjectsFactory.cpp					\
 					src/primitives/Properties/AbstractProperties.cpp	\
 					src/primitives/Properties/PropertiesFactory.cpp		\
+					src/Application.cpp									\
 
-CXX_TESTS		=	tests/testsMaterial.cpp			\
-					tests/testsTexture.cpp			\
-					tests/testsSceneParser.cpp		\
+SHADERS 		= 	shaders/screen.vert									\
+					shaders/raytracing.frag								\
+
+CXX_TESTS		=	tests/testsMaterial.cpp								\
+					tests/testsTexture.cpp								\
+					tests/testsSceneParser.cpp							\
 
 LIBS			=   libs/json/libjson.so
 
 # Compiler and linker settings
 NAME 			= 	raytracer
 CXX				= 	g++
+GLSLC			=	$(shell which glslc)
 CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include  \
-				 	-L. -ljson
+				 	-L. -ljson -lglfw -lvulkan -ldl -lpthread -lX11
+MACOS_FLAGS		= 	-rpath /usr/local/lib/
+LINUX_FLAGS		=
+CXXFLAGS		+=	$(shell [ `uname -s` = "Darwin" ] && echo $(MACOS_FLAGS))
+CXXFLAGS		+=	$(shell [ `uname -s` = "Linux" ] && echo $(LINUX_FLAGS))
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
+TEMP_SHADED 	=	$(SHADERS:.frag=.spv) $(SHADERS:.vert=.spv)
+# Remove all the non .spv files
+SHADERS_OBJS	=	$(filter %.spv, $(TEMP_SHADED))
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
 LOG				=	./build.log
@@ -63,14 +75,20 @@ all: $(LIBS)
 			break; \
 		fi; \
 	done; \
+	for file in $(SHADERS); do \
+		if [ "$$file" -nt "$(NAME)" ]; then \
+			HAS_NEWER_SOURCE=1; \
+			break; \
+		fi; \
+	done; \
 	if [ ! -f $(NAME) ] || [ $$HAS_NEWER_SOURCE -eq 1 ]; then \
-		make $(NAME); \
+		make $(NAME) --no-print-directory; \
 	else \
 		printf "$(SKIPPED)$(MAGENTA)  🚀  \
-$(NAME) already up to date$(RESET)\n"; \
+ $(NAME) already up to date$(RESET)\n"; \
 	fi
 
-$(NAME):	$(CXX_OBJS)
+$(NAME):	$(SHADERS_OBJS) $(CXX_OBJS)
 # Link the object files
 		@printf "$(RUNNING) $(BLUE) 🔗   Linking$(RESET)"
 		@$(CXX) -o $(NAME) $(CXX_OBJS) $(CXXFLAGS) >> $(LOG) 2>&1 \
@@ -86,7 +104,7 @@ $(NAME):	$(CXX_OBJS)
 			exit 1; \
 		fi
 
-clion: $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
+clion: $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS) $(SHADERS_OBJS)
 
 $(LIBS): 	%.so:
 # If lib is already shipped (.so present in the directory)
@@ -97,9 +115,9 @@ $(LIBS): 	%.so:
 	SHIPPED_PATH=./$$(basename $@); \
 	if [ ! -f $$SHIPPED_PATH ] || [ "$$LIBRARY_SOURCES" -nt $$SHIPPED_PATH ];\
 	then \
-		make -C $$(dirname $@); \
+		make -C $$(dirname $@) --no-print-directory; \
 		if [ -f $@ ]; then \
-			printf "$(RUNNING) $(BLUE) 🚚   Shipping $@$(RESET)"; \
+			printf "$(RUNNING)$(BLUE)  🚚   Shipping $@$(RESET)"; \
 			cp $@ . >> $(LOG) 2>&1 \
 			&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
 			FOLDER_NAME=$$(echo $$(dirname $@) | sed 's:.*/::' \
@@ -115,7 +133,7 @@ $$FOLDER_NAME$(RESET)"; \
 		fi; \
 	else \
 		printf "$(SKIPPED)$(MAGENTA)  🚀  \
-$@ already up to date and shipped$(RESET)\n"; \
+ $@ already up to date and shipped$(RESET)\n"; \
 	fi
 
 $(CXX_OBJS):	%.o: %.cpp
@@ -136,6 +154,15 @@ clean: clean_libs
 				printf "\r$(SKIPPED)\n"; \
 			fi; \
 		done
+		@for file in $(SHADERS_OBJS); do \
+			printf "$(RUNNING) $(YELLOW) 🧹️   Deleting $$file$(RESET)"; \
+			if [ -f $$file ]; then \
+				rm -f $$file >> $(LOG) 2>&1 \
+				&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+			else \
+				printf "\r$(SKIPPED)\n"; \
+			fi; \
+		done
 # Delete all the tests' object files
 		@for file in $(CXX_TESTS_OBJS); do \
 			printf "$(RUNNING) $(YELLOW) 🧹   Deleting $$file$(RESET)"; \
@@ -147,6 +174,18 @@ clean: clean_libs
 			fi; \
 		done
 
+%.spv: 	%.frag
+		@printf "$(RUNNING) $(BLUE) 🪄   Compiling $<$(RESET)"
+		@$(GLSLC) $< -o $@ >> $(LOG) 2>&1 \
+		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
+		&& exit 1)
+
+%.spv: 	%.vert
+		@printf "$(RUNNING) $(BLUE) 🪄   Compiling $<$(RESET)"
+		@$(GLSLC) $< -o $@ >> $(LOG) 2>&1 \
+		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
+		&& exit 1)
+
 clean_libs:
 	@for lib in $(LIBS); do \
   		LIBRARY_SOURCE_DIR=$$(dirname $$lib)/src; \
@@ -154,7 +193,8 @@ clean_libs:
 		if [ -n "$$LIBRARY_OBJECTS" ]; then \
 			printf "$(RUNNING) $(YELLOW) 🧹   Cleaning $$(basename $$lib)\
 $(RESET)"; \
-			make -C $$(dirname $$lib) clean >> $(LOG) 2>&1 \
+			make -C $$(dirname $$lib) clean --no-print-directory \
+			>> $(LOG) 2>&1 \
 			&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
 		else \
 			printf "$(SKIPPED)$(MAGENTA)  ✨  \
@@ -197,7 +237,8 @@ $${LOWERCASE_DIR}$(RESET)"; \
 			else \
 				printf "\r$(SKIPPED)\n"; \
 			fi; \
-			make -C $$(dirname $$lib) fclean >> $(LOG) 2>&1; \
+			make -C $$(dirname $$lib) fclean --no-print-directory \
+			>> $(LOG) 2>&1; \
 		done
 
 re:			fclean all
@@ -209,7 +250,7 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 
 tests_libs:
 	@for lib in $(LIBS); do \
-		make -C $$(dirname $$lib) tests_run \
+		make -C $$(dirname $$lib) tests_run --no-print-directory \
 		&& printf "$(SUCCESS)$(GREEN)  🎉   Tests for $$(basename $$lib) \
 passed successfully$(RESET)\n" \
 		|| (printf "$(FAILURE)$(RED)  🚨   Tests for $$(basename $$lib) \

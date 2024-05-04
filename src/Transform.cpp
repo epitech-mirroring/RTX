@@ -29,7 +29,8 @@ Transform::Transform(const Transform &other)
     _scale = other._scale;
 }
 
-Transform::Transform(JsonObject *obj) {
+Transform::Transform(JsonObject *obj)
+{
     _position = GlmParser::parseVec3(obj->getValue<JsonObject>("position"));
     _rotation = GlmParser::parseQuat(obj->getValue<JsonObject>("rotation"));
     _scale = GlmParser::parseVec3(obj->getValue<JsonObject>("scale"));
@@ -100,9 +101,9 @@ void Transform::translate(const float x, const float y, const float z)
     _position += glm::vec3(x, y, z);
 }
 
-void Transform::rotate(const float x, const float y, const float z)
+void Transform::rotate(const glm::vec3 &axis, const float angle)
 {
-    _rotation = glm::dquat(glm::vec3(x, y, z)) * _rotation;
+    _rotation *= glm::angleAxis(angle, axis);
 }
 
 void Transform::scale(const float x, const float y, const float z)

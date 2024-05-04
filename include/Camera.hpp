@@ -10,6 +10,8 @@
 #include "Transform.hpp"
 #include "json/Json.hpp"
 
+#define DEG_TO_RAD(x) (x * M_PI / 180)
+
 class Camera {
 protected:
     Transform _transform;
@@ -37,4 +39,5 @@ public:
     void setAspect(double aspect);
     void setNear(double near);
     void setTransform(const Transform& transform);
+    [[nodiscard]] glm::vec3 getViewParams() const;
 };
