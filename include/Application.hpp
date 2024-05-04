@@ -15,6 +15,8 @@
 #include <optional>
 #include "Camera.hpp"
 #include "Scene.hpp"
+#include <chrono>
+#include <functional>
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -137,6 +139,7 @@ protected:
     std::vector<VkBuffer> _meshBuffers;
     std::vector<VkDeviceMemory> _meshBuffersMemory;
     std::vector<void*> _meshBuffersMapped;
+    std::size_t _lastFrameTime = 0;
 
     // Screen
     const std::vector<Vertex> _screenVertices = {
@@ -154,6 +157,7 @@ protected:
     // Camera
     const Camera *_camera;
 
+#define NDEBUG
 #ifdef NDEBUG
     const bool enableValidationLayers = false;
 #else
