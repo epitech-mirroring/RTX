@@ -395,6 +395,8 @@ void Application::setupDebugMessenger()
 
 void Application::cleanup()
 {
+    cleanupSwapChain();
+
     for (std::size_t i = 0; i < _MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroyBuffer(_device, _uniformBuffers[i], nullptr);
         vkFreeMemory(_device, _uniformBuffersMemory[i], nullptr);
@@ -915,10 +917,16 @@ void Application::createSyncObjects()
 void Application::drawFrame()
 {
     vkWaitForFences(_device, 1, &_inFlightFences[_currentFrame], VK_TRUE, UINT64_MAX);
-    vkResetFences(_device, 1, &_inFlightFences[_currentFrame]);
 
     uint32_t imageIndex;
-    vkAcquireNextImageKHR(_device, _swapChain, UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(_device, _swapChain, UINT64_MAX, _imageAvailableSemaphores[_currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+        recreateSwapChain();
+    } else if (result != VK_SUCCESS) {
+        throw std::runtime_error("failed to acquire swap chain image!");
+    }
+    vkResetFences(_device, 1, &_inFlightFences[_currentFrame]);
 
     updateUniformBuffer(_currentFrame);
 
@@ -1331,6 +1339,30 @@ void Application::createDescriptorSets()
 void Application::useCamera(std::size_t idx)
 {
     _camera = &_scene->getCamera((int) idx);
+}
+
+void Application::cleanupSwapChain()
+{
+    for (size_t i = 0; i < _swapChainFrameBuffers.size(); i++) {
+        vkDestroyFramebuffer(_device, _swapChainFrameBuffers[i], nullptr);
+    }
+
+    for (size_t i = 0; i < _swapChainImageViews.size(); i++) {
+        vkDestroyImageView(_device, _swapChainImageViews[i], nullptr);
+    }
+
+    vkDestroySwapchainKHR(_device, _swapChain, nullptr);
+}
+
+void Application::recreateSwapChain()
+{
+    vkDeviceWaitIdle(_device);
+
+    cleanupSwapChain();
+
+    createSwapChain();
+    createImageViews();
+    createFrameBuffers();
 }
 
 Application::~Application() = default;

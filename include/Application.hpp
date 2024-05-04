@@ -192,6 +192,8 @@ protected:
     void updateUniformBuffer(uint32_t currentImage);
     void createDescriptorPool();
     void createDescriptorSets();
+    void recreateSwapChain();
+    void cleanupSwapChain();
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
     bool isDeviceSuitable(VkPhysicalDevice device);
