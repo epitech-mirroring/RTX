@@ -318,10 +318,29 @@ void Application::pickPhysicalDevice()
     }
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
+    std::size_t score = 0;
     for (const auto& device : devices) {
         if (isDeviceSuitable(device)) {
-            _physicalDevice = device;
-            break;
+            std::size_t newScore = 0;
+
+            VkPhysicalDeviceProperties deviceProperties;
+            vkGetPhysicalDeviceProperties(device, &deviceProperties);
+            VkPhysicalDeviceFeatures deviceFeatures;
+            vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+
+            if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+                newScore += 1000;
+            }
+            newScore += deviceProperties.limits.maxImageDimension2D;
+
+            if (!deviceFeatures.geometryShader) {
+                newScore = 0;
+            }
+
+            if (newScore > score || _physicalDevice == VK_NULL_HANDLE) {
+                _physicalDevice = device;
+                score = newScore;
+            }
         }
     }
     if (_physicalDevice == VK_NULL_HANDLE) {
@@ -397,6 +416,10 @@ void Application::cleanup()
 {
     cleanupSwapChain();
 
+    vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
+    vkDestroyRenderPass(_device, _renderPass, nullptr);
+
     for (std::size_t i = 0; i < _MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroyBuffer(_device, _uniformBuffers[i], nullptr);
         vkFreeMemory(_device, _uniformBuffersMemory[i], nullptr);
@@ -413,27 +436,18 @@ void Application::cleanup()
     vkDestroyDescriptorPool(_device, _descriptorPool, nullptr);
     vkDestroyDescriptorSetLayout(_device, _descriptorSetLayout, nullptr);
 
+    vkDestroyBuffer(_device, _indexBuffer, nullptr);
+    vkFreeMemory(_device, _indexBufferMemory, nullptr);
+
+    vkDestroyBuffer(_device, _vertexBuffer, nullptr);
+    vkFreeMemory(_device, _vertexBufferMemory, nullptr);
+
     for (std::size_t i = 0; i < _MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(_device, _renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(_device, _imageAvailableSemaphores[i], nullptr);
         vkDestroyFence(_device, _inFlightFences[i], nullptr);
     }
     vkDestroyCommandPool(_device, _commandPool, nullptr);
-    for (auto framebuffer : _swapChainFrameBuffers) {
-        vkDestroyFramebuffer(_device, framebuffer, nullptr);
-    }
-    vkDestroyPipeline(_device, _graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
-    vkDestroyRenderPass(_device, _renderPass, nullptr);
-    vkDestroyBuffer(_device, _indexBuffer, nullptr);
-    vkFreeMemory(_device, _indexBufferMemory, nullptr);
-
-    vkDestroyBuffer(_device, _vertexBuffer, nullptr);
-    vkFreeMemory(_device, _vertexBufferMemory, nullptr);
-    for (auto imageView : _swapChainImageViews) {
-        vkDestroyImageView(_device, imageView, nullptr);
-    }
-    vkDestroySwapchainKHR(_device, _swapChain, nullptr);
     vkDestroyDevice(_device, nullptr);
 
     if (enableValidationLayers) {
