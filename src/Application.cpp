@@ -8,12 +8,13 @@
 
 #include "Application.hpp"
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <limits>
 #include <set>
-#include <chrono>
+#include <thread>
 
 QueueFamilyIndices Application::findQueueFamilies(VkPhysicalDevice device)
 {
@@ -977,6 +978,12 @@ void Application::drawFrame()
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
+
+    // If last frame was displayed less than 1/60th of a second ago, wait
+    if (_lastFrameTime + 1000 / 60 > std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(_lastFrameTime + 1000 / 60 - std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()));
+    }
+    _lastFrameTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
     vkQueuePresentKHR(_presentQueue, &presentInfo);
     _currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
