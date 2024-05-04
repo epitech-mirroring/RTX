@@ -1245,6 +1245,12 @@ void Application::updateUniformBuffer(uint32_t currentImage)
         m.endIdx = end_idx;
         m.boundingBoxMax = boundingBoxMax;
         m.boundingBoxMin = boundingBoxMin;
+        RaytracingMaterial material{};
+        material.color = mesh->getMaterial().getColor();
+        material.emission = mesh->getMaterial().getEmission();
+        material.emissionIntensity = (float) mesh->getMaterial().getBrightness();
+        m.material = material;
+
         meshes.push_back(m);
     }
 

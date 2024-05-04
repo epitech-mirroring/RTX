@@ -27,15 +27,35 @@ int main(int argc, char **argv)
     Transform cubeTransform;
     cubeTransform.setPosition({0.0f, 0.0f, 0.0f});
     Material cubeMaterial;
+    cubeMaterial.setColor({1.0f, 0.0f, 0.0f});
     Cube *cube = new Cube(cubeMaterial, cubeTransform, {}, 1.0f);
     scene.addObject(cube);
+
+    // Cube (light)
+    Transform lightTransform;
+    lightTransform.setPosition({2.0f, 0.0f, 0.0f});
+    Material lightMaterial;
+    lightMaterial.setColor({0.0f, 0.0f, 0.0f});
+    lightMaterial.setEmission({1.0f, 1.0f, 1.0f});
+    lightMaterial.setBrightness(1.0f);
+    Cube *light = new Cube(lightMaterial, lightTransform, {}, 1.0f);
+    scene.addObject(light);
+
+    // Cube (ground)
+    Transform groundTransform;
+    groundTransform.setPosition({0.0f, 6.f, 0.0f});
+    Material groundMaterial;
+    groundMaterial.setColor({0.8f, 0.8f, 0.7f});
+    Cube *ground = new Cube(groundMaterial, groundTransform, {}, 10.0f);
+    scene.addObject(ground);
+
 
     Application app(WIDTH, HEIGHT, "RTX", &scene);
 
     app.run([&scene]() {
-        for (auto &object : scene.getObjects()) {
-            object->getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.05f);
-        }
+        Cube *cube = (Cube *)scene.getObject(0);
+
+        cube->getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.01f);
     });
     return 0;
 }

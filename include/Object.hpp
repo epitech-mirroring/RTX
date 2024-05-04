@@ -20,11 +20,18 @@ struct Triangle {
     alignas(16) glm::vec3 normalV2;
 };
 
+struct RaytracingMaterial {
+    alignas(16) glm::vec3 color;
+    alignas(16) glm::vec3 emission;
+    alignas(4) float emissionIntensity;
+};
+
 struct Mesh {
     alignas(4) unsigned int startIdx;
     alignas(4) unsigned int endIdx;
     alignas(16) glm::vec3 boundingBoxMin;
     alignas(16) glm::vec3 boundingBoxMax;
+    RaytracingMaterial material;
 };
 
 class Object {

@@ -18,11 +18,18 @@ struct Triangle {
     vec3 cNormal;
 };
 
+struct Material {
+    vec3 color;
+    vec3 emission;
+    float emissionIntensity;
+};
+
 struct Mesh {
     uint startIdx;
     uint endIdx;
     vec3 boundingBoxMin;
     vec3 boundingBoxMax;
+    Material material;
 };
 
 struct Sphere {
@@ -56,7 +63,29 @@ struct Hit {
     float distance;
     vec3 normal;
     vec3 position;
+    Material material;
 };
+
+float randomValue(inout uint seed) {
+    seed = seed * 747796405 + 2891336453;
+    uint res = ((seed >> ((seed >> 28) + 4)) ^ seed) * 277803737;
+    res = (res >> 22) ^ res;
+    return res / 4294967295.0;
+}
+
+vec3 randomDirection(inout uint seed) {
+    for (int i = 0; i < 200; i++) {
+        float x = randomValue(seed) * 2.0 - 1.0;
+        float y = randomValue(seed) * 2.0 - 1.0;
+        float z = randomValue(seed) * 2.0 - 1.0;
+        vec3 dir = vec3(x, y, z);
+        float dist = dot(dir, dir);
+        if (dist < 1.0 && dist > 0.0001) {
+            return normalize(dir);
+        }
+    }
+    return vec3(0.0, 0.0, 1.0);
+}
 
 bool isRayBoundingBoxIntersect(Ray ray, vec3 boxMin, vec3 boxMax)
 {
@@ -70,7 +99,7 @@ bool isRayBoundingBoxIntersect(Ray ray, vec3 boxMin, vec3 boxMax)
     return tNear <= tFar;
 }
 
-Hit RayTriangle(Ray ray, Triangle tri)
+Hit rayTriangle(Ray ray, Triangle tri)
 {
     vec3 AB = tri.b - tri.a;
     vec3 AC = tri.c - tri.a;
@@ -96,7 +125,7 @@ Hit RayTriangle(Ray ray, Triangle tri)
     return hit;
 }
 
-Hit RaySphere(Ray ray, Sphere sphere)
+Hit raySphere(Ray ray, Sphere sphere)
 {
     Hit hit;
     hit.hit = false;
@@ -123,7 +152,7 @@ Hit RaySphere(Ray ray, Sphere sphere)
     return hit;
 }
 
-Hit ComputeHit(Ray ray) {
+Hit computeHit(Ray ray) {
     Hit closestHit;
     closestHit.hit = false;
     closestHit.distance = 1E6;
@@ -136,16 +165,17 @@ Hit ComputeHit(Ray ray) {
 
         for (uint j = mesh.startIdx; j < mesh.endIdx; j++) {
             Triangle tri = iTriangles[j];
-            Hit hit = RayTriangle(ray, tri);
+            Hit hit = rayTriangle(ray, tri);
             if (hit.hit && hit.distance < closestHit.distance) {
                 closestHit = hit;
+                closestHit.material = mesh.material;
                 break;
             }
         }
     }
     for (uint i = 0; i < iNumSpheres; i++) {
         Sphere sphere = iSpheres[i];
-        Hit hit = RaySphere(ray, sphere);
+        Hit hit = raySphere(ray, sphere);
         if (hit.hit && hit.distance < closestHit.distance) {
             closestHit = hit;
         }
@@ -153,21 +183,29 @@ Hit ComputeHit(Ray ray) {
     return closestHit;
 }
 
-vec3 Raytrace(Ray ray) {
-    bool hasHit = false;
+vec3 raytrace(Ray ray, inout uint seed) {
+    vec3 incomingLight = vec3(0.0, 0.0, 0.0);
+    vec3 color = vec3(1.0, 1.0, 1.0);
 
-    for (uint bounce = 0; bounce < 10; bounce++) {
-        Hit hit = ComputeHit(ray);
+    for (uint bounce = 0; bounce < 100; bounce++) {
+        Hit hit = computeHit(ray);
 
         if (hit.hit) {
             ray.origin = hit.position;
-            ray.direction = reflect(ray.direction, hit.normal);
-            hasHit = true;
+            vec3 newDirection = randomDirection(seed);
+            if (dot(newDirection, hit.normal) < 0.0) {
+                newDirection = -newDirection;
+            }
+            ray.direction = newDirection;
+            vec3 directLight = hit.material.emission * hit.material.emissionIntensity;
+            incomingLight += color * directLight;
+            color *= hit.material.color;
         } else {
             break;
         }
     }
-    return hasHit ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 0.0, 0.0);
+
+    return incomingLight;
 }
 
 void main() {
@@ -175,6 +213,7 @@ void main() {
 
     vec3 viewPointLocal = vec3(uv - 0.5, 1.0) * iViewPlaneParams;
     vec3 viewPointWorld = (iCameraMatrix * vec4(viewPointLocal, 1.0)).xyz;
+    uint seed = int(gl_FragCoord.x) + int(gl_FragCoord.y) * 1000;
 
     Ray ray;
     ray.origin = iCameraPosition;
@@ -182,6 +221,10 @@ void main() {
 
     iNumSpheres = 0;
 
-    Hit hit = ComputeHit(ray);
-    FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
+    vec3 incomingLight = vec3(0.0, 0.0, 0.0);
+    for (uint i = 0; i < 20; i++) {
+        incomingLight += raytrace(ray, seed);
+    }
+
+    FragColor = vec4(incomingLight, 1.0);
 }
