@@ -157,6 +157,9 @@ protected:
     // Camera
     const Camera *_camera;
 
+    std::vector<Triangle> _triangles;
+    std::vector<Mesh> _meshes;
+
 #define NDEBUG
 #ifdef NDEBUG
     const bool enableValidationLayers = false;

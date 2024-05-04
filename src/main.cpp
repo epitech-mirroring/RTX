@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     app.run([&scene]() {
         Cube *cube = (Cube *)scene.getObject(0);
 
-        cube->getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.01f);
+        cube->getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.05f);
     });
     return 0;
 }

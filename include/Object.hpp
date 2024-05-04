@@ -31,6 +31,7 @@ struct Mesh {
     alignas(4) unsigned int endIdx;
     alignas(16) glm::vec3 boundingBoxMin;
     alignas(16) glm::vec3 boundingBoxMax;
+    alignas(16) glm::mat4 transform;
     RaytracingMaterial material;
 };
 

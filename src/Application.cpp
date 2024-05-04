@@ -200,6 +200,30 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         }
         _numMeshes++;
     }
+
+    for (const auto mesh : _scene->getObjects()) {
+        std::size_t start_idx = _triangles.size();
+        glm::vec3 boundingBoxMax = {0, 0, 0};
+        glm::vec3 boundingBoxMin = {0, 0, 0};
+        _triangles.reserve(_triangles.size() + mesh->getTriangles().size());
+        for (const auto &triangle : mesh->getTriangles()) {
+            _triangles.push_back(triangle);
+        }
+        std::size_t end_idx = _triangles.size();
+        Mesh m{};
+        m.startIdx = start_idx;
+        m.endIdx = end_idx;
+        m.boundingBoxMax = boundingBoxMax;
+        m.boundingBoxMin = boundingBoxMin;
+        m.transform = mesh->getTransform().getTransformationMatrix();
+        RaytracingMaterial material{};
+        material.color = mesh->getMaterial().getColor();
+        material.emission = mesh->getMaterial().getEmission();
+        material.emissionIntensity = (float) mesh->getMaterial().getBrightness();
+        m.material = material;
+
+        _meshes.push_back(m);
+    }
 }
 
 void Application::run(std::function<void()> update)
@@ -1156,9 +1180,9 @@ static VkDescriptorSetLayoutBinding createDescriptorSetLayoutBinding(uint32_t bi
 void Application::createDescriptorSetLayout()
 {
     VkDescriptorSetLayoutBinding viewLayoutBinding = createDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-    VkDescriptorSetLayoutBinding sceneLayoutBinding = createDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-    VkDescriptorSetLayoutBinding triangleLayoutBinding = createDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
-    VkDescriptorSetLayoutBinding meshLayoutBinding = createDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
+    VkDescriptorSetLayoutBinding sceneLayoutBinding = createDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT);
+    VkDescriptorSetLayoutBinding triangleLayoutBinding = createDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT);
+    VkDescriptorSetLayoutBinding meshLayoutBinding = createDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT);
 
     VkDescriptorSetLayoutBinding bindings[] = {viewLayoutBinding, sceneLayoutBinding, triangleLayoutBinding, meshLayoutBinding};
 
@@ -1205,53 +1229,8 @@ void Application::updateUniformBuffer(uint32_t currentImage)
         memcpy(_uniformBuffersMapped[currentImage], &viewUBO, sizeof(viewUBO));
     }
 
-    std::vector<Triangle> triangles;
-    std::vector<Mesh> meshes;
-    for (const auto mesh : _scene->getObjects()) {
-        std::size_t start_idx = triangles.size();
-        glm::vec3 boundingBoxMax = {0, 0, 0};
-        glm::vec3 boundingBoxMin = {0, 0, 0};
-        for (auto &t : mesh->getTriangles()) {
-            Triangle triangle = t;
-            triangle.v0 = mesh->getTransform().getTransformationMatrix() * glm::vec4(triangle.v0, 1);
-            triangle.v1 = mesh->getTransform().getTransformationMatrix() * glm::vec4(triangle.v1, 1);
-            triangle.v2 = mesh->getTransform().getTransformationMatrix() * glm::vec4(triangle.v2, 1);
-            triangle.normalV0 = glm::normalize(glm::vec3(mesh->getTransform().getTransformationMatrix() * glm::vec4(triangle.normalV0, 0)));
-            triangle.normalV1 = glm::normalize(glm::vec3(mesh->getTransform().getTransformationMatrix() * glm::vec4(triangle.normalV1, 0)));
-            triangle.normalV2 = glm::normalize(glm::vec3(mesh->getTransform().getTransformationMatrix() * glm::vec4(triangle.normalV2, 0)));
-            triangles.push_back(triangle);
-            if (triangle.v0.x > boundingBoxMax.x) boundingBoxMax.x = triangle.v0.x;
-            if (triangle.v0.y > boundingBoxMax.y) boundingBoxMax.y = triangle.v0.y;
-            if (triangle.v0.z > boundingBoxMax.z) boundingBoxMax.z = triangle.v0.z;
-            if (triangle.v0.x < boundingBoxMin.x) boundingBoxMin.x = triangle.v0.x;
-            if (triangle.v0.y < boundingBoxMin.y) boundingBoxMin.y = triangle.v0.y;
-            if (triangle.v0.z < boundingBoxMin.z) boundingBoxMin.z = triangle.v0.z;
-            if (triangle.v1.x > boundingBoxMax.x) boundingBoxMax.x = triangle.v1.x;
-            if (triangle.v1.y > boundingBoxMax.y) boundingBoxMax.y = triangle.v1.y;
-            if (triangle.v1.z > boundingBoxMax.z) boundingBoxMax.z = triangle.v1.z;
-            if (triangle.v1.x < boundingBoxMin.x) boundingBoxMin.x = triangle.v1.x;
-            if (triangle.v1.y < boundingBoxMin.y) boundingBoxMin.y = triangle.v1.y;
-            if (triangle.v1.z < boundingBoxMin.z) boundingBoxMin.z = triangle.v1.z;
-            if (triangle.v2.x > boundingBoxMax.x) boundingBoxMax.x = triangle.v2.x;
-            if (triangle.v2.y > boundingBoxMax.y) boundingBoxMax.y = triangle.v2.y;
-            if (triangle.v2.z > boundingBoxMax.z) boundingBoxMax.z = triangle.v2.z;
-            if (triangle.v2.x < boundingBoxMin.x) boundingBoxMin.x = triangle.v2.x;
-            if (triangle.v2.y < boundingBoxMin.y) boundingBoxMin.y = triangle.v2.y;
-            if (triangle.v2.z < boundingBoxMin.z) boundingBoxMin.z = triangle.v2.z;
-        }
-        std::size_t end_idx = triangles.size();
-        Mesh m{};
-        m.startIdx = start_idx;
-        m.endIdx = end_idx;
-        m.boundingBoxMax = boundingBoxMax;
-        m.boundingBoxMin = boundingBoxMin;
-        RaytracingMaterial material{};
-        material.color = mesh->getMaterial().getColor();
-        material.emission = mesh->getMaterial().getEmission();
-        material.emissionIntensity = (float) mesh->getMaterial().getBrightness();
-        m.material = material;
-
-        meshes.push_back(m);
+    for (std::size_t i = 0; i < _numMeshes; i++) {
+        _meshes[i].transform = _scene->getObject((int) i)->getTransform().getTransformationMatrix();
     }
 
     SceneUBO sceneUBO{};
@@ -1259,8 +1238,8 @@ void Application::updateUniformBuffer(uint32_t currentImage)
     sceneUBO.iNumMeshes = _numMeshes;
 
     memcpy(_sceneBuffersMapped[currentImage], &sceneUBO, sizeof(sceneUBO));
-    memcpy(_triangleBuffersMapped[currentImage], triangles.data(), sizeof(Triangle) * _numTriangles);
-    memcpy(_meshBuffersMapped[currentImage], meshes.data(), sizeof(Mesh) * _numMeshes);
+    memcpy(_triangleBuffersMapped[currentImage], _triangles.data(), sizeof(Triangle) * _numTriangles);
+    memcpy(_meshBuffersMapped[currentImage], _meshes.data(), sizeof(Mesh) * _numMeshes);
 }
 
 void Application::createDescriptorPool()

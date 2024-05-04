@@ -29,6 +29,7 @@ struct Mesh {
     uint endIdx;
     vec3 boundingBoxMin;
     vec3 boundingBoxMax;
+    mat4 transform;
     Material material;
 };
 
@@ -73,18 +74,17 @@ float randomValue(inout uint seed) {
     return res / 4294967295.0;
 }
 
+float randomNormalValue(inout uint seed) {
+    float theta = 2.0 * 3.14159265359 * randomValue(seed);
+    float rho = sqrt(-2.0 * log(randomValue(seed)));
+    return rho * cos(theta);
+}
+
 vec3 randomDirection(inout uint seed) {
-    for (int i = 0; i < 200; i++) {
-        float x = randomValue(seed) * 2.0 - 1.0;
-        float y = randomValue(seed) * 2.0 - 1.0;
-        float z = randomValue(seed) * 2.0 - 1.0;
-        vec3 dir = vec3(x, y, z);
-        float dist = dot(dir, dir);
-        if (dist < 1.0 && dist > 0.0001) {
-            return normalize(dir);
-        }
-    }
-    return vec3(0.0, 0.0, 1.0);
+    float x = randomNormalValue(seed);
+    float y = randomNormalValue(seed);
+    float z = randomNormalValue(seed);
+    return normalize(vec3(x, y, z));
 }
 
 bool isRayBoundingBoxIntersect(Ray ray, vec3 boxMin, vec3 boxMax)
@@ -187,7 +187,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
     vec3 color = vec3(1.0, 1.0, 1.0);
 
-    for (uint bounce = 0; bounce < 100; bounce++) {
+    for (uint bounce = 0; bounce < 30; bounce++) {
         Hit hit = computeHit(ray);
 
         if (hit.hit) {
@@ -222,7 +222,7 @@ void main() {
     iNumSpheres = 0;
 
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
-    for (uint i = 0; i < 20; i++) {
+    for (uint i = 0; i < 100; i++) {
         incomingLight += raytrace(ray, seed);
     }
 
