@@ -23,9 +23,9 @@ Scene::Scene(Scene const &other)
 
 Scene::~Scene()
 {
-    for (auto & _object : _objects) {
-        delete _object;
-    }
+//    for (auto & _object : _objects) {
+//        delete _object;
+//    }
     _objects.clear();
     _cameras.clear();
 }

@@ -181,7 +181,7 @@ void main() {
     ray.direction = normalize(viewPointWorld - iCameraPosition);
 
     iNumSpheres = 0;
-
+//    FragColor = vec4(ray.direction, 1.0);
     Hit hit = ComputeHit(ray);
     FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
 }
