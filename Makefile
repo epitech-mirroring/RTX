@@ -17,6 +17,7 @@ CXX_SOURCES		= 	src/main.cpp										\
 					src/Scene.cpp										\
 					src/SceneParser.cpp									\
 					src/primitives/Rectangle.cpp						\
+					src/primitives/Cube.cpp								\
 					src/primitives/ObjectsFactory.cpp					\
 					src/primitives/Properties/AbstractProperties.cpp	\
 					src/primitives/Properties/PropertiesFactory.cpp		\
@@ -35,7 +36,7 @@ LIBS			=   libs/json/libjson.so
 NAME 			= 	raytracer
 CXX				= 	g++
 GLSLC			=	$(shell which glslc)
-CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include  \
+CXXFLAGS		= 	-g -W -Wall -Wextra -std=c++20 --coverage -I./include  \
 				 	-L. -ljson -lglfw -lvulkan -ldl -lpthread -lX11
 MACOS_FLAGS		= 	-rpath /usr/local/lib/
 LINUX_FLAGS		=

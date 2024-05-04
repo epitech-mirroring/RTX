@@ -7,6 +7,7 @@
 */
 
 #include "Application.hpp"
+#include "SceneParser.hpp"
 #include "primitives/Cube.hpp"
 #include <iostream>
 
@@ -15,20 +16,18 @@
 
 int main(int argc, char **argv)
 {
-    Scene scene;
-    // Camera
-    Transform cameraTransform;
-    cameraTransform.setPosition({0.0f, 0.0f, 5.0f});
-    cameraTransform.rotate({0.0f, -1.0f, 0.0f}, M_PI);
-    Camera camera(cameraTransform, 60.0f, WIDTH / HEIGHT, 0.1f);
-    scene.addCamera(camera);
-
-    // Cube
-    Transform cubeTransform;
-    cubeTransform.setPosition({0.0f, 0.0f, 0.0f});
-    Material cubeMaterial;
-    Cube *cube = new Cube(cubeMaterial, cubeTransform, {}, 1.0f);
-    scene.addObject(cube);
+    if (argc != 2) {
+        std::cerr << "Usage: ./rtx \"scene file\"" << std::endl;
+        return 84;
+    }
+    ObjectsFactory objFactory = ObjectsFactory();
+    PropertiesFactory propFactory = PropertiesFactory();
+    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
+    propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
+    std::string path = std::string(argv[1]);
+    SceneParser parser = SceneParser(path, propFactory, objFactory);
+    parser.parse();
+    Scene scene = parser.getScene();
 
     Application app(WIDTH, HEIGHT, "RTX", &scene);
 
