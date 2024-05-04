@@ -257,7 +257,9 @@ std::vector<const char*> Application::getRequiredExtensions() const
     if (enableValidationLayers) {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
+#ifdef __APPLE__
     extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
 
     return extensions;
 }
@@ -420,7 +422,7 @@ void Application::cleanup()
     vkDestroyPipelineLayout(_device, _pipelineLayout, nullptr);
     vkDestroyRenderPass(_device, _renderPass, nullptr);
 
-    for (std::size_t i = 0; i < _MAX_FRAMES_IN_FLIGHT; i++) {
+    for (std::size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroyBuffer(_device, _uniformBuffers[i], nullptr);
         vkFreeMemory(_device, _uniformBuffersMemory[i], nullptr);
 
@@ -442,7 +444,7 @@ void Application::cleanup()
     vkDestroyBuffer(_device, _vertexBuffer, nullptr);
     vkFreeMemory(_device, _vertexBufferMemory, nullptr);
 
-    for (std::size_t i = 0; i < _MAX_FRAMES_IN_FLIGHT; i++) {
+    for (std::size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(_device, _renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(_device, _imageAvailableSemaphores[i], nullptr);
         vkDestroyFence(_device, _inFlightFences[i], nullptr);
@@ -838,7 +840,7 @@ void Application::createCommandPool()
 }
 
 void Application::createCommandBuffer() {
-    _commandBuffers.resize(_MAX_FRAMES_IN_FLIGHT);
+    _commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool = _commandPool;
@@ -907,9 +909,9 @@ void Application::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t im
 
 void Application::createSyncObjects()
 {
-    _imageAvailableSemaphores.resize(_MAX_FRAMES_IN_FLIGHT);
-    _renderFinishedSemaphores.resize(_MAX_FRAMES_IN_FLIGHT);
-    _inFlightFences.resize(_MAX_FRAMES_IN_FLIGHT);
+    _imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    _renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+    _inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
 
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -918,7 +920,7 @@ void Application::createSyncObjects()
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (std::size_t i = 0; i < _MAX_FRAMES_IN_FLIGHT; i++) {
+    for (std::size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         if (vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS ||
             vkCreateSemaphore(_device, &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS ||
             vkCreateFence(_device, &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS) {
@@ -977,7 +979,7 @@ void Application::drawFrame()
     presentInfo.pImageIndices = &imageIndex;
 
     vkQueuePresentKHR(_presentQueue, &presentInfo);
-    _currentFrame = (_currentFrame + 1) % _MAX_FRAMES_IN_FLIGHT;
+    _currentFrame = (_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
 void Application::createVertexBuffer()
@@ -1102,23 +1104,23 @@ uint32_t Application::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags 
 void Application::createUniformBuffers()
 {
 
-    _uniformBuffers.resize(_MAX_FRAMES_IN_FLIGHT);
-    _uniformBuffersMemory.resize(_MAX_FRAMES_IN_FLIGHT);
-    _uniformBuffersMapped.resize(_MAX_FRAMES_IN_FLIGHT);
+    _uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    _uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
+    _uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-    _sceneBuffers.resize(_MAX_FRAMES_IN_FLIGHT);
-    _sceneBuffersMemory.resize(_MAX_FRAMES_IN_FLIGHT);
-    _sceneBuffersMapped.resize(_MAX_FRAMES_IN_FLIGHT);
+    _sceneBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    _sceneBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
+    _sceneBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-    _triangleBuffers.resize(_MAX_FRAMES_IN_FLIGHT);
-    _triangleBuffersMemory.resize(_MAX_FRAMES_IN_FLIGHT);
-    _triangleBuffersMapped.resize(_MAX_FRAMES_IN_FLIGHT);
+    _triangleBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    _triangleBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
+    _triangleBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-    _meshBuffers.resize(_MAX_FRAMES_IN_FLIGHT);
-    _meshBuffersMemory.resize(_MAX_FRAMES_IN_FLIGHT);
-    _meshBuffersMapped.resize(_MAX_FRAMES_IN_FLIGHT);
+    _meshBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    _meshBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
+    _meshBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-    for (std::size_t i = 0; i < _MAX_FRAMES_IN_FLIGHT; i++) {
+    for (std::size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         createBuffer(sizeof(ViewUBO), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _uniformBuffers[i], _uniformBuffersMemory[i]);
         vkMapMemory(_device, _uniformBuffersMemory[i], 0, sizeof(ViewUBO), 0, &_uniformBuffersMapped[i]);
 
@@ -1252,11 +1254,11 @@ void Application::createDescriptorPool()
 {
     VkDescriptorPoolSize poolSize{};
     poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSize.descriptorCount = static_cast<uint32_t>(_MAX_FRAMES_IN_FLIGHT * 2);
+    poolSize.descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT * 2);
 
     VkDescriptorPoolSize poolSize2{};
     poolSize2.type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    poolSize2.descriptorCount = static_cast<uint32_t>(_MAX_FRAMES_IN_FLIGHT * 2);
+    poolSize2.descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT * 2);
 
     std::array<VkDescriptorPoolSize, 2> poolSizes = {poolSize, poolSize2};
 
@@ -1264,7 +1266,7 @@ void Application::createDescriptorPool()
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     poolInfo.pPoolSizes = poolSizes.data();
-    poolInfo.maxSets = static_cast<uint32_t>(_MAX_FRAMES_IN_FLIGHT * 2);
+    poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT * 2);
 
     if (vkCreateDescriptorPool(_device, &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS) {
         throw std::runtime_error("failed to create descriptor pool!");
@@ -1273,7 +1275,7 @@ void Application::createDescriptorPool()
 
 void Application::createDescriptorSets()
 {
-    std::vector<VkDescriptorSetLayout> layouts(_MAX_FRAMES_IN_FLIGHT, _descriptorSetLayout);
+    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, _descriptorSetLayout);
 
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -1281,12 +1283,12 @@ void Application::createDescriptorSets()
     allocInfo.descriptorSetCount = static_cast<uint32_t>(layouts.size());
     allocInfo.pSetLayouts = layouts.data();
 
-    _descriptorSets.resize(_MAX_FRAMES_IN_FLIGHT);
+    _descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
     if (vkAllocateDescriptorSets(_device, &allocInfo, _descriptorSets.data()) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate descriptor sets!");
     }
 
-    for (std::size_t i = 0; i < _MAX_FRAMES_IN_FLIGHT; i++) {
+    for (std::size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkDescriptorBufferInfo viewBufferInfo{};
         viewBufferInfo.buffer = _uniformBuffers[i];
         viewBufferInfo.offset = 0;
