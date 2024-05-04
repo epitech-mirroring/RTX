@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     Material lightMaterial;
     lightMaterial.setColor({0.0f, 0.0f, 0.0f});
     lightMaterial.setEmission({1.0f, 1.0f, 1.0f});
-    lightMaterial.setBrightness(1.0f);
+    lightMaterial.setBrightness(1.f);
     Cube *light = new Cube(lightMaterial, lightTransform, {}, 1.0f);
     scene.addObject(light);
 
@@ -48,14 +48,16 @@ int main(int argc, char **argv)
     groundMaterial.setColor({0.8f, 0.8f, 0.7f});
     Cube *ground = new Cube(groundMaterial, groundTransform, {}, 10.0f);
     scene.addObject(ground);
+    scene.setSkyBoxEnabled(false);
 
 
     Application app(WIDTH, HEIGHT, "RTX", &scene);
 
-    app.run([&scene]() {
+    app.run([&scene, &app]() {
         Cube *cube = (Cube *)scene.getObject(0);
 
         cube->getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.05f);
+        app.updateScene();
     });
     return 0;
 }

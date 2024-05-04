@@ -99,3 +99,13 @@ void Scene::setCameras(std::vector<Camera> cameras)
 {
     _cameras = std::move(cameras);
 }
+
+void Scene::setSkyBoxEnabled(bool enabled)
+{
+    _skyBoxEnabled = enabled;
+}
+
+bool Scene::isSkyBoxEnabled() const
+{
+    return _skyBoxEnabled;
+}

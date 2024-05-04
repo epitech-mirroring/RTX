@@ -1,4 +1,7 @@
 #version 450
+// y+ is down
+// x+ is right
+// z+ is forward
 // Output
 layout(location = 0) out vec4 FragColor;
 // View
@@ -43,6 +46,8 @@ Sphere iSpheres[50];
 layout(binding = 1) uniform Scene {
     uint iNumMeshes;
     uint iNumTriangles;
+    uint iSceneChanged;
+    uint iSkyboxEnabled;
 };
 
 layout(binding = 2) buffer Triangles {
@@ -183,11 +188,35 @@ Hit computeHit(Ray ray) {
     return closestHit;
 }
 
+vec3 lerp(vec3 a, vec3 b, float t) {
+    return a * (1.0 - t) + b * t;
+}
+
+vec3 environmentLight(Ray ray) {
+    // Horizon should be whitish, zenith should be blueish and ground should be dark (like brownish)
+    vec3 horizonColor = vec3(1., 1., 1.);
+    vec3 zenithColor = vec3(0.5, 0.7, 1.0);
+    vec3 groundColor = vec3(0.2, 0.17, 0.1);
+    vec3 sunDirection = normalize(vec3(0.5, 0.5, 0.5));
+    float sunFocus = 1;
+    float sunIntensity = 0.01;
+
+    vec3 dir = vec3(ray.direction.x, -ray.direction.y, ray.direction.z);
+
+    float skyGradientT = pow(smoothstep(0, 0.4, dir.y), 0.35);
+    vec3 skyGradient = lerp(horizonColor, zenithColor, skyGradientT);
+    float sun = pow(max(0, dot(dir, -sunDirection)), sunFocus) * sunIntensity;
+
+    float groundToSkyT = smoothstep(-0.01, 0, dir.y);
+    float sunMask = groundToSkyT >= 1.0 ? 0.0 : 1.0;
+    return lerp(groundColor, skyGradient, groundToSkyT) + sun * sunMask;
+}
+
 vec3 raytrace(Ray ray, inout uint seed) {
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
     vec3 color = vec3(1.0, 1.0, 1.0);
 
-    for (uint bounce = 0; bounce < 30; bounce++) {
+    for (uint bounce = 0; bounce < 5; bounce++) {
         Hit hit = computeHit(ray);
 
         if (hit.hit) {
@@ -198,9 +227,12 @@ vec3 raytrace(Ray ray, inout uint seed) {
             }
             ray.direction = newDirection;
             vec3 directLight = hit.material.emission * hit.material.emissionIntensity;
-            incomingLight += color * directLight;
+            incomingLight += directLight * color;
             color *= hit.material.color;
         } else {
+            if (iSkyboxEnabled > 0) {
+                incomingLight += environmentLight(ray) * color;
+            }
             break;
         }
     }
@@ -222,9 +254,10 @@ void main() {
     iNumSpheres = 0;
 
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
-    for (uint i = 0; i < 100; i++) {
+    uint numRaysPerPixel = 20;
+    for (uint i = 0; i < numRaysPerPixel; i++) {
         incomingLight += raytrace(ray, seed);
     }
 
-    FragColor = vec4(incomingLight, 1.0);
+    FragColor = vec4(incomingLight / float(numRaysPerPixel), 1.0);
 }

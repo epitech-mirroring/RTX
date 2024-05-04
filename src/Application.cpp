@@ -15,6 +15,7 @@
 #include <limits>
 #include <set>
 #include <thread>
+#include <utility>
 
 QueueFamilyIndices Application::findQueueFamilies(VkPhysicalDevice device)
 {
@@ -230,7 +231,7 @@ void Application::run(std::function<void()> update)
 {
     initWindow();
     initVulkan();
-    loop(update);
+    loop(std::move(update));
     cleanup();
 }
 
@@ -414,14 +415,14 @@ void Application::createSurface()
     }
 }
 
-void Application::loop(std::function<void()> update)
+void Application::loop(const std::function<void()>& update)
 {
     while (!glfwWindowShouldClose(_window)) {
-        glfwPollEvents();
         drawFrame();
         if (update) {
             update();
         }
+        glfwPollEvents();
     }
 
     vkDeviceWaitIdle(_device);
@@ -1229,17 +1230,27 @@ void Application::updateUniformBuffer(uint32_t currentImage)
         memcpy(_uniformBuffersMapped[currentImage], &viewUBO, sizeof(viewUBO));
     }
 
-    for (std::size_t i = 0; i < _numMeshes; i++) {
-        _meshes[i].transform = _scene->getObject((int) i)->getTransform().getTransformationMatrix();
+    if (!_scene) {
+        return;
     }
 
     SceneUBO sceneUBO{};
     sceneUBO.iNumTriangles = _numTriangles;
     sceneUBO.iNumMeshes = _numMeshes;
-
+    sceneUBO.iSceneChanged = _sceneChanged ? 1 : 0;
+    sceneUBO.iSkyboxEnabled = _scene->isSkyBoxEnabled() ? 1 : 0;
     memcpy(_sceneBuffersMapped[currentImage], &sceneUBO, sizeof(sceneUBO));
+
+    if (_sceneChanged) {
+        for (std::size_t i = 0; i < _numMeshes; i++) {
+            _meshes[i].transform = _scene->getObject((int) i)
+                                           ->getTransform()
+                                           .getTransformationMatrix();
+        }
+    }
     memcpy(_triangleBuffersMapped[currentImage], _triangles.data(), sizeof(Triangle) * _numTriangles);
     memcpy(_meshBuffersMapped[currentImage], _meshes.data(), sizeof(Mesh) * _numMeshes);
+    _sceneChanged = false;
 }
 
 void Application::createDescriptorPool()
@@ -1371,6 +1382,11 @@ void Application::recreateSwapChain()
     createSwapChain();
     createImageViews();
     createFrameBuffers();
+}
+
+void Application::updateScene()
+{
+    _sceneChanged = true;
 }
 
 Application::~Application() = default;

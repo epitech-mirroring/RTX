@@ -65,10 +65,12 @@ struct ViewUBO {
     alignas(16) glm::mat4 iCameraMatrix;
 };
 
-// Gives the info about the scene (number of triangles and meshes)
+// Gives the info about the scene (number of triangles and meshes and bool if scene dirty)
 struct SceneUBO {
     alignas(4) unsigned int iNumMeshes;
     alignas(4) unsigned int iNumTriangles;
+    alignas(4) unsigned int iSceneChanged;
+    alignas(4) unsigned int iSkyboxEnabled;
 };
 
 // Array of triangles given to the shader
@@ -160,6 +162,8 @@ protected:
     std::vector<Triangle> _triangles;
     std::vector<Mesh> _meshes;
 
+    bool _sceneChanged = true;
+
 #define NDEBUG
 #ifdef NDEBUG
     const bool enableValidationLayers = false;
@@ -173,6 +177,7 @@ public:
     void run(std::function<void()> update = nullptr);
 
     void useCamera(std::size_t idx);
+    void updateScene();
 protected:
     void initWindow();
     void initVulkan();
@@ -180,7 +185,7 @@ protected:
     void pickPhysicalDevice();
     void createLogicalDevice();
     void createSurface();
-    void loop(std::function<void()> update);
+    void loop(const std::function<void()>& update);
     void cleanup();
     bool checkValidationLayerSupport();
     void setupDebugMessenger();

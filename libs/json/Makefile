@@ -21,7 +21,7 @@ CXX_TESTS		=   tests/json_parser.cpp	\
 # Compiler and linker settings
 NAME 			= 	libjson.so
 CXX				= 	g++
-CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include -fPIC
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include -fPIC
 LDFLAGS			= 	-shared
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)

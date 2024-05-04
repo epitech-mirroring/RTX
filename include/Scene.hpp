@@ -15,6 +15,7 @@ class Scene {
     protected:
         std::vector<Object *> _objects;
         std::vector<Camera> _cameras;
+        bool _skyBoxEnabled = true;
     public:
         Scene();
         Scene(Scene const &other);
@@ -33,4 +34,6 @@ class Scene {
         [[nodiscard]] Camera &getMainCamera();
         void setObjects(std::vector<Object *> objects);
         void setCameras(std::vector<Camera> cameras);
+        void setSkyBoxEnabled(bool enabled);
+        [[nodiscard]] bool isSkyBoxEnabled() const;
 };
