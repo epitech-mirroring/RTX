@@ -150,11 +150,13 @@ Rectangle::Rectangle(const Rectangle &other)
 Rectangle::Rectangle(JsonObject *obj)
 {
     _properties = RectangleProperties(obj);
+    _triangles = generateTriangles(_properties);
 }
 
 Rectangle::Rectangle(RectangleProperties &properties): Object(properties)
 {
     _properties = properties;
+    _triangles = generateTriangles(properties);
 }
 
 RectangleProperties Rectangle::getProperties() const {

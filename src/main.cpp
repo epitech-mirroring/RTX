@@ -9,6 +9,7 @@
 #include "Application.hpp"
 #include "SceneParser.hpp"
 #include "primitives/Cube.hpp"
+#include "primitives/Rectangle.hpp"
 #include <iostream>
 
 #define WIDTH 800.0f
@@ -23,7 +24,9 @@ int main(int argc, char **argv)
     ObjectsFactory objFactory = ObjectsFactory();
     PropertiesFactory propFactory = PropertiesFactory();
     objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
+    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
     propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
+    propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
     std::string path = std::string(argv[1]);
     SceneParser parser = SceneParser(path, propFactory, objFactory);
     parser.parse();
