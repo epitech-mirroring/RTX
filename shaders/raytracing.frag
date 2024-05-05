@@ -1,4 +1,4 @@
-#version 450
+#version 450 core
 // y+ is down
 // x+ is right
 // z+ is forward
