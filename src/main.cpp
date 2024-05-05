@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     groundMaterial.setColor({0.8f, 0.8f, 0.7f});
     Cube *ground = new Cube(groundMaterial, groundTransform, {}, 10.0f);
     scene.addObject(ground);
-    scene.setSkyBoxEnabled(false);
+    scene.setSkyBoxEnabled(true);
 
 
     Application app(WIDTH, HEIGHT, "RTX", &scene);

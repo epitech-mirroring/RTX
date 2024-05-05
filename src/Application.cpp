@@ -8,7 +8,6 @@
 
 #include "Application.hpp"
 #include <algorithm>
-#include <chrono>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
@@ -153,10 +152,10 @@ Application::Application(glm::vec2 windowSize, const std::string &appName, Scene
     _renderPass = VK_NULL_HANDLE;
     _graphicsPipeline = VK_NULL_HANDLE;
     _commandPool = VK_NULL_HANDLE;
-    _vertexBuffer = VK_NULL_HANDLE;
-    _vertexBufferMemory = VK_NULL_HANDLE;
-    _indexBuffer = VK_NULL_HANDLE;
-    _indexBufferMemory = VK_NULL_HANDLE;
+    _screenVertexBuffer = VK_NULL_HANDLE;
+    _screenVertexBufferMemory = VK_NULL_HANDLE;
+    _screenIndexBuffer = VK_NULL_HANDLE;
+    _screenIndexBufferMemory = VK_NULL_HANDLE;
     _scene = scene;
     _camera = &scene->getMainCamera();
     _numMeshes = 0;
@@ -187,10 +186,10 @@ Application::Application(unsigned int width, unsigned int height, const std::str
     _renderPass = VK_NULL_HANDLE;
     _graphicsPipeline = VK_NULL_HANDLE;
     _commandPool = VK_NULL_HANDLE;
-    _vertexBuffer = VK_NULL_HANDLE;
-    _vertexBufferMemory = VK_NULL_HANDLE;
-    _indexBuffer = VK_NULL_HANDLE;
-    _indexBufferMemory = VK_NULL_HANDLE;
+    _screenVertexBuffer = VK_NULL_HANDLE;
+    _screenVertexBufferMemory = VK_NULL_HANDLE;
+    _screenIndexBuffer = VK_NULL_HANDLE;
+    _screenIndexBufferMemory = VK_NULL_HANDLE;
     _scene = scene;
     _camera = &scene->getMainCamera();
     _numMeshes = 0;
@@ -464,11 +463,11 @@ void Application::cleanup()
     vkDestroyDescriptorPool(_device, _descriptorPool, nullptr);
     vkDestroyDescriptorSetLayout(_device, _descriptorSetLayout, nullptr);
 
-    vkDestroyBuffer(_device, _indexBuffer, nullptr);
-    vkFreeMemory(_device, _indexBufferMemory, nullptr);
+    vkDestroyBuffer(_device, _screenIndexBuffer, nullptr);
+    vkFreeMemory(_device, _screenIndexBufferMemory, nullptr);
 
-    vkDestroyBuffer(_device, _vertexBuffer, nullptr);
-    vkFreeMemory(_device, _vertexBufferMemory, nullptr);
+    vkDestroyBuffer(_device, _screenVertexBuffer, nullptr);
+    vkFreeMemory(_device, _screenVertexBufferMemory, nullptr);
 
     for (std::size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(_device, _renderFinishedSemaphores[i], nullptr);
@@ -917,11 +916,11 @@ void Application::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t im
     scissor.extent = _swapChainExtent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    VkBuffer vertexBuffers[] = {_vertexBuffer};
+    VkBuffer vertexBuffers[] = {_screenVertexBuffer};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdBindIndexBuffer(commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(commandBuffer, _screenIndexBuffer, 0, VK_INDEX_TYPE_UINT16);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelineLayout, 0, 1, &_descriptorSets[_currentFrame], 0, nullptr);
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(_screenIndices.size()), 1, 0, 0, 0);
@@ -1027,9 +1026,10 @@ void Application::createVertexBuffer()
     memcpy(data, _screenVertices.data(), (size_t) bufferSize);
     vkUnmapMemory(_device, stagingBufferMemory);
 
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _vertexBuffer, _vertexBufferMemory);
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _screenVertexBuffer,
+                 _screenVertexBufferMemory);
 
-    copyBuffer(stagingBuffer, _vertexBuffer, bufferSize);
+    copyBuffer(stagingBuffer, _screenVertexBuffer, bufferSize);
 
     vkDestroyBuffer(_device, stagingBuffer, nullptr);
     vkFreeMemory(_device, stagingBufferMemory, nullptr);
@@ -1048,9 +1048,9 @@ void Application::createIndexBuffer()
     memcpy(data, _screenIndices.data(), (size_t) bufferSize);
     vkUnmapMemory(_device, stagingBufferMemory);
 
-    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _indexBuffer, _indexBufferMemory);
+    createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, _screenIndexBuffer, _screenIndexBufferMemory);
 
-    copyBuffer(stagingBuffer, _indexBuffer, bufferSize);
+    copyBuffer(stagingBuffer, _screenIndexBuffer, bufferSize);
 
     vkDestroyBuffer(_device, stagingBuffer, nullptr);
     vkFreeMemory(_device, stagingBufferMemory, nullptr);
@@ -1159,10 +1159,10 @@ void Application::createUniformBuffers()
         createBuffer(sizeof(SceneUBO), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _sceneBuffers[i], _sceneBuffersMemory[i]);
         vkMapMemory(_device, _sceneBuffersMemory[i], 0, sizeof(SceneUBO), 0, &_sceneBuffersMapped[i]);
 
-        createBuffer(sizeof(Triangle) * _numTriangles, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _triangleBuffers[i], _triangleBuffersMemory[i]);
+        createBuffer(sizeof(Triangle) * _numTriangles, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _triangleBuffers[i], _triangleBuffersMemory[i]);
         vkMapMemory(_device, _triangleBuffersMemory[i], 0, sizeof(Triangle) * _numTriangles, 0, &_triangleBuffersMapped[i]);
 
-        createBuffer(sizeof(Mesh) * _numMeshes, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _meshBuffers[i], _meshBuffersMemory[i]);
+        createBuffer(sizeof(Mesh) * _numMeshes, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _meshBuffers[i], _meshBuffersMemory[i]);
         vkMapMemory(_device, _meshBuffersMemory[i], 0, sizeof(Mesh) * _numMeshes, 0, &_meshBuffersMapped[i]);
     }
 }
@@ -1182,8 +1182,8 @@ void Application::createDescriptorSetLayout()
 {
     VkDescriptorSetLayoutBinding viewLayoutBinding = createDescriptorSetLayoutBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT);
     VkDescriptorSetLayoutBinding sceneLayoutBinding = createDescriptorSetLayoutBinding(1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT);
-    VkDescriptorSetLayoutBinding triangleLayoutBinding = createDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT);
-    VkDescriptorSetLayoutBinding meshLayoutBinding = createDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT);
+    VkDescriptorSetLayoutBinding triangleLayoutBinding = createDescriptorSetLayoutBinding(2, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR);
+    VkDescriptorSetLayoutBinding meshLayoutBinding = createDescriptorSetLayoutBinding(3, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR | VK_SHADER_STAGE_ANY_HIT_BIT_KHR | VK_SHADER_STAGE_INTERSECTION_BIT_KHR);
 
     VkDescriptorSetLayoutBinding bindings[] = {viewLayoutBinding, sceneLayoutBinding, triangleLayoutBinding, meshLayoutBinding};
 

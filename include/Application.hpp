@@ -120,10 +120,10 @@ protected:
     uint32_t _currentFrame = 0;
     VkDescriptorPool _descriptorPool;
     std::vector<VkDescriptorSet> _descriptorSets;
-    VkBuffer _vertexBuffer;
-    VkDeviceMemory _vertexBufferMemory;
-    VkBuffer _indexBuffer;
-    VkDeviceMemory _indexBufferMemory;
+    VkBuffer _screenVertexBuffer;
+    VkDeviceMemory _screenVertexBufferMemory;
+    VkBuffer _screenIndexBuffer;
+    VkDeviceMemory _screenIndexBufferMemory;
     std::vector<VkBuffer> _uniformBuffers;
     std::vector<VkDeviceMemory> _uniformBuffersMemory;
     std::vector<void*> _uniformBuffersMapped;

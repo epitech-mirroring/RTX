@@ -216,7 +216,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
     vec3 color = vec3(1.0, 1.0, 1.0);
 
-    for (uint bounce = 0; bounce < 5; bounce++) {
+    for (uint bounce = 0; bounce < 3; bounce++) {
         Hit hit = computeHit(ray);
 
         if (hit.hit) {
