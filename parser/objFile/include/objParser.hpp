@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** RTX
 ** File description:
-** myObjParser
+** objParser
 */
 
 #include <iostream>
@@ -29,7 +29,7 @@ struct objMaterial {
     int illuminationModel;
 };
 
-class MyObjParser {
+class objParser {
     public:
         Object *parseFile(const std::string& filename);
         void parseVertices(const std::string& line);

@@ -8,7 +8,7 @@
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/myObjParser.cpp
+CXX_SOURCES		= 	src/objParser.cpp
 
 CXX_TESTS		= 
 

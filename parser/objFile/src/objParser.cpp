@@ -2,10 +2,10 @@
 ** EPITECH PROJECT, 2024
 ** RTX
 ** File description:
-** myObjParser
+** objParser
 */
 
-#include "../include/myObjParser.hpp"
+#include "../include/objParser.hpp"
 
 static std::vector<std::string> split(const std::string &s, char delimiter) {
     std::vector<std::string> tokens;
@@ -24,19 +24,19 @@ static glm::vec3 parseVec3(const std::string& line) {
     return v;
 }
 
-void MyObjParser::parseVertices(const std::string& line)
+void objParser::parseVertices(const std::string& line)
 {
     if (line.substr(0, 2) == "v ")
         verticesBuffer.push_back(parseVec3(line.substr(2)));
 }
 
-void MyObjParser::parseNormals(const std::string& line)
+void objParser::parseNormals(const std::string& line)
 {
     if (line.substr(0, 3) == "vn ")
         normalsBuffer.push_back(parseVec3(line.substr(3)));
 }
 
-void MyObjParser::parseFaces(const std::string& line)
+void objParser::parseFaces(const std::string& line)
 {
     if (line.substr(0, 2) == "f ") {
         std::vector<std::string> tokens = split(line.substr(2), ' ');
@@ -73,7 +73,7 @@ void MyObjParser::parseFaces(const std::string& line)
     }
 }
 
-Object *MyObjParser::parseFile(const std::string& filename)
+Object *objParser::parseFile(const std::string& filename)
 {
     // remain to implement texture
     Transform objTransform;
