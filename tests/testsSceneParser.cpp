@@ -184,8 +184,8 @@ Test(SceneParser, ParseScene)
     std::string path = "scenes/tests/testScene.json";
     PropertiesFactory factory = PropertiesFactory();
     ObjectsFactory objFactory = ObjectsFactory();
-    factory.registerProperties("cube", [](JsonObject *obj) { return new RectangleProperties(obj); });
-    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
+    factory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
+    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
     SceneParser parser = SceneParser(path, factory, objFactory);
     parser.parse();
 
