@@ -30,14 +30,14 @@ CXX_TESTS		=	tests/testsMaterial.cpp								\
 					tests/testsSceneParser.cpp							\
 
 LIBS			=   libs/json/libjson.so								\
-					parser/objFile/libobjParser.so						
+					parser/objFile/libobj.so						
 
 # Compiler and linker settings
 NAME 			= 	raytracer
 CXX				= 	g++
 GLSLC			=	$(shell which glslc)
 CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include  \
-				 	-L. -ljson -lobjParser -lglfw -lvulkan -ldl -lpthread -lX11
+				 	-L. -ljson -lobj -lglfw -lvulkan -ldl -lpthread -lX11
 MACOS_FLAGS		= 	-rpath /usr/local/lib/
 LINUX_FLAGS		=
 CXXFLAGS		+=	$(shell [ `uname -s` = "Darwin" ] && echo $(MACOS_FLAGS))

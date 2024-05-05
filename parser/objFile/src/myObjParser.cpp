@@ -24,15 +24,62 @@ static glm::vec3 parseVec3(const std::string& line) {
     return v;
 }
 
-Object *MyObjParser::parseFile(const std::string& filename) {
+void MyObjParser::parseVertices(const std::string& line)
+{
+    if (line.substr(0, 2) == "v ")
+        verticesBuffer.push_back(parseVec3(line.substr(2)));
+}
+
+void MyObjParser::parseNormals(const std::string& line)
+{
+    if (line.substr(0, 3) == "vn ")
+        normalsBuffer.push_back(parseVec3(line.substr(3)));
+}
+
+void MyObjParser::parseFaces(const std::string& line)
+{
+    if (line.substr(0, 2) == "f ") {
+        std::vector<std::string> tokens = split(line.substr(2), ' ');
+        if (tokens.size() >= 3) {
+            Triangle tri;
+            std::vector<int> vertexIndices, normalIndices;
+            for (auto& token : tokens) {
+                auto parts = split(token, '/');
+                if (parts.size() >= 1 && !parts[0].empty()) {
+                    vertexIndices.push_back(std::stoi(parts[0]) - 1);
+                }
+                if (parts.size() == 3 && !parts[2].empty()) {
+                    normalIndices.push_back(std::stoi(parts[2]) - 1);
+                }
+            }
+            if (vertexIndices.size() == 3) {
+                tri.v0 = verticesBuffer[vertexIndices[0]];
+                tri.v1 = verticesBuffer[vertexIndices[1]];
+                tri.v2 = verticesBuffer[vertexIndices[2]];
+
+                if (normalIndices.size() == 3) {
+                    tri.normalV0 = normalsBuffer[normalIndices[0]];
+                    tri.normalV1 = normalsBuffer[normalIndices[1]];
+                    tri.normalV2 = normalsBuffer[normalIndices[2]];
+                } else {
+                    glm::vec3 edge1 = tri.v1 - tri.v0;
+                    glm::vec3 edge2 = tri.v2 - tri.v0;
+                    glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
+                    tri.normalV0 = tri.normalV1 = tri.normalV2 = normal;
+                }
+                trianglesBuffer.push_back(tri);
+            }
+        }
+    }
+}
+
+Object *MyObjParser::parseFile(const std::string& filename)
+{
     // remain to implement texture
     Transform objTransform;
     std::vector<Texture> textures;
 
     std::string line;
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec3> normals;
-    std::vector<Triangle> triangles;
     std::ifstream file(filename);
 
     if (filename.substr(filename.find_last_of(".") + 1) != "obj") {
@@ -43,45 +90,14 @@ Object *MyObjParser::parseFile(const std::string& filename) {
         std::cerr << "Failed to open OBJ file: " << filename << std::endl;
         return nullptr;
     }
+    trianglesBuffer.clear();
+    verticesBuffer.clear();
+    normalsBuffer.clear();
     while (getline(file, line)) {
-        if (line.substr(0, 2) == "v ") {
-            vertices.push_back(parseVec3(line.substr(2)));
-        } else if (line.substr(0, 3) == "vn ") {
-            normals.push_back(parseVec3(line.substr(3)));
-        } else if (line.substr(0, 2) == "f ") {
-            std::vector<std::string> tokens = split(line.substr(2), ' ');
-            if (tokens.size() >= 3) {
-                Triangle tri;
-                std::vector<int> vertexIndices, normalIndices;
-                for (auto& token : tokens) {
-                    auto parts = split(token, '/');
-                    if (parts.size() >= 1 && !parts[0].empty()) {
-                        vertexIndices.push_back(std::stoi(parts[0]) - 1);
-                    }
-                    if (parts.size() == 3 && !parts[2].empty()) {
-                        normalIndices.push_back(std::stoi(parts[2]) - 1);
-                    }
-                }
-                if (vertexIndices.size() == 3) {
-                    tri.v0 = vertices[vertexIndices[0]];
-                    tri.v1 = vertices[vertexIndices[1]];
-                    tri.v2 = vertices[vertexIndices[2]];
-
-                    if (normalIndices.size() == 3) {
-                        tri.normalV0 = normals[normalIndices[0]];
-                        tri.normalV1 = normals[normalIndices[1]];
-                        tri.normalV2 = normals[normalIndices[2]];
-                    } else {
-                        glm::vec3 edge1 = tri.v1 - tri.v0;
-                        glm::vec3 edge2 = tri.v2 - tri.v0;
-                        glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
-                        tri.normalV0 = tri.normalV1 = tri.normalV2 = normal;
-                    }
-                    triangles.push_back(tri);
-                }
-            }
-        }
+        parseVertices(line);
+        parseNormals(line);
+        parseFaces(line);
     }
     file.close();
-    return new Object({}, objTransform, triangles, textures);
+    return new Object({}, objTransform, trianglesBuffer, textures);
 }

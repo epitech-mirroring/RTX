@@ -13,7 +13,7 @@ CXX_SOURCES		= 	src/myObjParser.cpp
 CXX_TESTS		= 
 
 # Compiler and linker settings
-NAME 			= 	libobjParser.so
+NAME 			= 	libobj.so
 CXX				= 	g++
 CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I../../include -fPIC 
 LDFLAGS			= 	-shared

@@ -32,4 +32,11 @@ struct objMaterial {
 class MyObjParser {
     public:
         Object *parseFile(const std::string& filename);
+        void parseVertices(const std::string& line);
+        void parseNormals(const std::string& line);
+        void parseFaces(const std::string& line);
+    private:
+        std::vector<glm::vec3> verticesBuffer;
+        std::vector<glm::vec3> normalsBuffer;
+        std::vector<Triangle> trianglesBuffer;
 };
