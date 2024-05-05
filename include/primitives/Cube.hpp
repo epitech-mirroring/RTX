@@ -14,7 +14,7 @@
 class Cube : public Object {
 public:
     Cube();
-    Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t size);
+    Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, float size);
     Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const CubeProperties& properties);
     Cube(const Cube &other);
     explicit Cube(JsonObject *obj);
@@ -23,8 +23,8 @@ public:
 
     [[nodiscard]] CubeProperties getProperties() const;
     [[nodiscard]] CubeProperties &getProperties();
-    std::size_t getSize() const { return _properties.getSize(); }
-    std::size_t &getSize() { return _properties.getSize(); }
+    float getSize() const { return _properties.getSize(); }
+    float &getSize() { return _properties.getSize(); }
 protected:
     CubeProperties _properties{};
 };

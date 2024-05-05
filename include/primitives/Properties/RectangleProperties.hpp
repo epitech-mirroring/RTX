@@ -14,21 +14,21 @@
 class RectangleProperties : public AbstractProperties {
     public:
         RectangleProperties() : AbstractProperties() { _length = 1; _width = 1; _height = 1; };
-        explicit RectangleProperties(std::size_t length, std::size_t width, std::size_t height) : AbstractProperties() { _length = length; _width = width; _height = height;};
-        explicit RectangleProperties(JsonObject *obj) : AbstractProperties(obj) { _length = obj->getInt("length");
-            _width = obj->getInt("width"); _height = obj->getInt("height");};
+        explicit RectangleProperties(float length, float width, float height) : AbstractProperties() { _length = length; _width = width; _height = height;};
+        explicit RectangleProperties(JsonObject *obj) : AbstractProperties(obj) { _length = obj->getFloat("length");
+            _width = obj->getFloat("width"); _height = obj->getFloat("height");};
         ~RectangleProperties() override = default;
-        std::size_t getLength() const { return _length; }
-        std::size_t &getLength() { return _length; }
-        std::size_t getWidth() const { return _width; }
-        std::size_t &getWidth() { return _width; }
-        std::size_t getHeight() const { return _height; }
-        std::size_t &getHeight() { return _height; }
-        void setLength(std::size_t length) { _length = length; }
-        void setWidth(std::size_t width) { _width = width; }
-        void setHeight(std::size_t height) { _height = height; }
+        float getLength() const { return _length; }
+        float &getLength() { return _length; }
+        float getWidth() const { return _width; }
+        float &getWidth() { return _width; }
+        float getHeight() const { return _height; }
+        float &getHeight() { return _height; }
+        void setLength(float length) { _length = length; }
+        void setWidth(float width) { _width = width; }
+        void setHeight(float height) { _height = height; }
     protected:
-        std::size_t _length;
-        std::size_t _width;
-        std::size_t _height;
+        float _length;
+        float _width;
+        float _height;
 };

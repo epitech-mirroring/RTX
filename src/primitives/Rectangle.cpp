@@ -128,7 +128,7 @@ Rectangle::Rectangle()
     _properties = RectangleProperties();
 }
 
-Rectangle::Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t length, std::size_t width, std::size_t height) : Object(material, transform, generateTriangles(RectangleProperties(length, width, height)), textures)
+Rectangle::Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, float length, float width, float height) : Object(material, transform, generateTriangles(RectangleProperties(length, width, height)), textures)
 {
     _properties = RectangleProperties(length, width, height);
 }

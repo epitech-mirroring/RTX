@@ -14,7 +14,7 @@
 class Rectangle : public Object {
     public:
         Rectangle();
-        Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t length, std::size_t width, std::size_t height);
+        Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, float length, float width, float height);
         Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const RectangleProperties & properties);
         Rectangle(const Rectangle &other);
         explicit Rectangle(JsonObject *obj);
@@ -23,12 +23,12 @@ class Rectangle : public Object {
 
         [[nodiscard]] RectangleProperties getProperties() const;
         [[nodiscard]] RectangleProperties &getProperties();
-        std::size_t getLength() const { return _properties.getLength(); }
-        std::size_t getWidth() const { return _properties.getWidth(); }
-        std::size_t getHeight() const { return _properties.getHeight(); }
-        void setLength(std::size_t length) { _properties.setLength(length); }
-        void setWidth(std::size_t width) { _properties.setWidth(width); }
-        void setHeight(std::size_t height) { _properties.setHeight(height); }
+        float getLength() const { return _properties.getLength(); }
+        float getWidth() const { return _properties.getWidth(); }
+        float getHeight() const { return _properties.getHeight(); }
+        void setLength(float length) { _properties.setLength(length); }
+        void setWidth(float width) { _properties.setWidth(width); }
+        void setHeight(float height) { _properties.setHeight(height); }
 
         static std::vector<glm::vec3> generateVertices(const RectangleProperties &properties);
         static std::vector<unsigned int> generateIndices();

@@ -13,13 +13,13 @@
 
 class CubeProperties : public AbstractProperties {
 public:
-    CubeProperties() : AbstractProperties() { _size = 1; };
-    explicit CubeProperties(std::size_t size) : AbstractProperties() { _size = size; };
-    explicit CubeProperties(JsonObject *obj) : AbstractProperties(obj) { _size = obj->getInt("size");};
+    CubeProperties() : AbstractProperties() { _size = 1.0; };
+    explicit CubeProperties(float size) : AbstractProperties() { _size = size; };
+    explicit CubeProperties(JsonObject *obj) : AbstractProperties(obj) { _size = obj->getFloat("size");};
     ~CubeProperties() override = default;
-    [[nodiscard]] std::size_t getSize() const { return _size; }
-    [[nodiscard]] std::size_t &getSize() { return _size; }
-    void setSize(std::size_t size) { _size = size; }
+    [[nodiscard]] float getSize() const { return _size; }
+    [[nodiscard]] float &getSize() { return _size; }
+    void setSize(float size) { _size = size; }
 protected:
-    std::size_t _size;
+    float _size;
 };

@@ -174,9 +174,9 @@ Test(SceneParser, Cube)
     cr_assert_eq(cube.getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(cube.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(cube.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
-    cr_assert_eq(cube.getLength(), 1);
-    cr_assert_eq(cube.getWidth(), 1);
-    cr_assert_eq(cube.getHeight(), 1);
+    cr_assert_eq(cube.getLength(), 1.0);
+    cr_assert_eq(cube.getWidth(), 1.0);
+    cr_assert_eq(cube.getHeight(), 1.0);
 }
 
 Test(SceneParser, ParseScene)
