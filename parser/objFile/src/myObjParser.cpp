@@ -7,7 +7,7 @@
 
 #include "../include/myObjParser.hpp"
 
-std::vector<std::string> split(const std::string &s, char delimiter) {
+static std::vector<std::string> split(const std::string &s, char delimiter) {
     std::vector<std::string> tokens;
     std::string token;
     std::istringstream tokenStream(s);
@@ -17,7 +17,7 @@ std::vector<std::string> split(const std::string &s, char delimiter) {
     return tokens;
 }
 
-glm::vec3 parseVec3(const std::string& line) {
+static glm::vec3 parseVec3(const std::string& line) {
     std::istringstream s(line);
     glm::vec3 v;
     s >> v.x >> v.y >> v.z;
@@ -39,7 +39,6 @@ Object *MyObjParser::parseFile(const std::string& filename) {
         std::cerr << "Invalid file format: " << filename << std::endl;
         return nullptr;
     }
-
     if (!file.is_open()) {
         std::cerr << "Failed to open OBJ file: " << filename << std::endl;
         return nullptr;

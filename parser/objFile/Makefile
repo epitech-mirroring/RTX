@@ -1,17 +1,16 @@
 ##
 ## EPITECH PROJECT, 2024
-## Json
+## objParser
 ## File description:
 ## This is the Makefile for the  project
-## (more specifically the JSON library)
+## (more specifically the objParser library)
 ## It job is to compile, clean and tests the project
 ##
 
 # All the source files
 CXX_SOURCES		= 	src/myObjParser.cpp
 
-# CXX_TESTS		=   tests/json_parser.cpp	\
-# 					tests/json_save.cpp		\
+CXX_TESTS		= 
 
 # Compiler and linker settings
 NAME 			= 	libobjParser.so
