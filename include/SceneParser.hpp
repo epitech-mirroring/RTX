@@ -17,7 +17,7 @@ class SceneParser {
         SceneParser();
         explicit SceneParser(std::string &path, PropertiesFactory &propertiesFactory, ObjectsFactory &objectsFactory);
         ~SceneParser() = default;
-        void setPath(std::string path);
+        void setPath(std::string &path);
         void parse();
         [[nodiscard]] Scene &getScene();
         [[nodiscard]] Scene getScene() const;

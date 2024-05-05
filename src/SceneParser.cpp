@@ -30,7 +30,7 @@ SceneParser::SceneParser(std::string &path, PropertiesFactory &propertiesFactory
     this->_path = path;
 }
 
-void SceneParser::setPath(std::string path)
+void SceneParser::setPath(std::string &path)
 {
     if (path.substr(path.find_last_of('.') + 1) != "json") {
         path = "";

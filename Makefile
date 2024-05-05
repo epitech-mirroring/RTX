@@ -36,7 +36,7 @@ LIBS			=   libs/json/libjson.so
 NAME 			= 	raytracer
 CXX				= 	g++
 GLSLC			=	$(shell which glslc)
-CXXFLAGS		= 	-g -W -Wall -Wextra -std=c++20 --coverage -I./include  \
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include  \
 				 	-L. -ljson -lglfw -lvulkan -ldl -lpthread -lX11
 MACOS_FLAGS		= 	-rpath /usr/local/lib/
 LINUX_FLAGS		=

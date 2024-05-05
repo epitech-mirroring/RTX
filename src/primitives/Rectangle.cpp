@@ -10,11 +10,11 @@
 #include <utility>
 #include <iostream>
 
-static std::vector<Triangle> generateTriangles(const RectangleProperties &properties)
+static std::vector<Triangle> generateTriangles(float length, float width, float height)
 {
-    float offsetX = (float) properties.getLength() / 2.f;
-    float offsetY = (float) properties.getHeight() / 2.f;
-    float offsetZ = (float) properties.getWidth() / 2.f;
+    float offsetX = length / 2.f;
+    float offsetY = height / 2.f;
+    float offsetZ = width / 2.f;
     std::vector<Triangle> triangles;
     Triangle triangle{};
 
@@ -128,12 +128,12 @@ Rectangle::Rectangle()
     _properties = RectangleProperties();
 }
 
-Rectangle::Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, float length, float width, float height) : Object(material, transform, generateTriangles(RectangleProperties(length, width, height)), textures)
+Rectangle::Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, float length, float width, float height) : Object(material, transform, generateTriangles(length, width, height), textures)
 {
     _properties = RectangleProperties(length, width, height);
 }
 
-Rectangle::Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const RectangleProperties & properties) : Object(material, transform, generateTriangles(properties), textures)
+Rectangle::Rectangle(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const RectangleProperties & properties) : Object(material, transform, generateTriangles(properties.getLength(), properties.getWidth(), properties.getHeight()), textures)
 {
     _properties = properties;
 }
@@ -146,13 +146,13 @@ Rectangle::Rectangle(const Rectangle &other)
 Rectangle::Rectangle(JsonObject *obj)
 {
     _properties = RectangleProperties(obj);
-    _triangles = generateTriangles(_properties);
+    _triangles = generateTriangles(_properties.getLength(), _properties.getWidth(), _properties.getHeight());
 }
 
 Rectangle::Rectangle(RectangleProperties &properties): Object(properties)
 {
     _properties = properties;
-    _triangles = generateTriangles(properties);
+    _triangles = generateTriangles(properties.getLength(), properties.getWidth(), properties.getHeight());
 }
 
 RectangleProperties Rectangle::getProperties() const {
