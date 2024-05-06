@@ -1249,6 +1249,7 @@ void Application::updateUniformBuffer(uint32_t currentImage)
         }
     }
     memcpy(_triangleBuffersMapped[currentImage], _triangles.data(), sizeof(Triangle) * _numTriangles);
+
     memcpy(_meshBuffersMapped[currentImage], _meshes.data(), sizeof(Mesh) * _numMeshes);
     _sceneChanged = false;
 }
