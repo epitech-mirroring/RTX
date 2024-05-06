@@ -116,3 +116,4 @@ vgcore*
 node_modules/
 *.lockb
 .vscode/
+*.spv

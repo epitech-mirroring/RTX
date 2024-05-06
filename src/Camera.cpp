@@ -99,3 +99,10 @@ void Camera::setTransform(const Transform& transform)
 {
     this->_transform = transform;
 }
+
+glm::vec3 Camera::getViewParams() const
+{
+    double planeHeight = this->_near * tan(DEG_TO_RAD(this->_fov * 0.5f)) * 2.0f;
+    double planeWidth = planeHeight * this->_aspect;
+    return {planeWidth, planeHeight, this->_near};
+}

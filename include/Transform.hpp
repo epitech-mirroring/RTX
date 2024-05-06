@@ -7,8 +7,10 @@
 */
 
 #pragma once
+#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "json/Json.hpp"
 #include "GlmParser.hpp"
 
@@ -40,7 +42,7 @@ public:
     void rotate(const glm::dquat &rotation);
     void scale(const glm::vec3 &scale);
     void translate(float x, float y, float z);
-    void rotate(float x, float y, float z);
+    void rotate(const glm::vec3 &axis, float angle);
     void scale(float x, float y, float z);
 
     [[nodiscard]] glm::mat4 getTranslationMatrix() const;
