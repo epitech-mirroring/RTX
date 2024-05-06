@@ -23,8 +23,8 @@ public:
 
     [[nodiscard]] CubeProperties getProperties() const;
     [[nodiscard]] CubeProperties &getProperties();
-    float getSize() const { return _properties.getSize(); }
-    float &getSize() { return _properties.getSize(); }
+    float getSize() const;
+    float &getSize();
 protected:
     CubeProperties _properties{};
 };

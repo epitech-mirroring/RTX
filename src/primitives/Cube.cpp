@@ -88,3 +88,13 @@ CubeProperties &Cube::getProperties()
 {
     return _properties;
 }
+
+float &Cube::getSize()
+{
+    return _properties.getSize();
+}
+
+float Cube::getSize() const
+{
+    return _properties.getSize();
+}

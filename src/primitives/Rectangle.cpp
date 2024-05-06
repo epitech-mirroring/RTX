@@ -22,102 +22,102 @@ static std::vector<Triangle> generateTriangles(float length, float width, float 
     triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
     triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
     triangle.v2 = glm::vec3(offsetX, offsetY, -offsetZ);
-    triangle.normalV0 = {0, 0, -1};
-    triangle.normalV1 = {0, 0, -1};
-    triangle.normalV2 = {0, 0, -1};
+    triangle.normalV0 = {0.0f, 0.0f, -1.0f};
+    triangle.normalV1 = {0.0f, 0.0f, -1.0f};
+    triangle.normalV2 = {0.0f, 0.0f, -1.0f};
     triangles.push_back(triangle);
 
     triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
     triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
     triangle.v2 = glm::vec3(offsetX, -offsetY, -offsetZ);
-    triangle.normalV0 = {0, 0, -1};
-    triangle.normalV1 = {0, 0, -1};
-    triangle.normalV2 = {0, 0, -1};
+    triangle.normalV0 = {0.0f, 0.0f, -1.0f};
+    triangle.normalV1 = {0.0f, 0.0f, -1.0f};
+    triangle.normalV2 = {0.0f, 0.0f, -1.0f};
     triangles.push_back(triangle);
 
     //right
     triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
     triangle.v1 = glm::vec3(offsetX, offsetY, -offsetZ);
     triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {1, 0, 0};
-    triangle.normalV1 = {1, 0, 0};
-    triangle.normalV2 = {1, 0, 0};
+    triangle.normalV0 = {1.0f, 0.0f, 0.0f};
+    triangle.normalV1 = {1.0f, 0.0f, 0.0f};
+    triangle.normalV2 = {1.0f, 0.0f, 0.0f};
     triangles.push_back(triangle);
 
     triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
     triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
     triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {1, 0, 0};
-    triangle.normalV1 = {1, 0, 0};
-    triangle.normalV2 = {1, 0, 0};
+    triangle.normalV0 = {1.0f, 0.0f, 0.0f};
+    triangle.normalV1 = {1.0f, 0.0f, 0.0f};
+    triangle.normalV2 = {1.0f, 0.0f, 0.0f};
     triangles.push_back(triangle);
 
     //back
     triangle.v0 = glm::vec3(offsetX, -offsetY, offsetZ);
     triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
     triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {0, 0, 1};
-    triangle.normalV1 = {0, 0, 1};
-    triangle.normalV2 = {0, 0, 1};
+    triangle.normalV0 = {0.0f, 0.0f, 1.0f};
+    triangle.normalV1 = {0.0f, 0.0f, 1.0f};
+    triangle.normalV2 = {0.0f, 0.0f, 1.0f};
     triangles.push_back(triangle);
 
     triangle.v0 = glm::vec3(-offsetX, -offsetY, offsetZ);
     triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
     triangle.v2 = glm::vec3(-offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {0, 0, 1};
-    triangle.normalV1 = {0, 0, 1};
-    triangle.normalV2 = {0, 0, 1};
+    triangle.normalV0 = {0.0f, 0.0f, 1.0f};
+    triangle.normalV1 = {0.0f, 0.0f, 1.0f};
+    triangle.normalV2 = {0.0f, 0.0f, 1.0f};
     triangles.push_back(triangle);
 
     //left
     triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
     triangle.v1 = glm::vec3(-offsetX, -offsetY, -offsetZ);
     triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {-1, 0, 0};
-    triangle.normalV1 = {-1, 0, 0};
-    triangle.normalV2 = {-1, 0, 0};
+    triangle.normalV0 = {-1.0f, 0.0f, 0.0f};
+    triangle.normalV1 = {-1.0f, 0.0f, 0.0f};
+    triangle.normalV2 = {-1.0f, 0.0f, 0.0f};
     triangles.push_back(triangle);
 
     triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
     triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
     triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {-1, 0, 0};
-    triangle.normalV1 = {-1, 0, 0};
-    triangle.normalV2 = {-1, 0, 0};
+    triangle.normalV0 = {-1.0f, 0.0f, 0.0f};
+    triangle.normalV1 = {-1.0f, 0.0f, 0.0f};
+    triangle.normalV2 = {-1.0f, 0.0f, 0.0f};
     triangles.push_back(triangle);
 
     //top
     triangle.v0 = glm::vec3(offsetX, offsetY, -offsetZ);
     triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
     triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {0, 1, 0};
-    triangle.normalV1 = {0, 1, 0};
-    triangle.normalV2 = {0, 1, 0};
+    triangle.normalV0 = {0.0f, 1.0f, 0.0f};
+    triangle.normalV1 = {0.0f, 1.0f, 0.0f};
+    triangle.normalV2 = {0.0f, 1.0f, 0.0f};
     triangles.push_back(triangle);
 
     triangle.v0 = glm::vec3(-offsetX, offsetY, -offsetZ);
     triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
     triangle.v2 = glm::vec3(-offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {0, 1, 0};
-    triangle.normalV1 = {0, 1, 0};
-    triangle.normalV2 = {0, 1, 0};
+    triangle.normalV0 = {0.0f, 1.0f, 0.0f};
+    triangle.normalV1 = {0.0f, 1.0f, 0.0f};
+    triangle.normalV2 = {0.0f, 1.0f, 0.0f};
     triangles.push_back(triangle);
 
     //bottom
     triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
     triangle.v1 = glm::vec3(offsetX, -offsetY, offsetZ);
     triangle.v2 = glm::vec3(-offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {0, 1, 0};
-    triangle.normalV1 = {0, 1, 0};
-    triangle.normalV2 = {0, 1, 0};
+    triangle.normalV0 = {0.0f, 1.0f, 0.0f};
+    triangle.normalV1 = {0.0f, 1.0f, 0.0f};
+    triangle.normalV2 = {0.0f, 1.0f, 0.0f};
     triangles.emplace_back(triangle);
 
     triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
     triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
     triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {0, -1, 0};
-    triangle.normalV1 = {0, -1, 0};
-    triangle.normalV2 = {0, -1, 0};
+    triangle.normalV0 = {0.0f, -1.0f, 0.0f};
+    triangle.normalV1 = {0.0f, -1.0f, 0.0f};
+    triangle.normalV2 = {0.0f, -1.0f, 0.0f};
     triangles.push_back(triangle);
 
     return triangles;
@@ -138,8 +138,8 @@ Rectangle::Rectangle(const Material& material, const Transform& transform, const
     _properties = properties;
 }
 
-Rectangle::Rectangle(const Rectangle &other)
- : Object(other) {
+Rectangle::Rectangle(const Rectangle &other) : Object(other)
+{
     _properties = other._properties;
 }
 
@@ -149,13 +149,14 @@ Rectangle::Rectangle(JsonObject *obj)
     _triangles = generateTriangles(_properties.getLength(), _properties.getWidth(), _properties.getHeight());
 }
 
-Rectangle::Rectangle(RectangleProperties &properties): Object(properties)
+Rectangle::Rectangle(RectangleProperties &properties) : Object(properties)
 {
     _properties = properties;
     _triangles = generateTriangles(properties.getLength(), properties.getWidth(), properties.getHeight());
 }
 
-RectangleProperties Rectangle::getProperties() const {
+RectangleProperties Rectangle::getProperties() const
+{
     return _properties;
 }
 
