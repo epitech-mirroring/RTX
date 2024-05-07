@@ -18,7 +18,7 @@
 #include "Material.hpp"
 #include "Transform.hpp"
 
-class abstractParser {
+class AbstractParser {
     public:
         virtual Object *parseFile(const std::string& filename) = 0;
         virtual void parseVertices(const std::string& line) = 0;

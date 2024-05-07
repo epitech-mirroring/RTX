@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "abstractParser.hpp"
+#include "AbstractParser.hpp"
 
 // will be used to store every data related to the texture
 
@@ -23,7 +23,7 @@ struct objMaterial {
     int illuminationModel;
 };
 
-class objParser : public abstractParser {
+class objParser : public AbstractParser {
     public:
         Object *parseFile(const std::string& filename);
         void parseVertices(const std::string& line);
