@@ -8,14 +8,14 @@
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/objParser.cpp
+CXX_SOURCES		= 	src/objParser.cpp 		\
 
-CXX_TESTS		= 
+CXX_TESTS		=
 
 # Compiler and linker settings
 NAME 			= 	libobj.so
 CXX				= 	g++
-CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I../../include -fPIC 
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I../../include -I./include -fPIC 
 LDFLAGS			= 	-shared
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
@@ -40,6 +40,7 @@ SKIPPED = [$(MAGENTA)@$(RESET)]
 
 all:
 # Check if $(NAME) is up to date
+	@make ../../libs/json/libjson.so
 	@HAS_NEWER_SOURCE=0; \
 	for file in $(CXX_SOURCES); do \
 		if [ "$$file" -nt "$(NAME)" ]; then \
@@ -120,87 +121,88 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 		@$(CXX) -o $@ -c $< $(CXXFLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"
 
-tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
-	@printf "$(RUNNING) $(BLUE) 🔗   Linking for $(shell uname -m)\
- architecture$(RESET)";
-	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \
-	$(CXX_TESTS_OBJS) $(CXXFLAGS) \
-	$(shell [ `uname -m` != "arm64" ]	\
-	&& echo "-lcriterion" \
-	|| echo "-lcriterion") >> $(LOG) 2>&1 \
-	&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n";
-	@printf "$(RUNNING)$(MAGENTA)  ⚗️    Running tests$(RESET)" \
-	&& ./tests.out --xml=criterion.xml --ignore-warnings >> tests.log 2>&1 \
-	&& printf "\r$(SUCCESS)\n" \
-	|| (printf "\r$(FAILURE)\n" && cat tests.log && exit 1);
-	@cat tests.log;
-	@printf "$(RUNNING)$(YELLOW)  📊   Generating coverage$(RESET)" \
-	&& gcovr --exclude tests/ >> coverage.log 2>&1 \
-	&& printf "\r$(SUCCESS)\n" \
-	|| printf "\r$(FAILURE)\n";
-	@cat coverage.log;
+# tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
+# 	@printf "$(RUNNING) $(BLUE) 🔗   Linking for $(shell uname -m)\
+#  architecture$(RESET)"; \
+#  	printf "running : $(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) $(CXX_TESTS_OBJS) $(CXXFLAGS)";
+# 	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \
+# 	$(CXX_TESTS_OBJS) $(CXXFLAGS) \
+# 	$(shell [ `uname -m` != "arm64" ]	\
+# 	&& echo "-lcriterion" \
+# 	|| echo "-lcriterion") >> $(LOG) 2>&1 \
+# 	&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n";
+# 	@printf "$(RUNNING)$(MAGENTA)  ⚗️    Running tests$(RESET)" \
+# 	&& ./tests.out --xml=criterion.xml --ignore-warnings >> tests.log 2>&1 \
+# 	&& printf "\r$(SUCCESS)\n" \
+# 	|| (printf "\r$(FAILURE)\n" && cat tests.log && exit 1);
+# 	@cat tests.log;
+# 	@printf "$(RUNNING)$(YELLOW)  📊   Generating coverage$(RESET)" \
+# 	&& gcovr --exclude tests/ >> coverage.log 2>&1 \
+# 	&& printf "\r$(SUCCESS)\n" \
+# 	|| printf "\r$(FAILURE)\n";
+# 	@cat coverage.log;
 
-clean_test:
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting tests.out$(RESET)"
-	@if [ -f tests.out ]; then \
-		rm -f tests.out >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting coverage$(RESET)"
-	@if [ -f coverage* ]; then \
-		rm -f coverage* >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting *.gcda$(RESET)"
-	@if [ -n "$$(find ./ -name "*.gcda")" ]; then \
-		find ./ -name "*.gcda" -delete >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting *.gcno$(RESET)"
-	@if [ -n "$$(find ./ -name "*.gcno")" ]; then \
-		find ./ -name "*.gcno" -delete >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting criterion.xml$(RESET)"
-	@if [ -f criterion.xml ]; then \
-		rm -f criterion.xml >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting tests.log$(RESET)"
-	@if [ -f tests.log ]; then \
-		rm -f tests.log >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting coverage.log$(RESET)"
-	@if [ -f coverage.log ]; then \
-		rm -f coverage.log >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting .cache/$(RESET)"
-	@if [ -d .cache/ ]; then \
-		rm -rf .cache >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
-	@printf "$(RUNNING) $(RED) 🗑️    Deleting .local/$(RESET)"
-	@if [ -d .local/ ]; then \
-		rm -rf .local >> $(LOG) 2>&1 \
-		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
-	else \
-		printf "\r$(SKIPPED)\n"; \
-	fi
+# clean_test:
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting tests.out$(RESET)"
+# 	@if [ -f tests.out ]; then \
+# 		rm -f tests.out >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting coverage$(RESET)"
+# 	@if [ -f coverage* ]; then \
+# 		rm -f coverage* >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting *.gcda$(RESET)"
+# 	@if [ -n "$$(find ./ -name "*.gcda")" ]; then \
+# 		find ./ -name "*.gcda" -delete >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting *.gcno$(RESET)"
+# 	@if [ -n "$$(find ./ -name "*.gcno")" ]; then \
+# 		find ./ -name "*.gcno" -delete >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting criterion.xml$(RESET)"
+# 	@if [ -f criterion.xml ]; then \
+# 		rm -f criterion.xml >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting tests.log$(RESET)"
+# 	@if [ -f tests.log ]; then \
+# 		rm -f tests.log >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting coverage.log$(RESET)"
+# 	@if [ -f coverage.log ]; then \
+# 		rm -f coverage.log >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting .cache/$(RESET)"
+# 	@if [ -d .cache/ ]; then \
+# 		rm -rf .cache >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi
+# 	@printf "$(RUNNING) $(RED) 🗑️    Deleting .local/$(RESET)"
+# 	@if [ -d .local/ ]; then \
+# 		rm -rf .local >> $(LOG) 2>&1 \
+# 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"; \
+# 	else \
+# 		printf "\r$(SKIPPED)\n"; \
+# 	fi

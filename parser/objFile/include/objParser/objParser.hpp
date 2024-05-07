@@ -5,6 +5,9 @@
 ** objParser
 */
 
+
+#pragma once
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -13,8 +16,8 @@
 #include <unordered_map>
 #include <algorithm>
 #include "Object.hpp"
-
-#pragma once
+#include "Material.hpp"
+#include "Transform.hpp"
 
 // will be used to store every data related to the texture
 

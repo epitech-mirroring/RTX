@@ -5,7 +5,7 @@
 ** objParser
 */
 
-#include "../include/objParser.hpp"
+#include "objParser/objParser.hpp"
 
 static std::vector<std::string> split(const std::string &s, char delimiter) {
     std::vector<std::string> tokens;
