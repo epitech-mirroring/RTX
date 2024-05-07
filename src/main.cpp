@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     propertiesFactory.registerProperties("sphere", [](JsonObject *obj) {
         return new SphereProperties(obj);
     });
-    objectsFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object * {
+    objectsFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object *{
         return new Sphere(dynamic_cast<SphereProperties &>(properties));
     });
     SceneParser parser(filename, propertiesFactory, objectsFactory);

@@ -135,14 +135,12 @@ Hit ComputeHit(Ray ray) {
         }
 
         for (uint j = mesh.startIdx; j < mesh.endIdx; j++) {
-//            if (j == 0) {
                 Triangle tri = iTriangles[j];
                 Hit hit = RayTriangle(ray, tri);
                 if (hit.hit && hit.distance < closestHit.distance) {
                     closestHit = hit;
                     break;
                 }
-//            }
         }
     }
     for (uint i = 0; i < iNumSpheres; i++) {

@@ -25,7 +25,7 @@ Sphere::Sphere(const Material& material, const Transform& transform, const std::
     _properties = properties;
 }
 
-Sphere::Sphere(const Sphere &other)  : Object(other) {
+Sphere::Sphere(const Sphere &other) : Object(other) {
     _properties = other._properties;
 }
 
@@ -35,7 +35,7 @@ Sphere::Sphere(JsonObject *obj)
     _triangles = Sphere::generateVertices(_properties);
 }
 
-Sphere::Sphere(SphereProperties &properties): Object(properties)
+Sphere::Sphere(SphereProperties &properties) : Object(properties)
 {
     _properties = properties;
     _triangles = Sphere::generateVertices(properties);
@@ -56,16 +56,14 @@ void Sphere::setProperties(const SphereProperties &properties)
 }
 
 std::vector<Triangle> Sphere::generateVertices(const SphereProperties &properties) {
-//    std::vector<glm::vec3> vertices;
     float r = properties.getRadius();
     float j = -r + (float)sqrt(2 * pow(r, 2) * 3);
     float topY = r - j;
     float bottomY = -topY;
     float theta = 2 * M_PI / 5;
-    glm::vec3 top = {0, -r, 0};
-    glm::vec3 bottom = {0, r, 0};
+    glm::vec3 top = {0.0f, -r, 0.0f};
+    glm::vec3 bottom = {0.0f, r, 0.0f};
     std::vector<glm::vec3> vertices;
-
 
     vertices.push_back(top);
     for (std::size_t i = 0; i < 5; i++) {
@@ -115,7 +113,7 @@ std::vector<Triangle> Sphere::duplicateTriangles(std::vector<Triangle>& triangle
     std::vector<glm::vec3> newTriangle;
     std::vector<Triangle> vertex;
 
-    for (std::size_t j = 0; j < 3; j++) {
+    for (std::size_t j = 0; j < 4; j++) {
         vertex.clear();
         for (auto &triangle : triangles) {
             glm::vec3 h1 = getMiddle(triangle.v0, triangle.v1);
@@ -134,7 +132,7 @@ std::vector<Triangle> Sphere::duplicateTriangles(std::vector<Triangle>& triangle
         triangle.v1 = glm::normalize(triangle.v1) * radius;
         triangle.v2 = glm::normalize(triangle.v2) * radius;
     }
-    for (auto & t : triangles) {
+    for (auto &t : triangles) {
         t.normalV0 = glm::normalize(t.v0);
         t.normalV1 = glm::normalize(t.v1);
         t.normalV2 = glm::normalize(t.v2);

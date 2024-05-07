@@ -14,7 +14,7 @@
 
 class SphereProperties : public AbstractProperties {
     public:
-        SphereProperties() : AbstractProperties() { _radius = 1; };
+        SphereProperties() : AbstractProperties() { _radius = 1.0f; };
         explicit SphereProperties(float radius) : AbstractProperties() { _radius = radius;};
         explicit SphereProperties(JsonObject *obj) : AbstractProperties(obj) { _radius = (float)obj->getFloat("radius"); };
         ~SphereProperties() override = default;
