@@ -10,7 +10,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 *.gch
 *.pch
 *.so
