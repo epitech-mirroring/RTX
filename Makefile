@@ -35,6 +35,7 @@ LIBS			=   libs/json/libjson.so
 NAME 			= 	raytracer
 CXX				= 	g++
 GLSLC			=	$(shell which glslc)
+GLSL_FLAGS		=   -O
 CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include  \
 				 	-L. -ljson -lglfw -lvulkan -ldl -lpthread -lX11 -O3
 MACOS_FLAGS		= 	-rpath /usr/local/lib/
@@ -176,13 +177,13 @@ clean: clean_libs
 
 %.spv: 	%.frag
 		@printf "$(RUNNING) $(BLUE) 🪄   Compiling $<$(RESET)"
-		@$(GLSLC) $< -o $@ >> $(LOG) 2>&1 \
+		@$(GLSLC) $< -o $@ $(GLSL_FLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
 		&& exit 1)
 
 %.spv: 	%.vert
 		@printf "$(RUNNING) $(BLUE) 🪄   Compiling $<$(RESET)"
-		@$(GLSLC) $< -o $@ >> $(LOG) 2>&1 \
+		@$(GLSLC) $< -o $@ $(GLSL_FLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
 		&& exit 1)
 

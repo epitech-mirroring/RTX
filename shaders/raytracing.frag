@@ -39,31 +39,26 @@ struct Mesh {
 struct Sphere {
     vec3 center;
     float radius;
+    Material material;
 };
 uint iNumSpheres;
 Sphere iSpheres[50];
 
 layout(binding = 1) uniform Scene {
-    readonly uint iNumMeshes;
-    readonly uint iNumTriangles;
-    readonly uint iSceneChanged;
-    readonly uint iSkyboxEnabled;
+    uint iNumMeshes;
+    uint iNumTriangles;
+    uint iSceneChanged;
+    uint iSkyboxEnabled;
 };
 
 layout(binding = 2) buffer Triangles {
-    readonly Triangle iTriangles[];
+    Triangle iTriangles[];
 };
 
 layout(binding = 3) buffer Meshes {
-    readonly Mesh iMeshes[];
+    Mesh iMeshes[];
 };
 
-#define MAX_SHARED_MESHES 50
-#define MAX_SHARED_TRIANGLES 1000
-shared Mesh sharedMeshes[MAX_SHARED_MESHES];
-shared Triangle sharedTriangles[MAX_SHARED_TRIANGLES];
-bool hashAllMeshesShared = MAX_SHARED_MESHES >= iNumMeshes;
-bool hashAllTrianglesShared = MAX_SHARED_TRIANGLES >= iNumTriangles;
 
 struct Ray {
     vec3 origin;
@@ -169,23 +164,13 @@ Hit computeHit(Ray ray) {
     closestHit.distance = 1E6;
 
     for (uint i = 0; i < iNumMeshes; i++) {
-        Mesh mesh;
-        if (hashAllMeshesShared && i < MAX_SHARED_MESHES) {
-            mesh = sharedMeshes[i];
-        } else {
-            mesh = iMeshes[i];
-        }
+        Mesh mesh = iMeshes[i];
         if (!isRayBoundingBoxIntersect(ray, mesh.boundingBoxMin, mesh.boundingBoxMax)) {
             continue;
         }
 
         for (uint j = mesh.startIdx; j < mesh.endIdx; j++) {
-            Triangle tri;
-            if (hashAllTrianglesShared && j < MAX_SHARED_TRIANGLES) {
-                tri = sharedTriangles[j];
-            } else {
-                tri = iTriangles[j];
-            }
+            Triangle tri = iTriangles[j];
             Hit hit = rayTriangle(ray, tri);
             if (hit.hit && hit.distance < closestHit.distance) {
                 closestHit = hit;
@@ -199,6 +184,7 @@ Hit computeHit(Ray ray) {
         Hit hit = raySphere(ray, sphere);
         if (hit.hit && hit.distance < closestHit.distance) {
             closestHit = hit;
+            closestHit.material = sphere.material;
         }
     }
     return closestHit;
@@ -270,15 +256,7 @@ void main() {
     iNumSpheres = 0;
 
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
-    uint numRaysPerPixel = 20;
-
-    for (uint i = 0; i < MAX_SHARED_MESHES; i++) {
-        sharedMeshes[i] = iMeshes[i];
-    }
-
-    for (uint i = 0; i < MAX_SHARED_TRIANGLES; i++) {
-        sharedTriangles[i] = iTriangles[i];
-    }
+    uint numRaysPerPixel = 10;
 
     for (uint i = 0; i < numRaysPerPixel; i++) {
         incomingLight += raytrace(ray, seed);
