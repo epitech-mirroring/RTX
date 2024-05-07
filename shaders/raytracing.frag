@@ -136,6 +136,7 @@ Hit ComputeHit(Ray ray) {
 
         for (uint j = mesh.startIdx; j < mesh.endIdx; j++) {
             Triangle tri = iTriangles[j];
+            Hit hit = RayTriangle(ray, tri);
             if (hit.hit && hit.distance < closestHit.distance) {
                 closestHit = hit;
                 break;
