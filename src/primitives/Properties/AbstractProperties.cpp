@@ -7,7 +7,6 @@
 */
 
 #include "primitives/Properties/AbstractProperties.hpp"
-
 #include <utility>
 
 AbstractProperties::AbstractProperties()
