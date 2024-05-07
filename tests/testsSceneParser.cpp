@@ -11,6 +11,7 @@
 #include "SceneParser.hpp"
 #include "primitives/Cube.hpp"
 #include "primitives/Sphere.hpp"
+#include "primitives/Rectangle.hpp"
 
 Test(SceneParser, Color)
 {
@@ -225,5 +226,6 @@ Test(SceneParser, ParseSphere)
     cr_assert_eq(sphere.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(sphere.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
     cr_assert_eq(sphere.getProperties().getRadius() , 10.0);
+    std::cout << sphere.getTriangles().size() << std::endl;
     cr_assert_eq(sphere.getTriangles().size(), 1280);
 }

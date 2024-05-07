@@ -113,7 +113,7 @@ std::vector<Triangle> Sphere::duplicateTriangles(std::vector<Triangle>& triangle
     std::vector<glm::vec3> newTriangle;
     std::vector<Triangle> vertex;
 
-    for (std::size_t j = 0; j < 4; j++) {
+    for (std::size_t j = 0; j < 3; j++) {
         vertex.clear();
         for (auto &triangle : triangles) {
             glm::vec3 h1 = getMiddle(triangle.v0, triangle.v1);
