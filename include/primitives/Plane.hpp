@@ -15,10 +15,11 @@ class Plane : public Object {
 public:
     Plane();
     explicit Plane(PlaneProperties *properties);
+    Plane(const Material &material, const Transform &transform, const std::vector<Texture> &textures, float height, float width);
     ~Plane() override = default;
-    void setProperties(PlaneProperties *properties);
     [[nodiscard]] PlaneProperties *getProperties() const;
     [[nodiscard]] PlaneProperties *getProperties();
+    void setProperties(PlaneProperties *properties);
 protected:
-    PlaneProperties *_properties;
+    PlaneProperties *_properties{};
 };

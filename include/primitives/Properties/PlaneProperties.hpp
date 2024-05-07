@@ -14,12 +14,16 @@
 class PlaneProperties : public AbstractProperties {
 public:
     PlaneProperties();
-    explicit PlaneProperties(glm::vec3 axes);
+    explicit PlaneProperties(float height, float width);
     explicit PlaneProperties(JsonObject *obj);
     ~PlaneProperties() override = default;
-    [[nodiscard]] glm::vec3 getAxes() const;
-    [[nodiscard]] glm::vec3 &getAxes();
-    void setAxes(glm::vec3 size);
+    float getHeight() const;
+    float &getHeight();
+    float getWidth() const;
+    float &getWidth();
+    void setHeight(float height);
+    void setWidth(float width);
 protected:
-    glm::vec3 _axes{};
+    float _height;
+    float _width;
 };

@@ -10,31 +10,47 @@
 
 PlaneProperties::PlaneProperties()
 {
-    _axes = glm::vec3(1.0f, 1.0f, 1.0f);
+    _height = 0.0f;
+    _width = 0.0f;
 }
 
-PlaneProperties::PlaneProperties(glm::vec3 axes)
+PlaneProperties::PlaneProperties(const float height, const float width)
 {
-    _axes = axes;
+    _height = height;
+    _width = width;
 }
 
 PlaneProperties::PlaneProperties(JsonObject *obj) {
-    _axes.x = obj->getFloat("axes_x");
-    _axes.y = obj->getFloat("axes_y");
-    _axes.z = obj->getFloat("axes_z");
+    _height = obj->getFloat("height");
+    _width = obj->getFloat("width");
 }
 
-glm::vec3 &PlaneProperties::getAxes()
+float PlaneProperties::getHeight() const
 {
-    return _axes;
+    return _height;
 }
 
-glm::vec3 PlaneProperties::getAxes() const
+float &PlaneProperties::getHeight()
 {
-    return _axes;
+    return _height;
 }
 
-void PlaneProperties::setAxes(glm::vec3 axes)
+float PlaneProperties::getWidth() const
 {
-    _axes = axes;
+    return _width;
+}
+
+float &PlaneProperties::getWidth()
+{
+    return _width;
+}
+
+void PlaneProperties::setHeight(float height)
+{
+    _height = height;
+}
+
+void PlaneProperties::setWidth(float width)
+{
+    _width = width;
 }
