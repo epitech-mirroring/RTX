@@ -30,7 +30,7 @@ CXX_TESTS		=	tests/testsMaterial.cpp								\
 					tests/testsSceneParser.cpp							\
 
 LIBS			=   libs/json/libjson.so								\
-					parser/objFile/libobj.so						
+					parser/objFile/libobj.so
 
 # Compiler and linker settings
 NAME 			= 	raytracer

@@ -15,7 +15,8 @@ CXX_TESTS		=
 # Compiler and linker settings
 NAME 			= 	libobj.so
 CXX				= 	g++
-CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I../../include -I./include -fPIC 
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I../../include \
+					-I./include -fPIC
 LDFLAGS			= 	-shared
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
@@ -124,7 +125,6 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 # tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
 # 	@printf "$(RUNNING) $(BLUE) 🔗   Linking for $(shell uname -m)\
 #  architecture$(RESET)"; \
-#  	printf "running : $(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) $(CXX_TESTS_OBJS) $(CXXFLAGS)";
 # 	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \
 # 	$(CXX_TESTS_OBJS) $(CXXFLAGS) \
 # 	$(shell [ `uname -m` != "arm64" ]	\
