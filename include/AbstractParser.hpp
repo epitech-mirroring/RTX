@@ -24,5 +24,5 @@ class AbstractParser {
         virtual void parseVertices(const std::string& line) = 0;
         virtual void parseNormals(const std::string& line) = 0;
         virtual void parseFaces(const std::string& line) = 0;
-        ~AbstractParser() = default;
+        virtual ~AbstractParser() = default;
 };

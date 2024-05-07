@@ -5,7 +5,7 @@
 ** objParser
 */
 
-#include "objParser/objParser.hpp"
+#include "objParser/ObjParser.hpp"
 
 static std::vector<std::string> split(const std::string &s, char delimiter) {
     std::vector<std::string> tokens;
@@ -24,19 +24,19 @@ static glm::vec3 parseVec3(const std::string& line) {
     return v;
 }
 
-void objParser::parseVertices(const std::string& line)
+void ObjParser::parseVertices(const std::string& line)
 {
     if (line.substr(0, 2) == "v ")
         verticesBuffer.push_back(parseVec3(line.substr(2)));
 }
 
-void objParser::parseNormals(const std::string& line)
+void ObjParser::parseNormals(const std::string& line)
 {
     if (line.substr(0, 3) == "vn ")
         normalsBuffer.push_back(parseVec3(line.substr(3)));
 }
 
-void objParser::parseFaces(const std::string& line)
+void ObjParser::parseFaces(const std::string& line)
 {
     if (line.substr(0, 2) == "f ") {
         std::vector<std::string> tokens = split(line.substr(2), ' ');
@@ -73,7 +73,7 @@ void objParser::parseFaces(const std::string& line)
     }
 }
 
-Object *objParser::parseFile(const std::string& filename)
+Object *ObjParser::parseFile(const std::string& filename)
 {
     // remain to implement texture
     Transform objTransform;

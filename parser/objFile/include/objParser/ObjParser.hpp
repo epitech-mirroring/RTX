@@ -23,13 +23,13 @@ struct objMaterial {
     int illuminationModel;
 };
 
-class objParser : public AbstractParser {
+class ObjParser : public AbstractParser {
     public:
         Object *parseFile(const std::string& filename) override;
         void parseVertices(const std::string& line) override;
         void parseNormals(const std::string& line) override;
         void parseFaces(const std::string& line) override;
-        ~objParser() = default;
+        ~ObjParser() = default;
     private:
         std::vector<glm::vec3> verticesBuffer;
         std::vector<glm::vec3> normalsBuffer;
