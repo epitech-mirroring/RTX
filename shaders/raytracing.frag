@@ -135,12 +135,11 @@ Hit ComputeHit(Ray ray) {
         }
 
         for (uint j = mesh.startIdx; j < mesh.endIdx; j++) {
-                Triangle tri = iTriangles[j];
-                Hit hit = RayTriangle(ray, tri);
-                if (hit.hit && hit.distance < closestHit.distance) {
-                    closestHit = hit;
-                    break;
-                }
+            Triangle tri = iTriangles[j];
+            if (hit.hit && hit.distance < closestHit.distance) {
+                closestHit = hit;
+                break;
+            }
         }
     }
     for (uint i = 0; i < iNumSpheres; i++) {
@@ -183,5 +182,5 @@ void main() {
     iNumSpheres = 0;
 
     Hit hit = ComputeHit(ray);
-    FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(255.0, 255.0, 255.0, 1.0);
+    FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
 }

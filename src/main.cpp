@@ -35,6 +35,18 @@ int main(int argc, char **argv)
     objectsFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object *{
         return new Sphere(dynamic_cast<SphereProperties &>(properties));
     });
+    propertiesFactory.registerProperties("cube", [](JsonObject *obj) {
+        return new CubeProperties(obj);
+    });
+    objectsFactory.registerObject("cube", [](AbstractProperties &properties) -> Object *{
+        return new Cube(dynamic_cast<CubeProperties &>(properties));
+    });
+    propertiesFactory.registerProperties("rectangle", [](JsonObject *obj) {
+        return new RectangleProperties(obj);
+    });
+    objectsFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object *{
+        return new Rectangle(dynamic_cast<RectangleProperties &>(properties));
+    });
     SceneParser parser(filename, propertiesFactory, objectsFactory);
     parser.parse();
     scene = parser.getScene();
