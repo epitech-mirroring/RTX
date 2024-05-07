@@ -30,7 +30,7 @@ struct Sphere {
     float radius;
 };
 uint iNumSpheres;
-Sphere iSpheres[50];
+Sphere iSpheres[1];
 
 layout(binding = 1) uniform Scene {
     uint iNumMeshes;
@@ -135,12 +135,14 @@ Hit ComputeHit(Ray ray) {
         }
 
         for (uint j = mesh.startIdx; j < mesh.endIdx; j++) {
-            Triangle tri = iTriangles[j];
-            Hit hit = RayTriangle(ray, tri);
-            if (hit.hit && hit.distance < closestHit.distance) {
-                closestHit = hit;
-                break;
-            }
+//            if (j == 0) {
+                Triangle tri = iTriangles[j];
+                Hit hit = RayTriangle(ray, tri);
+                if (hit.hit && hit.distance < closestHit.distance) {
+                    closestHit = hit;
+                    break;
+                }
+//            }
         }
     }
     for (uint i = 0; i < iNumSpheres; i++) {
@@ -181,7 +183,13 @@ void main() {
     ray.direction = normalize(viewPointWorld - iCameraPosition);
 
     iNumSpheres = 0;
+//    for (uint i = 0; i < iNumTriangles; i++) {
+//        Triangle tri = iTriangles[i];
+//        iSpheres[i * 3] = Sphere(tri.a, 0.1);
+//        iSpheres[i * 3 + 1] = Sphere(tri.b, 0.1);
+//        iSpheres[i * 3 + 2] = Sphere(tri.c, 0.1);
+//    }
 
     Hit hit = ComputeHit(ray);
-    FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(0.0, 0.0, 0.0, 1.0);
+    FragColor = hit.hit ? vec4(hit.normal, 1.0) : vec4(255.0, 255.0, 255.0, 1.0);
 }

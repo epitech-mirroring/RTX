@@ -7,7 +7,8 @@
 */
 
 #include "Application.hpp"
-#include "primitives/Cube.hpp"
+#include "SceneParser.hpp"
+#include "primitives/Sphere.hpp"
 #include <iostream>
 
 #define WIDTH 800.0f
@@ -16,20 +17,25 @@
 int main(int argc, char **argv)
 {
     Scene scene;
-    // Camera
-    Transform cameraTransform;
-    cameraTransform.setPosition({0.0f, 0.0f, 5.0f});
-    cameraTransform.rotate({0.0f, -1.0f, 0.0f}, M_PI);
-    Camera camera(cameraTransform, 60.0f, WIDTH / HEIGHT, 0.1f);
-    scene.addCamera(camera);
-
-    // Cube
-    Transform cubeTransform;
-    cubeTransform.setPosition({0.0f, 0.0f, 0.0f});
-    Material cubeMaterial;
-    Cube *cube = new Cube(cubeMaterial, cubeTransform, {}, 1.0f);
-    scene.addObject(cube);
-
+    std::string filename;
+    if (argc > 1) {
+        filename = argv[1];
+    }
+    else {
+        std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
+        return 84;
+    }
+    PropertiesFactory propertiesFactory;
+    ObjectsFactory objectsFactory;
+    propertiesFactory.registerProperties("sphere", [](JsonObject *obj) {
+        return new SphereProperties(obj);
+    });
+    objectsFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object * {
+        return new Sphere(dynamic_cast<SphereProperties &>(properties));
+    });
+    SceneParser parser(filename, propertiesFactory, objectsFactory);
+    parser.parse();
+    scene = parser.getScene();
     Application app(WIDTH, HEIGHT, "RTX", &scene);
 
     app.run([&scene]() {

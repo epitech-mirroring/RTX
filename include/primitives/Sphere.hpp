@@ -14,7 +14,7 @@
 class Sphere : public Object {
     public:
         Sphere();
-        Sphere(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t radius);
+        Sphere(const Material& material, const Transform& transform, const std::vector<Texture>& textures, float radius);
         Sphere(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const SphereProperties& properties);
         Sphere(const Sphere &other);
         explicit Sphere(JsonObject *obj);
@@ -24,7 +24,7 @@ class Sphere : public Object {
         [[nodiscard]] SphereProperties &getProperties();
 
         static std::vector<Triangle> generateVertices(const SphereProperties &properties);
-        static std::vector<Triangle> duplicateTriangles(std::vector<Triangle>& vertex);
+        static std::vector<Triangle> duplicateTriangles(std::vector<Triangle>& vertex, float radius);
     protected:
         SphereProperties _properties;
         void setProperties(const SphereProperties &properties);
