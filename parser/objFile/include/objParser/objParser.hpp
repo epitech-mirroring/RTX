@@ -25,10 +25,10 @@ struct objMaterial {
 
 class objParser : public AbstractParser {
     public:
-        Object *parseFile(const std::string& filename);
-        void parseVertices(const std::string& line);
-        void parseNormals(const std::string& line);
-        void parseFaces(const std::string& line);
+        Object *parseFile(const std::string& filename) override;
+        void parseVertices(const std::string& line) override;
+        void parseNormals(const std::string& line) override;
+        void parseFaces(const std::string& line) override;
     private:
         std::vector<glm::vec3> verticesBuffer;
         std::vector<glm::vec3> normalsBuffer;
