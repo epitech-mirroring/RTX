@@ -8,16 +8,7 @@
 
 #pragma once
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <algorithm>
-#include "Object.hpp"
-#include "Material.hpp"
-#include "Transform.hpp"
+#include "abstractParser.hpp"
 
 // will be used to store every data related to the texture
 
@@ -32,7 +23,7 @@ struct objMaterial {
     int illuminationModel;
 };
 
-class objParser {
+class objParser : public abstractParser {
     public:
         Object *parseFile(const std::string& filename);
         void parseVertices(const std::string& line);
