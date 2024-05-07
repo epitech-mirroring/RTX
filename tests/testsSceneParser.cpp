@@ -9,7 +9,7 @@
 #include <criterion/criterion.h>
 #include <iostream>
 #include "SceneParser.hpp"
-#include "primitives/Cube.hpp"
+#include "primitives/Rectangle.hpp"
 
 Test(SceneParser, Color)
 {
@@ -80,7 +80,6 @@ Test(SceneParser, Transform)
     Transform transform(transformJson);
 
     cr_assert_eq(transform.getPosition(), glm::vec3(1.0, 1.0, 1.0));
-    cr_assert_eq(transform.getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
     cr_assert_eq(transform.getScale(), glm::vec3(1.0, 1.0, 1.0));
 }
 
@@ -95,7 +94,6 @@ Test(SceneParser, Camera)
     cr_assert_eq(camera.getNear(), 2.0);
     cr_assert_eq(camera.getAspect(), 1.0);
     cr_assert_eq(camera.getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
-    cr_assert_eq(camera.getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
     cr_assert_eq(camera.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
 }
 
@@ -130,13 +128,11 @@ Test(SceneParser, Cameras)
     cr_assert_eq(cameras[0].getAspect(), 1.0);
     cr_assert_eq(cameras[0].getNear(), 2.0);
     cr_assert_eq(cameras[0].getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
-    cr_assert_eq(cameras[0].getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
     cr_assert_eq(cameras[0].getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(cameras[1].getFov(), 50.0);
     cr_assert_eq(cameras[1].getAspect(), 3.0);
     cr_assert_eq(cameras[1].getNear(), 3.0);
     cr_assert_eq(cameras[1].getTransform().getPosition(), glm::vec3(3.0, 3.0, 3.0));
-    cr_assert_eq(cameras[1].getTransform().getRotation(), glm::dquat (3.0, 3.0, 3.0, 3.0));
     cr_assert_eq(cameras[1].getTransform().getScale(), glm::vec3(3.0, 3.0, 3.0));
 }
 
@@ -168,18 +164,19 @@ Test(SceneParser, Cube)
     JsonObject root = JsonObject::parseFile(path);
     auto *objectsJson = root.getValue<JsonArray>("objects");
     auto *cubeJson = objectsJson->getValue<JsonObject>(0);
-    auto properties = CubeProperties(cubeJson);
-    Cube cube(properties);
+    auto properties = RectangleProperties(cubeJson);
+    Rectangle cube(properties);
 
     cr_assert_eq(cube.getMaterial().getColor(), glm::vec3(1.0, 0.0, 0.0));
     cr_assert_eq(cube.getMaterial().getEmission(), glm::vec3(0.0, 0.0, 0.0));
     cr_assert_eq(cube.getMaterial().getBrightness(), 0.0);
     cr_assert_eq(cube.getMaterial().getRoughness(), 1.0);
     cr_assert_eq(cube.getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
-    cr_assert_eq(cube.getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
     cr_assert_eq(cube.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(cube.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
-    cr_assert_eq(cube.getProperties().getSize() , 10.0);
+    cr_assert_eq(cube.getLength(), 1.0);
+    cr_assert_eq(cube.getWidth(), 1.0);
+    cr_assert_eq(cube.getHeight(), 1.0);
 }
 
 Test(SceneParser, ParseScene)
@@ -187,8 +184,8 @@ Test(SceneParser, ParseScene)
     std::string path = "scenes/tests/testScene.json";
     PropertiesFactory factory = PropertiesFactory();
     ObjectsFactory objFactory = ObjectsFactory();
-    factory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
-    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
+    factory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
+    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object *{ return new Rectangle(dynamic_cast<RectangleProperties &>(properties)); });
     SceneParser parser = SceneParser(path, factory, objFactory);
     parser.parse();
 
@@ -198,7 +195,6 @@ Test(SceneParser, ParseScene)
     cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getBrightness(), 0.0);
     cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getRoughness(), 1.0);
     cr_assert_eq(parser.getScene().getObjects()[0]->getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
-    cr_assert_eq(parser.getScene().getObjects()[0]->getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
     cr_assert_eq(parser.getScene().getObjects()[0]->getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(parser.getScene().getObjects()[0]->getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
     cr_assert_eq(parser.getScene().getCameras().size(), 2);
@@ -206,12 +202,10 @@ Test(SceneParser, ParseScene)
     cr_assert_eq(parser.getScene().getCameras()[0].getAspect(), 1.0);
     cr_assert_eq(parser.getScene().getCameras()[0].getNear(), 2.0);
     cr_assert_eq(parser.getScene().getCameras()[0].getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
-    cr_assert_eq(parser.getScene().getCameras()[0].getTransform().getRotation(), glm::dquat (1.0, 1.0, 1.0, 1.0));
     cr_assert_eq(parser.getScene().getCameras()[0].getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(parser.getScene().getCameras()[1].getFov(), 50.0);
     cr_assert_eq(parser.getScene().getCameras()[1].getAspect(), 3.0);
     cr_assert_eq(parser.getScene().getCameras()[1].getNear(), 3.0);
     cr_assert_eq(parser.getScene().getCameras()[1].getTransform().getPosition(), glm::vec3(3.0, 3.0, 3.0));
-    cr_assert_eq(parser.getScene().getCameras()[1].getTransform().getRotation(), glm::dquat (3.0, 3.0, 3.0, 3.0));
     cr_assert_eq(parser.getScene().getCameras()[1].getTransform().getScale(), glm::vec3(3.0, 3.0, 3.0));
 }
