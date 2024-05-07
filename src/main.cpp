@@ -9,6 +9,8 @@
 #include "Application.hpp"
 #include "SceneParser.hpp"
 #include "primitives/Sphere.hpp"
+#include "primitives/Cube.hpp"
+#include "primitives/Rectangle.hpp"
 #include <iostream>
 
 #define WIDTH 800.0f
@@ -36,6 +38,7 @@ int main(int argc, char **argv)
     SceneParser parser(filename, propertiesFactory, objectsFactory);
     parser.parse();
     scene = parser.getScene();
+
     Application app(WIDTH, HEIGHT, "RTX", &scene);
 
     app.run([&scene]() {

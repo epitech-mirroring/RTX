@@ -9,7 +9,7 @@
 #include "primitives/Cube.hpp"
 #include <utility>
 
-static std::vector<Triangle> createCubeTriangles(int size)
+static std::vector<Triangle> createCubeTriangles(float size)
 {
     // Triangle struct is
     // vec3 a
@@ -52,7 +52,7 @@ Cube::Cube()
     _properties = CubeProperties();
 }
 
-Cube::Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t size) : Object(material, transform, createCubeTriangles(size), textures)
+Cube::Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, float size) : Object(material, transform, createCubeTriangles(size), textures)
 {
     _properties.setSize(size);
 }
@@ -87,4 +87,14 @@ CubeProperties Cube::getProperties() const {
 CubeProperties &Cube::getProperties()
 {
     return _properties;
+}
+
+float &Cube::getSize()
+{
+    return _properties.getSize();
+}
+
+float Cube::getSize() const
+{
+    return _properties.getSize();
 }
