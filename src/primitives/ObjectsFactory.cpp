@@ -9,7 +9,6 @@
 #include "primitives/ObjectsFactory.hpp"
 #include <stdexcept>
 #include <utility>
-#include "primitives/Cube.hpp"
 
 Object *ObjectsFactory::createObject(const std::string& type, AbstractProperties &properties)
 {
