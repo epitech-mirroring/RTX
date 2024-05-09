@@ -8,9 +8,11 @@
 
 #include "Application.hpp"
 #include "SceneParser.hpp"
+#include "primitives/Sphere.hpp"
 #include "primitives/Cube.hpp"
 #include "primitives/Rectangle.hpp"
 #include "Raytracer.hpp"
+#include "json/Json.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -98,15 +100,27 @@ int main(int argc, char **argv)
         std::cerr << "Missing scene file" << std::endl;
         return 84;
     }
-    checkOverwritingOutput(args.outputPath, args.quiet);
-    ObjectsFactory objFactory = ObjectsFactory();
-    PropertiesFactory propFactory = PropertiesFactory();
-    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
-    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
-    propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
-    propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
-    std::string path = std::string(args.scenePath);
-    SceneParser parser = SceneParser(path, propFactory, objFactory);
+    PropertiesFactory propertiesFactory;
+    ObjectsFactory objectsFactory;
+    propertiesFactory.registerProperties("sphere", [](JsonObject *obj) {
+        return new SphereProperties(obj);
+    });
+    objectsFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object *{
+        return new Sphere(dynamic_cast<SphereProperties &>(properties));
+    });
+    propertiesFactory.registerProperties("cube", [](JsonObject *obj) {
+        return new CubeProperties(obj);
+    });
+    objectsFactory.registerObject("cube", [](AbstractProperties &properties) -> Object *{
+        return new Cube(dynamic_cast<CubeProperties &>(properties));
+    });
+    propertiesFactory.registerProperties("rectangle", [](JsonObject *obj) {
+        return new RectangleProperties(obj);
+    });
+    objectsFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object *{
+        return new Rectangle(dynamic_cast<RectangleProperties &>(properties));
+    });
+    SceneParser parser(args.scenePath, propertiesFactory, objectsFactory);
     parser.parse();
     Scene scene = parser.getScene();
 

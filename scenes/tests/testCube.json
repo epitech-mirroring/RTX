@@ -1,7 +1,7 @@
 {
     "objects": [
         {
-            "type": "cube",
+            "type": "rectangle",
             "material": {
                 "color": {
                     "r": 1.0,
