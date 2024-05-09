@@ -19,42 +19,46 @@
 #include <functional>
 
 struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> graphicsAndComputeFamily;
     std::optional<uint32_t> presentFamily;
 
     bool isComplete() {
-        return graphicsFamily.has_value() && presentFamily.has_value();
+        return graphicsAndComputeFamily.has_value() && presentFamily.has_value();
     }
 };
 
 struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
+    vk::SurfaceCapabilitiesKHR capabilities;
+    std::vector<vk::SurfaceFormatKHR> formats;
+    std::vector<vk::PresentModeKHR> presentModes;
 };
 
 struct Vertex {
     glm::vec2 pos;
 
-    static VkVertexInputBindingDescription getBindingDescription() {
-        VkVertexInputBindingDescription bindingDescription{};
+    static vk::VertexInputBindingDescription getBindingDescription() {
+        vk::VertexInputBindingDescription bindingDescription{};
         bindingDescription.binding = 0;
         bindingDescription.stride = sizeof(Vertex);
-        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+        bindingDescription.inputRate = vk::VertexInputRate::eVertex;
 
         return bindingDescription;
     }
 
-    static std::array<VkVertexInputAttributeDescription, 1> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 1> attributeDescriptions{};
+    static std::array<vk::VertexInputAttributeDescription, 1> getAttributeDescriptions() {
+        std::array<vk::VertexInputAttributeDescription, 1> attributeDescriptions{};
 
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
-        attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[0].format = vk::Format::eR32G32Sfloat;
         attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
         return attributeDescriptions;
     }
+};
+
+struct InputUBO {
+    alignas(8) glm::vec2 iResolution;
 };
 
 // Gives the info about the camera and the view plane
@@ -65,20 +69,13 @@ struct ViewUBO {
     alignas(16) glm::mat4 iCameraMatrix;
 };
 
-// Gives the info about the scene (number of triangles and meshes)
+// Gives the info about the scene (number of triangles and meshes and bool if scene dirty)
 struct SceneUBO {
     alignas(4) unsigned int iNumMeshes;
     alignas(4) unsigned int iNumTriangles;
-};
-
-// Array of triangles given to the shader
-struct TrianglesUBO {
-    Triangle *triangles;
-};
-
-// Array of meshes given to the shader
-struct MeshesUBO {
-    Mesh *meshes;
+    alignas(4) unsigned int iSceneChanged;
+    alignas(4) unsigned int iSkyboxEnabled;
+    alignas(4) unsigned int iFrameIndex;
 };
 
 class Application {
@@ -86,60 +83,91 @@ protected:
     std::string _appName;
     glm::vec2 _windowSize{100, 100};
     GLFWwindow *_window;
-    VkInstance _instance;
-    VkPhysicalDevice _physicalDevice = VK_NULL_HANDLE;
-    VkDevice _device = VK_NULL_HANDLE;
+    vk::Instance _instance;
+    vk::PhysicalDevice _physicalDevice = VK_NULL_HANDLE;
+    vk::Device _device = VK_NULL_HANDLE;
     const std::vector<const char*> _validationLayers = {
             "VK_LAYER_KHRONOS_validation"
     };
-    VkDebugUtilsMessengerEXT _debugMessenger;
-    VkQueue _graphicsQueue;
-    VkSurfaceKHR _surface;
-    VkQueue _presentQueue;
+    vk::DebugUtilsMessengerEXT _debugMessenger;
+    vk::Queue _graphicsQueue;
+    vk::SurfaceKHR _surface;
+    vk::Queue _presentQueue;
+    vk::Queue _computeQueue;
     const std::vector<const char*> _deviceExtensions = {
-            VK_KHR_SWAPCHAIN_EXTENSION_NAME
+            VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+#ifdef __APPLE__
+            "VK_KHR_portability_subset",
+#endif
     };
-    VkSwapchainKHR _swapChain;
-    std::vector<VkImage> _swapChainImages;
-    VkFormat _swapChainImageFormat;
-    VkExtent2D _swapChainExtent{};
-    std::vector<VkImageView> _swapChainImageViews;
-    VkDescriptorSetLayout _descriptorSetLayout;
-    VkPipelineLayout _pipelineLayout;
-    VkRenderPass _renderPass;
-    VkPipeline _graphicsPipeline;
-    std::vector<VkFramebuffer> _swapChainFrameBuffers;
-    VkCommandPool _commandPool;
-    std::vector<VkCommandBuffer> _commandBuffers;
-    const int MAX_FRAMES_IN_FLIGHT = 2;
-    std::vector<VkSemaphore> _imageAvailableSemaphores;
-    std::vector<VkSemaphore> _renderFinishedSemaphores;
-    std::vector<VkFence> _inFlightFences;
+    vk::SwapchainKHR _swapChain;
+    std::vector<vk::Image> _swapChainImages;
+    vk::Format _swapChainImageFormat;
+    vk::Extent2D _swapChainExtent{};
+    std::vector<vk::ImageView> _swapChainImageViews;
+    vk::DescriptorSetLayout _screenDescriptorSetLayout;
+    vk::DescriptorSetLayout _computeDescriptorSetLayout;
+    vk::PipelineLayout _pipelineLayout;
+    vk::PipelineLayout _computePipelineLayout;
+    vk::RenderPass _renderPass;
+    vk::Pipeline _graphicsPipeline;
+    vk::Pipeline _computePipeline;
+    std::vector<vk::Framebuffer> _swapChainFrameBuffers;
+    vk::CommandPool _commandPool;
+    std::vector<vk::CommandBuffer> _commandBuffers;
+    std::vector<vk::CommandBuffer> _computeCommandBuffers;
+    const std::size_t MAX_FRAMES_IN_FLIGHT = 1;
+    std::vector<vk::Semaphore> _imageAvailableSemaphores;
+    std::vector<vk::Semaphore> _renderFinishedSemaphores;
+    std::vector<vk::Fence> _inFlightFences;
+    std::vector<vk::Fence> _computeInFlightFences;
+    std::vector<vk::Semaphore> _computeFinishedSemaphores;
     uint32_t _currentFrame = 0;
-    VkDescriptorPool _descriptorPool;
-    std::vector<VkDescriptorSet> _descriptorSets;
-    VkBuffer _vertexBuffer;
-    VkDeviceMemory _vertexBufferMemory;
-    VkBuffer _indexBuffer;
-    VkDeviceMemory _indexBufferMemory;
-    std::vector<VkBuffer> _uniformBuffers;
-    std::vector<VkDeviceMemory> _uniformBuffersMemory;
-    std::vector<void*> _uniformBuffersMapped;
+    std::size_t _frameIndex = 0;
+    vk::DescriptorPool _screenDescriptorPool;
+    std::vector<vk::DescriptorSet> _screenDescriptorSets;
+    vk::DescriptorPool _computeDescriptorPool;
+    std::vector<vk::DescriptorSet> _computeDescriptorSets;
+    std::size_t _lastFrameTime = 0;
+    vk::Buffer _screenVertexBuffer;
+    vk::DeviceMemory _screenVertexBufferMemory;
+    vk::Buffer _screenIndexBuffer;
+    vk::DeviceMemory _screenIndexBufferMemory;
+    vk::Image _textureImage;
+    vk::ImageView _textureImageView;
+    vk::DeviceMemory _textureImageMemory;
+    // Compute shader
+    // Input image
+    vk::Image _computeInputImage;
+    vk::ImageView _computeInputImageView;
+    vk::DeviceMemory _computeInputImageMemory;
+    // Output image
+    vk::Image _computeOutputImage;
+    vk::ImageView _computeOutputImageView;
+    vk::DeviceMemory _computeOutputImageMemory;
 
-    std::vector<VkBuffer> _sceneBuffers;
-    std::vector<VkDeviceMemory> _sceneBuffersMemory;
+
+    std::vector<vk::Buffer> _inputBuffers;
+    std::vector<vk::DeviceMemory> _inputBuffersMemory;
+    std::vector<void*> _inputBuffersMapped;
+
+    std::vector<vk::Buffer> _viewBuffers;
+    std::vector<vk::DeviceMemory> _viewBuffersMemory;
+    std::vector<void*> _viewBuffersMapped;
+
+    std::vector<vk::Buffer> _sceneBuffers;
+    std::vector<vk::DeviceMemory> _sceneBuffersMemory;
     std::vector<void*> _sceneBuffersMapped;
 
-    uint32_t _numTriangles = 1;
-    std::vector<VkBuffer> _triangleBuffers;
-    std::vector<VkDeviceMemory> _triangleBuffersMemory;
+    std::size_t _numTriangles = 1;
+    std::vector<vk::Buffer> _triangleBuffers;
+    std::vector<vk::DeviceMemory> _triangleBuffersMemory;
     std::vector<void*> _triangleBuffersMapped;
 
-    uint32_t _numMeshes = 1;
-    std::vector<VkBuffer> _meshBuffers;
-    std::vector<VkDeviceMemory> _meshBuffersMemory;
+    std::size_t _numMeshes = 1;
+    std::vector<vk::Buffer> _meshBuffers;
+    std::vector<vk::DeviceMemory> _meshBuffersMemory;
     std::vector<void*> _meshBuffersMapped;
-    std::size_t _lastFrameTime = 0;
 
     // Screen
     const std::vector<Vertex> _screenVertices = {
@@ -157,19 +185,18 @@ protected:
     // Camera
     const Camera *_camera;
 
-#define NDEBUG
-#ifdef NDEBUG
-    const bool enableValidationLayers = false;
-#else
-    const bool enableValidationLayers = true;
-#endif
+    std::vector<Triangle> _triangles;
+    std::vector<Mesh> _meshes;
+
+    bool _sceneChanged = true;
 public:
     Application(glm::vec2 windowSize, const std::string &appName, Scene *scene);
     Application(unsigned int width, unsigned int height, const std::string &appName, Scene *scene);
     ~Application();
-    void run(std::function<void()> update = nullptr);
+    void run(const std::function<void()>& update = nullptr);
 
     void useCamera(std::size_t idx);
+    void updateScene();
 protected:
     void initWindow();
     void initVulkan();
@@ -177,39 +204,47 @@ protected:
     void pickPhysicalDevice();
     void createLogicalDevice();
     void createSurface();
-    void loop(std::function<void()> update);
+    void loop(const std::function<void()>& update);
     void cleanup();
     bool checkValidationLayerSupport();
     void setupDebugMessenger();
     void createSwapChain();
     void createImageViews();
+    void createImages();
     void createRenderPass();
     void createFrameBuffers();
     void createGraphicsPipeline();
+    void createComputePipeline();
     void createCommandPool();
     void createCommandBuffer();
     void createSyncObjects();
     void createVertexBuffer();
     void createIndexBuffer();
     void createDescriptorSetLayout();
+    void createComputeDescriptorSetLayout();
     void createUniformBuffers();
     void updateUniformBuffer(uint32_t currentImage);
+    void updateComputeUniformBuffer(uint32_t currentImage);
     void createDescriptorPool();
     void createDescriptorSets();
+    void createComputeDescriptorPool();
+    void createComputeDescriptorSets();
     void recreateSwapChain();
     void cleanupSwapChain();
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+    void createComputeCommandBuffers();
+    QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
-    bool isDeviceSuitable(VkPhysicalDevice device);
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-    static VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-    static VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
-    VkShaderModule createShaderModule(const std::vector<char>& code);
-    void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
-    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+    bool isDeviceSuitable(vk::PhysicalDevice device);
+    bool checkDeviceExtensionSupport(vk::PhysicalDevice device);
+    SwapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice device);
+    static vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats);
+    static vk::PresentModeKHR chooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes);
+    vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
+    vk::ShaderModule createShaderModule(const std::vector<char>& code);
+    void recordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex);
+    void recordComputeCommandBuffer(vk::CommandBuffer commandBuffer);
+    void createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Buffer& buffer, vk::DeviceMemory& bufferMemory);
+    void copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, vk::DeviceSize size);
+    uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
     void drawFrame();
 };

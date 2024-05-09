@@ -35,9 +35,6 @@ int main(int argc, char **argv)
     Application app(WIDTH, HEIGHT, "RTX", &scene);
 
     app.run([&scene]() {
-        for (auto &object : scene.getObjects()) {
-            object->getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.05f);
-        }
     });
     return 0;
 }

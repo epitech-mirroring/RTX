@@ -25,27 +25,30 @@ CXX_SOURCES		= 	src/main.cpp										\
 					src/Application.cpp									\
 
 SHADERS 		= 	shaders/screen.vert									\
-					shaders/raytracing.frag								\
+					shaders/texture_screen.frag							\
+					shaders/raytracing.comp								\
 
 CXX_TESTS		=	tests/testsMaterial.cpp								\
 					tests/testsTexture.cpp								\
 					tests/testsSceneParser.cpp							\
 
 LIBS			=   libs/json/libjson.so								\
-					parser/objFile/libobj.so
+					parser/obj/libobj.so								\
 
 # Compiler and linker settings
 NAME 			= 	raytracer
 CXX				= 	g++
 GLSLC			=	$(shell which glslc)
-CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include  \
-				 	-L. -ljson -lobj -lglfw -lvulkan -ldl -lpthread -lX11
+GLSL_FLAGS		=   -O
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include  \
+				 	-L. -ljson -lobj -lglfw -lvulkan -ldl -lpthread -lX11 -O3
 MACOS_FLAGS		= 	-rpath /usr/local/lib/
 LINUX_FLAGS		=
 CXXFLAGS		+=	$(shell [ `uname -s` = "Darwin" ] && echo $(MACOS_FLAGS))
 CXXFLAGS		+=	$(shell [ `uname -s` = "Linux" ] && echo $(LINUX_FLAGS))
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
-TEMP_SHADED 	=	$(SHADERS:.frag=.spv) $(SHADERS:.vert=.spv)
+TEMP_SHADED 	=	$(SHADERS:.frag=.spv) $(SHADERS:.vert=.spv) \
+					$(SHADERS:.comp=.spv)
 # Remove all the non .spv files
 SHADERS_OBJS	=	$(filter %.spv, $(TEMP_SHADED))
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
@@ -53,7 +56,7 @@ CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 LOG				=	./build.log
 
 .PHONY: all clean fclean re tests_run \
-	clean_test $(LIBS) clean_libs fclean_libs clion
+	clean_test $(LIBS) clean_libs fclean_libs clion _tests_run
 
 # Colors and formatting
 GREEN =		\033[1;32m
@@ -68,6 +71,12 @@ RUNNING = [$(YELLOW)~$(RESET)]
 SUCCESS = [$(GREEN)✔$(RESET)]
 FAILURE = [$(RED)✘$(RESET)]
 SKIPPED = [$(MAGENTA)@$(RESET)]
+
+ifeq ($(ENABLE_COVERAGE), 1)
+	CXXFLAGS += --coverage
+else
+	CXXFLAGS += -O2
+endif
 
 all: $(LIBS)
 # Check if $(NAME) is up to date
@@ -178,14 +187,20 @@ clean: clean_libs
 		done
 
 %.spv: 	%.frag
-		@printf "$(RUNNING) $(BLUE) 🪄   Compiling $<$(RESET)"
-		@$(GLSLC) $< -o $@ >> $(LOG) 2>&1 \
+		@printf "$(RUNNING) $(BLUE) 🖼️    Compiling $<$(RESET)"
+		@$(GLSLC) $< -o $@ $(GLSL_FLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
 		&& exit 1)
 
 %.spv: 	%.vert
-		@printf "$(RUNNING) $(BLUE) 🪄   Compiling $<$(RESET)"
-		@$(GLSLC) $< -o $@ >> $(LOG) 2>&1 \
+		@printf "$(RUNNING) $(BLUE) 📐   Compiling $<$(RESET)"
+		@$(GLSLC) $< -o $@ $(GLSL_FLAGS) >> $(LOG) 2>&1 \
+		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
+		&& exit 1)
+
+%.spv: 	%.comp
+		@printf "$(RUNNING) $(BLUE) 🧮   Compiling $<$(RESET)"
+		@$(GLSLC) $< -o $@ $(GLSL_FLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
 		&& exit 1)
 
@@ -260,7 +275,10 @@ passed successfully$(RESET)\n" \
 failed$(RESET)\n" && exit 1); \
 	done
 
-tests_run: fclean tests_libs $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
+tests_run:
+	@ENABLE_COVERAGE='1' make _tests_run --no-print-directory
+
+_tests_run: fclean tests_libs $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
 	@printf "$(RUNNING) $(BLUE) 🔗   Linking for $(shell uname -m)\
  architecture$(RESET)";
 	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \
