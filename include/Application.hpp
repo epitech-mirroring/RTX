@@ -81,6 +81,7 @@ struct SceneUBO {
 class Application {
 protected:
     std::string _appName;
+    bool _running;
     glm::vec2 _windowSize{100, 100};
     GLFWwindow *_window;
     vk::Instance _instance;
@@ -197,6 +198,10 @@ public:
 
     void useCamera(std::size_t idx);
     void updateScene();
+    [[nodiscard]] std::size_t getFrameIndex() const;
+    vk::Image &getCurrentImage();
+    void screenshot(const std::string &filename);
+    void stop();
 protected:
     void initWindow();
     void initVulkan();
@@ -247,4 +252,5 @@ protected:
     void copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, vk::DeviceSize size);
     uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
     void drawFrame();
+    vk::CommandBuffer beginSingleTimeCommands();
 };
