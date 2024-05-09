@@ -57,7 +57,7 @@ int main(int argc, char **argv)
         Cube *cube = (Cube *)scene.getObject(0);
 
         cube->getTransform().rotate({0.0f, 1.0f, 0.0f}, 0.05f);
-        app.updateScene();
+        //app.updateScene();
     });
     return 0;
 }

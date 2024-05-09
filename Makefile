@@ -23,7 +23,8 @@ CXX_SOURCES		= 	src/main.cpp										\
 					src/Application.cpp									\
 
 SHADERS 		= 	shaders/screen.vert									\
-					shaders/raytracing.frag								\
+					shaders/texture_screen.frag							\
+					shaders/raytracing.comp								\
 
 CXX_TESTS		=	tests/testsMaterial.cpp								\
 					tests/testsTexture.cpp								\
@@ -43,7 +44,8 @@ LINUX_FLAGS		=
 CXXFLAGS		+=	$(shell [ `uname -s` = "Darwin" ] && echo $(MACOS_FLAGS))
 CXXFLAGS		+=	$(shell [ `uname -s` = "Linux" ] && echo $(LINUX_FLAGS))
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
-TEMP_SHADED 	=	$(SHADERS:.frag=.spv) $(SHADERS:.vert=.spv)
+TEMP_SHADED 	=	$(SHADERS:.frag=.spv) $(SHADERS:.vert=.spv) \
+					$(SHADERS:.comp=.spv)
 # Remove all the non .spv files
 SHADERS_OBJS	=	$(filter %.spv, $(TEMP_SHADED))
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
@@ -176,13 +178,19 @@ clean: clean_libs
 		done
 
 %.spv: 	%.frag
-		@printf "$(RUNNING) $(BLUE) 🪄   Compiling $<$(RESET)"
+		@printf "$(RUNNING) $(BLUE) 🖼️    Compiling $<$(RESET)"
 		@$(GLSLC) $< -o $@ $(GLSL_FLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
 		&& exit 1)
 
 %.spv: 	%.vert
-		@printf "$(RUNNING) $(BLUE) 🪄   Compiling $<$(RESET)"
+		@printf "$(RUNNING) $(BLUE) 📐   Compiling $<$(RESET)"
+		@$(GLSLC) $< -o $@ $(GLSL_FLAGS) >> $(LOG) 2>&1 \
+		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
+		&& exit 1)
+
+%.spv: 	%.comp
+		@printf "$(RUNNING) $(BLUE) 🧮   Compiling $<$(RESET)"
 		@$(GLSLC) $< -o $@ $(GLSL_FLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
 		&& exit 1)

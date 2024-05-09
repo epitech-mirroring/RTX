@@ -19,11 +19,11 @@
 #include <functional>
 
 struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> graphicsAndComputeFamily;
     std::optional<uint32_t> presentFamily;
 
     bool isComplete() {
-        return graphicsFamily.has_value() && presentFamily.has_value();
+        return graphicsAndComputeFamily.has_value() && presentFamily.has_value();
     }
 };
 
@@ -55,6 +55,10 @@ struct Vertex {
 
         return attributeDescriptions;
     }
+};
+
+struct InputUBO {
+    alignas(8) glm::vec2 iResolution;
 };
 
 // Gives the info about the camera and the view plane
@@ -89,6 +93,7 @@ protected:
     vk::Queue _graphicsQueue;
     vk::SurfaceKHR _surface;
     vk::Queue _presentQueue;
+    vk::Queue _computeQueue;
     const std::vector<const char*> _deviceExtensions = {
             VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
@@ -97,30 +102,56 @@ protected:
     vk::Format _swapChainImageFormat;
     vk::Extent2D _swapChainExtent{};
     std::vector<vk::ImageView> _swapChainImageViews;
-    vk::DescriptorSetLayout _descriptorSetLayout;
+    vk::DescriptorSetLayout _screenDescriptorSetLayout;
+    vk::DescriptorSetLayout _computeDescriptorSetLayout;
     vk::PipelineLayout _pipelineLayout;
+    vk::PipelineLayout _computePipelineLayout;
     vk::Sampler _textureSampler;
     vk::RenderPass _renderPass;
     vk::Pipeline _graphicsPipeline;
+    vk::Pipeline _computePipeline;
     std::vector<vk::Framebuffer> _swapChainFrameBuffers;
     vk::CommandPool _commandPool;
     std::vector<vk::CommandBuffer> _commandBuffers;
+    std::vector<vk::CommandBuffer> _computeCommandBuffers;
     const std::size_t MAX_FRAMES_IN_FLIGHT = 1;
     std::vector<vk::Semaphore> _imageAvailableSemaphores;
     std::vector<vk::Semaphore> _renderFinishedSemaphores;
     std::vector<vk::Fence> _inFlightFences;
+    std::vector<vk::Fence> _computeInFlightFences;
+    std::vector<vk::Semaphore> _computeFinishedSemaphores;
     uint32_t _currentFrame = 0;
     std::size_t _frameIndex = 0;
-    vk::DescriptorPool _descriptorPool;
-    std::vector<vk::DescriptorSet> _descriptorSets;
+    vk::DescriptorPool _screenDescriptorPool;
+    std::vector<vk::DescriptorSet> _screenDescriptorSets;
+    vk::DescriptorPool _computeDescriptorPool;
+    std::vector<vk::DescriptorSet> _computeDescriptorSets;
     std::size_t _lastFrameTime = 0;
     vk::Buffer _screenVertexBuffer;
     vk::DeviceMemory _screenVertexBufferMemory;
     vk::Buffer _screenIndexBuffer;
     vk::DeviceMemory _screenIndexBufferMemory;
-    std::vector<vk::Buffer> _uniformBuffers;
-    std::vector<vk::DeviceMemory> _uniformBuffersMemory;
-    std::vector<void*> _uniformBuffersMapped;
+    vk::Image _textureImage;
+    vk::ImageView _textureImageView;
+    vk::DeviceMemory _textureImageMemory;
+    // Compute shader
+    // Input image
+    vk::Image _computeInputImage;
+    vk::ImageView _computeInputImageView;
+    vk::DeviceMemory _computeInputImageMemory;
+    // Output image
+    vk::Image _computeOutputImage;
+    vk::ImageView _computeOutputImageView;
+    vk::DeviceMemory _computeOutputImageMemory;
+
+
+    std::vector<vk::Buffer> _inputBuffers;
+    std::vector<vk::DeviceMemory> _inputBuffersMemory;
+    std::vector<void*> _inputBuffersMapped;
+
+    std::vector<vk::Buffer> _viewBuffers;
+    std::vector<vk::DeviceMemory> _viewBuffersMemory;
+    std::vector<void*> _viewBuffersMapped;
 
     std::vector<vk::Buffer> _sceneBuffers;
     std::vector<vk::DeviceMemory> _sceneBuffersMemory;
@@ -177,21 +208,29 @@ protected:
     void setupDebugMessenger();
     void createSwapChain();
     void createImageViews();
+    void createImages();
+    void createSampler();
     void createRenderPass();
     void createFrameBuffers();
     void createGraphicsPipeline();
+    void createComputePipeline();
     void createCommandPool();
     void createCommandBuffer();
     void createSyncObjects();
     void createVertexBuffer();
     void createIndexBuffer();
     void createDescriptorSetLayout();
+    void createComputeDescriptorSetLayout();
     void createUniformBuffers();
     void updateUniformBuffer(uint32_t currentImage);
+    void updateComputeUniformBuffer(uint32_t currentImage);
     void createDescriptorPool();
     void createDescriptorSets();
+    void createComputeDescriptorPool();
+    void createComputeDescriptorSets();
     void recreateSwapChain();
     void cleanupSwapChain();
+    void createComputeCommandBuffers();
     QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice device);
     [[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
     bool isDeviceSuitable(vk::PhysicalDevice device);
@@ -202,6 +241,7 @@ protected:
     vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
     vk::ShaderModule createShaderModule(const std::vector<char>& code);
     void recordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex);
+    void recordComputeCommandBuffer(vk::CommandBuffer commandBuffer);
     void createBuffer(vk::DeviceSize size, vk::BufferUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Buffer& buffer, vk::DeviceMemory& bufferMemory);
     void copyBuffer(vk::Buffer srcBuffer, vk::Buffer dstBuffer, vk::DeviceSize size);
     uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
