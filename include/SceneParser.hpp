@@ -23,6 +23,7 @@ class SceneParser {
         [[nodiscard]] Scene getScene() const;
         static std::vector<Camera> parseCameras(JsonObject &obj);
         std::vector<Object *> parseObjects(JsonObject &obj);
+        void parseSceneSettings(JsonObject *obj);
     private:
         std::string _path;
         Scene _scene;

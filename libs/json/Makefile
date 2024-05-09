@@ -21,14 +21,14 @@ CXX_TESTS		=   tests/json_parser.cpp	\
 # Compiler and linker settings
 NAME 			= 	libjson.so
 CXX				= 	g++
-CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 --coverage -I./include -fPIC
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include -fPIC
 LDFLAGS			= 	-shared
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
 LOG				=	./build.log
 
-.PHONY: all clean fclean re tests_run clean_test
+.PHONY: all clean fclean re tests_run clean_test _tests_run
 
 # Colors and formatting
 GREEN =		\033[1;32m
@@ -44,6 +44,12 @@ SUCCESS = [$(GREEN)✔$(RESET)]
 FAILURE = [$(RED)✘$(RESET)]
 SKIPPED = [$(MAGENTA)@$(RESET)]
 
+ifeq ($(ENABLE_COVERAGE), 1)
+	CXXFLAGS += --coverage
+else
+	CXXFLAGS += -O2
+endif
+
 all:
 # Check if $(NAME) is up to date
 	@HAS_NEWER_SOURCE=0; \
@@ -54,7 +60,7 @@ all:
 		fi; \
 	done; \
 	if [ ! -f $(NAME) ] || [ $$HAS_NEWER_SOURCE -eq 1 ]; then \
-		make $(NAME); \
+		make $(NAME) --no-print-directory; \
 	else \
 		printf "$(SKIPPED)$(MAGENTA)  🚀  \
 $(NAME) already up to date$(RESET)\n"; \
@@ -126,7 +132,10 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 		@$(CXX) -o $@ -c $< $(CXXFLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"
 
-tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
+tests_run:
+	@ENABLE_COVERAGE='1' make _tests_run --no-print-directory
+
+_tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
 	@printf "$(RUNNING) $(BLUE) 🔗   Linking for $(shell uname -m)\
  architecture$(RESET)";
 	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \

@@ -8,6 +8,7 @@
 
 #include "Application.hpp"
 #include "SceneParser.hpp"
+#include "primitives/Sphere.hpp"
 #include "primitives/Cube.hpp"
 #include "primitives/Rectangle.hpp"
 #include "primitives/Plane.hpp"
@@ -18,8 +19,13 @@
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) {
-        std::cerr << "Usage: ./rtx \"scene file\"" << std::endl;
+    Scene scene;
+    std::string filename;
+    if (argc > 1) {
+        filename = argv[1];
+    }
+    else {
+        std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
         return 84;
     }
     ObjectsFactory objFactory = ObjectsFactory();
@@ -33,7 +39,7 @@ int main(int argc, char **argv)
     std::string path = std::string(argv[1]);
     SceneParser parser = SceneParser(path, propFactory, objFactory);
     parser.parse();
-    Scene scene = parser.getScene();
+    scene = parser.getScene();
 
     Application app(WIDTH, HEIGHT, "RTX", &scene);
 

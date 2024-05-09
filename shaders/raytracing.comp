@@ -1,0 +1,256 @@
+#version 450
+// Input/Output
+layout (local_size_x = 16, local_size_y = 16) in;
+layout (binding = 0, rgba8) uniform readonly image2D inputImage;
+layout (binding = 1, rgba8) uniform writeonly image2D outputImage;
+// View
+layout(binding = 2) uniform readonly View {
+    vec2 iResolution;
+    vec3 iViewPlaneParams;
+    vec3 iCameraPosition;
+    mat4 iCameraMatrix;
+};
+// Scene
+struct Triangle {
+    vec3 a;
+    vec3 b;
+    vec3 c;
+    vec3 aNormal;
+    vec3 bNormal;
+    vec3 cNormal;
+};
+
+struct Material {
+    vec3 color;
+    vec3 emission;
+    float emissionIntensity;
+};
+
+struct Mesh {
+    uint startIdx;
+    uint endIdx;
+    vec3 boundingBoxMin;
+    vec3 boundingBoxMax;
+    mat4 transform;
+    Material material;
+};
+
+layout(binding = 3) uniform readonly Scene {
+    uint iNumMeshes;
+    uint iNumTriangles;
+    uint iIsSceneDirty;
+    uint iIsSkyboxEnabled;
+    uint iFrameIndex;
+};
+
+layout(std140, binding = 4) buffer readonly Triangles {
+    Triangle iTriangles[];
+};
+
+layout(std140, binding = 5) buffer readonly Meshes {
+    Mesh iMeshes[];
+};
+
+
+struct Ray {
+    vec3 origin;
+    vec3 direction;
+};
+
+struct Hit {
+    bool hit;
+    float distance;
+    vec3 normal;
+    vec3 position;
+    Material material;
+};
+
+float randomValue(inout uint seed) {
+    seed = seed * 747796405 + 2891336453;
+    uint res = ((seed >> ((seed >> 28) + 4)) ^ seed) * 277803737;
+    res = (res >> 22) ^ res;
+    return res / 4294967295.0;
+}
+
+float randomNormalValue(inout uint seed) {
+    float theta = 2.0 * 3.14159265359 * randomValue(seed);
+    float rho = sqrt(-2.0 * log(randomValue(seed)));
+    return rho * cos(theta);
+}
+
+vec3 randomDirection(inout uint seed) {
+    float x = randomNormalValue(seed);
+    float y = randomNormalValue(seed);
+    float z = randomNormalValue(seed);
+    return normalize(vec3(x, y, z));
+}
+
+bool isRayBoundingBoxIntersect(Ray ray, vec3 boxMin, vec3 boxMax)
+{
+    vec3 invDir = 1 / ray.direction;
+    vec3 tMin = (boxMin - ray.origin) * invDir;
+    vec3 tMax = (boxMax - ray.origin) * invDir;
+    vec3 t1 = min(tMin, tMax);
+    vec3 t2 = max(tMin, tMax);
+    float tNear = max(max(t1.x, t1.y), t1.z);
+    float tFar = min(min(t2.x, t2.y), t2.z);
+    return tNear <= tFar;
+}
+
+Hit rayTriangle(Ray ray, Triangle tri)
+{
+    vec3 AB = tri.b - tri.a;
+    vec3 AC = tri.c - tri.a;
+    vec3 normal = cross(AB, AC);
+    vec3 AO = ray.origin - tri.a;
+    vec3 dirAO = cross(AO, ray.direction);
+
+    float _determinant = -dot(ray.direction, normal);
+    float invDet = 1 / _determinant;
+
+    // Calculate dst to triangle & barycentric coordinates of intersection point
+    float dst = dot(AO, normal) * invDet;
+    float u = dot(AC, dirAO) * invDet;
+    float v = -dot(AB, dirAO) * invDet;
+    float w = 1 - u - v;
+
+    // Initialize hit info
+    Hit hit;
+    hit.hit = _determinant >= 1E-6 && dst >= 0 && u >= 0 && v >= 0 && w >= 0;
+    hit.position = ray.origin + ray.direction * dst;
+    hit.normal = normalize(tri.aNormal * w + tri.bNormal * u + tri.cNormal * v);
+    hit.distance = dst;
+    return hit;
+}
+
+Triangle getTransformedTriangle(Triangle tri, mat4 transform) {
+    Triangle transformedTri;
+    transformedTri.a = (transform * vec4(tri.a, 1.0)).xyz;
+    transformedTri.b = (transform * vec4(tri.b, 1.0)).xyz;
+    transformedTri.c = (transform * vec4(tri.c, 1.0)).xyz;
+    transformedTri.aNormal = (transform * vec4(tri.aNormal, 0.0)).xyz;
+    transformedTri.bNormal = (transform * vec4(tri.bNormal, 0.0)).xyz;
+    transformedTri.cNormal = (transform * vec4(tri.cNormal, 0.0)).xyz;
+    return transformedTri;
+}
+
+struct BoundingBox {
+    vec3 min;
+    vec3 max;
+};
+
+BoundingBox getMeshBoundingBox(Mesh mesh) {
+    vec3 minB = vec3(1E6, 1E6, 1E6);
+    vec3 maxB = vec3(-1E6, -1E6, -1E6);
+    for (uint i = mesh.startIdx; i < mesh.endIdx; i++) {
+        Triangle tri = getTransformedTriangle(iTriangles[i], mesh.transform);
+        minB = min(minB, min(min(tri.a, tri.b), tri.c));
+        maxB = max(maxB, max(max(tri.a, tri.b), tri.c));
+    }
+    return BoundingBox(minB, maxB);
+}
+
+
+Hit computeHit(Ray ray) {
+    Hit closestHit;
+    closestHit.hit = false;
+    closestHit.distance = 1E6;
+
+    for (uint i = 0; i < iNumMeshes; i++) {
+        Mesh mesh = iMeshes[i];
+        BoundingBox box = getMeshBoundingBox(mesh);
+        if (!isRayBoundingBoxIntersect(ray, box.min, box.max)) {
+            continue;
+        }
+
+        for (uint j = mesh.startIdx; j < mesh.endIdx; j++) {
+            Triangle tri = getTransformedTriangle(iTriangles[j], mesh.transform);
+            Hit hit = rayTriangle(ray, tri);
+            if (hit.hit && hit.distance < closestHit.distance) {
+                closestHit = hit;
+                closestHit.material = mesh.material;
+                break;
+            }
+        }
+    }
+    return closestHit;
+}
+
+vec3 lerp(vec3 a, vec3 b, float t) {
+    return a * (1.0 - t) + b * t;
+}
+
+vec3 environmentLight(Ray ray) {
+    // Horizon should be whitish, zenith should be blueish and ground should be dark (like brownish)
+    vec3 horizonColor = vec3(1., 1., 1.);
+    vec3 zenithColor = vec3(0.5, 0.7, 1.0);
+    vec3 groundColor = vec3(0.2, 0.17, 0.1);
+    vec3 sunDirection = normalize(vec3(0.5, 0.5, 0.5));
+    float sunFocus = 1;
+    float sunIntensity = 0.01;
+
+    vec3 dir = vec3(ray.direction.x, -ray.direction.y, ray.direction.z);
+
+    float skyGradientT = pow(smoothstep(0, 0.4, dir.y), 0.35);
+    vec3 skyGradient = lerp(horizonColor, zenithColor, skyGradientT);
+    float sun = pow(max(0, dot(dir, -sunDirection)), sunFocus) * sunIntensity;
+
+    float groundToSkyT = smoothstep(-0.01, 0, dir.y);
+    float sunMask = groundToSkyT >= 1.0 ? 0.0 : 1.0;
+    return lerp(groundColor, skyGradient, groundToSkyT) + sun * sunMask;
+}
+
+vec3 raytrace(Ray ray, inout uint seed) {
+    vec3 incomingLight = vec3(0.0, 0.0, 0.0);
+    vec3 color = vec3(1.0, 1.0, 1.0);
+
+    for (uint bounce = 0; bounce < 3; bounce++) {
+        Hit hit = computeHit(ray);
+
+        if (hit.hit) {
+            ray.origin = hit.position;
+            vec3 newDirection = randomDirection(seed);
+            if (dot(newDirection, hit.normal) < 0.0) {
+                newDirection = -newDirection;
+            }
+            ray.direction = newDirection;
+            vec3 directLight = hit.material.emission * hit.material.emissionIntensity;
+            incomingLight += directLight * color;
+            color *= hit.material.color;
+        } else {
+            if (iIsSkyboxEnabled == 1) {
+                incomingLight += environmentLight(ray) * color;
+            }
+            break;
+        }
+    }
+
+    return incomingLight;
+}
+
+void main() {
+    ivec2 pixelCoords = ivec2(gl_GlobalInvocationID.xy);
+    vec4 pixel = imageLoad(inputImage, pixelCoords);
+    if (iIsSceneDirty == 1) {
+        pixel = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    vec2 uv = (vec2(pixelCoords)) / iResolution;
+    vec3 viewPointLocal = vec3(uv - 0.5, 1.0) * iViewPlaneParams;
+    vec3 viewPointWorld = (iCameraMatrix * vec4(viewPointLocal, 1.0)).xyz;
+    uint seed = int(pixelCoords.x) + int(pixelCoords.y) * 1000 + iFrameIndex * 25723;
+
+    Ray ray;
+    ray.origin = iCameraPosition;
+    ray.direction = normalize(viewPointWorld - iCameraPosition);
+    vec3 incomingLight = vec3(0.0, 0.0, 0.0);
+    uint numRaysPerPixel = 10;
+
+    for (uint i = 0; i < numRaysPerPixel; i++) {
+        incomingLight += raytrace(ray, seed);
+    }
+    incomingLight /= float(numRaysPerPixel);
+
+    // Result pixel is the mix of the previous pixel and the new color
+    vec4 newPixel = mix(pixel, vec4(incomingLight, 1.0), 0.1);
+    imageStore(outputImage, pixelCoords, newPixel);
+}

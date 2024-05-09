@@ -9,6 +9,8 @@
 #include <criterion/criterion.h>
 #include <iostream>
 #include "SceneParser.hpp"
+#include "primitives/Cube.hpp"
+#include "primitives/Sphere.hpp"
 #include "primitives/Rectangle.hpp"
 
 Test(SceneParser, Color)
@@ -184,28 +186,47 @@ Test(SceneParser, ParseScene)
     std::string path = "scenes/tests/testScene.json";
     PropertiesFactory factory = PropertiesFactory();
     ObjectsFactory objFactory = ObjectsFactory();
-    factory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
-    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object *{ return new Rectangle(dynamic_cast<RectangleProperties &>(properties)); });
+    factory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
+    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
+    factory.registerProperties("sphere", [](JsonObject *obj) { return new SphereProperties(obj); });
+    objFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object * {return new Sphere(dynamic_cast<SphereProperties &>(properties));});
     SceneParser parser = SceneParser(path, factory, objFactory);
     parser.parse();
 
+    cr_assert_eq(parser.getScene().isSkyBoxEnabled(), true);
     cr_assert_eq(parser.getScene().getObjects().size(), 1);
-    cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getColor(), glm::vec3(1.0, 0.0, 0.0));
+    cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getColor(), glm::vec3(255.0, 0.0, 0.0));
     cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getEmission(), glm::vec3(0.0, 0.0, 0.0));
     cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getBrightness(), 0.0);
     cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getRoughness(), 1.0);
-    cr_assert_eq(parser.getScene().getObjects()[0]->getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
+    cr_assert_eq(parser.getScene().getObjects()[0]->getTransform().getPosition(), glm::vec3(1.0, 1.0, 6.0));
     cr_assert_eq(parser.getScene().getObjects()[0]->getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(parser.getScene().getObjects()[0]->getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
-    cr_assert_eq(parser.getScene().getCameras().size(), 2);
+    cr_assert_eq(parser.getScene().getCameras().size(), 1);
     cr_assert_eq(parser.getScene().getCameras()[0].getFov(), 90.0);
     cr_assert_eq(parser.getScene().getCameras()[0].getAspect(), 1.0);
     cr_assert_eq(parser.getScene().getCameras()[0].getNear(), 2.0);
     cr_assert_eq(parser.getScene().getCameras()[0].getTransform().getPosition(), glm::vec3(1.0, 1.0, 1.0));
     cr_assert_eq(parser.getScene().getCameras()[0].getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
-    cr_assert_eq(parser.getScene().getCameras()[1].getFov(), 50.0);
-    cr_assert_eq(parser.getScene().getCameras()[1].getAspect(), 3.0);
-    cr_assert_eq(parser.getScene().getCameras()[1].getNear(), 3.0);
-    cr_assert_eq(parser.getScene().getCameras()[1].getTransform().getPosition(), glm::vec3(3.0, 3.0, 3.0));
-    cr_assert_eq(parser.getScene().getCameras()[1].getTransform().getScale(), glm::vec3(3.0, 3.0, 3.0));
+}
+
+Test(SceneParser, ParseSphere)
+{
+    std::string path = "scenes/tests/testSphere.json";
+    JsonObject root = JsonObject::parseFile(path);
+    auto *objectsJson = root.getValue<JsonArray>("objects");
+    auto *sphereJson = objectsJson->getValue<JsonObject>(0);
+    auto properties = SphereProperties(sphereJson);
+    Sphere sphere(properties);
+
+    cr_assert_eq(sphere.getMaterial().getColor(), glm::vec3(255.0, 0.0, 0.0));
+    cr_assert_eq(sphere.getMaterial().getEmission(), glm::vec3(0.0, 0.0, 0.0));
+    cr_assert_eq(sphere.getMaterial().getBrightness(), 0.0);
+    cr_assert_eq(sphere.getMaterial().getRoughness(), 1.0);
+    cr_assert_eq(sphere.getTransform().getPosition(), glm::vec3(1.0, 1.0, 6.0));
+    cr_assert_eq(sphere.getTransform().getScale(), glm::vec3(1.0, 1.0, 1.0));
+    cr_assert_eq(sphere.getTextures().at(Texture::TextureType::NORMAL).getPath(), "test_texture.png");
+    cr_assert_eq(sphere.getProperties().getRadius() , 10.0);
+    std::cout << sphere.getTriangles().size() << std::endl;
+    cr_assert_eq(sphere.getTriangles().size(), 1280);
 }

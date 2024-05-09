@@ -15,110 +15,26 @@ static std::vector<Triangle> generateTriangles(float length, float width, float 
     float offsetX = length / 2.f;
     float offsetY = height / 2.f;
     float offsetZ = width / 2.f;
-    std::vector<Triangle> triangles;
-    Triangle triangle{};
-
-    //front
-    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
-    triangle.v2 = glm::vec3(offsetX, offsetY, -offsetZ);
-    triangle.normalV0 = {0.0f, 0.0f, -1.0f};
-    triangle.normalV1 = {0.0f, 0.0f, -1.0f};
-    triangle.normalV2 = {0.0f, 0.0f, -1.0f};
-    triangles.push_back(triangle);
-
-    triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
-    triangle.v2 = glm::vec3(offsetX, -offsetY, -offsetZ);
-    triangle.normalV0 = {0.0f, 0.0f, -1.0f};
-    triangle.normalV1 = {0.0f, 0.0f, -1.0f};
-    triangle.normalV2 = {0.0f, 0.0f, -1.0f};
-    triangles.push_back(triangle);
-
-    //right
-    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(offsetX, offsetY, -offsetZ);
-    triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {1.0f, 0.0f, 0.0f};
-    triangle.normalV1 = {1.0f, 0.0f, 0.0f};
-    triangle.normalV2 = {1.0f, 0.0f, 0.0f};
-    triangles.push_back(triangle);
-
-    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {1.0f, 0.0f, 0.0f};
-    triangle.normalV1 = {1.0f, 0.0f, 0.0f};
-    triangle.normalV2 = {1.0f, 0.0f, 0.0f};
-    triangles.push_back(triangle);
-
-    //back
-    triangle.v0 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
-    triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {0.0f, 0.0f, 1.0f};
-    triangle.normalV1 = {0.0f, 0.0f, 1.0f};
-    triangle.normalV2 = {0.0f, 0.0f, 1.0f};
-    triangles.push_back(triangle);
-
-    triangle.v0 = glm::vec3(-offsetX, -offsetY, offsetZ);
-    triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.v2 = glm::vec3(-offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {0.0f, 0.0f, 1.0f};
-    triangle.normalV1 = {0.0f, 0.0f, 1.0f};
-    triangle.normalV2 = {0.0f, 0.0f, 1.0f};
-    triangles.push_back(triangle);
-
-    //left
-    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(-offsetX, -offsetY, -offsetZ);
-    triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {-1.0f, 0.0f, 0.0f};
-    triangle.normalV1 = {-1.0f, 0.0f, 0.0f};
-    triangle.normalV2 = {-1.0f, 0.0f, 0.0f};
-    triangles.push_back(triangle);
-
-    triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
-    triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {-1.0f, 0.0f, 0.0f};
-    triangle.normalV1 = {-1.0f, 0.0f, 0.0f};
-    triangle.normalV2 = {-1.0f, 0.0f, 0.0f};
-    triangles.push_back(triangle);
-
-    //top
-    triangle.v0 = glm::vec3(offsetX, offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(-offsetX, offsetY, -offsetZ);
-    triangle.v2 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {0.0f, 1.0f, 0.0f};
-    triangle.normalV1 = {0.0f, 1.0f, 0.0f};
-    triangle.normalV2 = {0.0f, 1.0f, 0.0f};
-    triangles.push_back(triangle);
-
-    triangle.v0 = glm::vec3(-offsetX, offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(offsetX, offsetY, offsetZ);
-    triangle.v2 = glm::vec3(-offsetX, offsetY, offsetZ);
-    triangle.normalV0 = {0.0f, 1.0f, 0.0f};
-    triangle.normalV1 = {0.0f, 1.0f, 0.0f};
-    triangle.normalV2 = {0.0f, 1.0f, 0.0f};
-    triangles.push_back(triangle);
-
-    //bottom
-    triangle.v0 = glm::vec3(offsetX, -offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.v2 = glm::vec3(-offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {0.0f, 1.0f, 0.0f};
-    triangle.normalV1 = {0.0f, 1.0f, 0.0f};
-    triangle.normalV2 = {0.0f, 1.0f, 0.0f};
-    triangles.emplace_back(triangle);
-
-    triangle.v0 = glm::vec3(-offsetX, -offsetY, -offsetZ);
-    triangle.v1 = glm::vec3(-offsetX, -offsetY, offsetZ);
-    triangle.v2 = glm::vec3(offsetX, -offsetY, offsetZ);
-    triangle.normalV0 = {0.0f, -1.0f, 0.0f};
-    triangle.normalV1 = {0.0f, -1.0f, 0.0f};
-    triangle.normalV2 = {0.0f, -1.0f, 0.0f};
-    triangles.push_back(triangle);
+    std::vector<Triangle> triangles = {
+            // Front
+            {{-offsetX, -offsetY, -offsetZ}, {-offsetX, offsetY, -offsetZ}, {offsetX, offsetY, -offsetZ}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}},
+            {{-offsetX, -offsetY, -offsetZ}, {offsetX, offsetY, -offsetZ}, {offsetX, -offsetY, -offsetZ}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}},
+            // Back
+            {{-offsetX, -offsetY, offsetZ}, {offsetX, -offsetY, offsetZ}, {offsetX, offsetY, offsetZ}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}},
+            {{-offsetX, -offsetY, offsetZ}, {offsetX, offsetY, offsetZ}, {-offsetX, offsetY, offsetZ}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}},
+            // Left
+            {{-offsetX, -offsetY, -offsetZ}, {-offsetX, -offsetY, offsetZ}, {-offsetX, offsetY, offsetZ}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}},
+            {{-offsetX, -offsetY, -offsetZ}, {-offsetX, offsetY, offsetZ}, {-offsetX, offsetY, -offsetZ}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}},
+            // Right
+            {{offsetX, -offsetY, -offsetZ}, {offsetX, offsetY, -offsetZ}, {offsetX, offsetY, offsetZ}, {1, 0, 0}, {1, 0, 0}, {1, 0, 0}},
+            {{offsetX, -offsetY, -offsetZ}, {offsetX, offsetY, offsetZ}, {offsetX, -offsetY, offsetZ}, {1, 0, 0}, {1, 0, 0}, {1, 0, 0}},
+            // Top
+            {{-offsetX, offsetY, -offsetZ}, {-offsetX, offsetY, offsetZ}, {offsetX, offsetY, offsetZ}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}},
+            {{-offsetX, offsetY, -offsetZ}, {offsetX, offsetY, offsetZ}, {offsetX, offsetY, -offsetZ}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}},
+            // Bottom
+            {{-offsetX, -offsetY, -offsetZ}, {offsetX, -offsetY, -offsetZ}, {offsetX, -offsetY, offsetZ}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0}},
+            {{-offsetX, -offsetY, -offsetZ}, {offsetX, -offsetY, offsetZ}, {-offsetX, -offsetY, offsetZ}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0}},
+    };
 
     return triangles;
 }
