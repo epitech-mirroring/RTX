@@ -8,6 +8,7 @@
 
 #include "Application.hpp"
 #include "SceneParser.hpp"
+#include "primitives/Sphere.hpp"
 #include "primitives/Cube.hpp"
 #include "primitives/Rectangle.hpp"
 #include <iostream>
@@ -17,20 +18,38 @@
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) {
-        std::cerr << "Usage: ./rtx \"scene file\"" << std::endl;
+    Scene scene;
+    std::string filename;
+    if (argc > 1) {
+        filename = argv[1];
+    }
+    else {
+        std::cerr << "Usage: " << argv[0] << " <filename>" << std::endl;
         return 84;
     }
-    ObjectsFactory objFactory = ObjectsFactory();
-    PropertiesFactory propFactory = PropertiesFactory();
-    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
-    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
-    propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
-    propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
-    std::string path = std::string(argv[1]);
-    SceneParser parser = SceneParser(path, propFactory, objFactory);
+    PropertiesFactory propertiesFactory;
+    ObjectsFactory objectsFactory;
+    propertiesFactory.registerProperties("sphere", [](JsonObject *obj) {
+        return new SphereProperties(obj);
+    });
+    objectsFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object *{
+        return new Sphere(dynamic_cast<SphereProperties &>(properties));
+    });
+    propertiesFactory.registerProperties("cube", [](JsonObject *obj) {
+        return new CubeProperties(obj);
+    });
+    objectsFactory.registerObject("cube", [](AbstractProperties &properties) -> Object *{
+        return new Cube(dynamic_cast<CubeProperties &>(properties));
+    });
+    propertiesFactory.registerProperties("rectangle", [](JsonObject *obj) {
+        return new RectangleProperties(obj);
+    });
+    objectsFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object *{
+        return new Rectangle(dynamic_cast<RectangleProperties &>(properties));
+    });
+    SceneParser parser(filename, propertiesFactory, objectsFactory);
     parser.parse();
-    Scene scene = parser.getScene();
+    scene = parser.getScene();
 
     Application app(WIDTH, HEIGHT, "RTX", &scene);
 
