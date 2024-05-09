@@ -12,19 +12,19 @@
 #include "primitives/Properties/CubeProperties.hpp"
 
 class Cube : public Object {
-    public:
-        Cube();
-        Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, std::size_t size);
-        Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const CubeProperties& properties);
-        Cube(const Cube &other);
-        explicit Cube(JsonObject *obj);
-        explicit Cube(CubeProperties &properties);
-        ~Cube() override = default;
+public:
+    Cube();
+    Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, float size);
+    Cube(const Material& material, const Transform& transform, const std::vector<Texture>& textures, const CubeProperties& properties);
+    Cube(const Cube &other);
+    explicit Cube(JsonObject *obj);
+    explicit Cube(CubeProperties &properties);
+    ~Cube() override = default;
 
-        [[nodiscard]] CubeProperties getProperties() const;
-        [[nodiscard]] CubeProperties &getProperties();
-        std::size_t getSize() const { return _properties.getSize(); }
-        std::size_t &getSize() { return _properties.getSize(); }
-    protected:
-        CubeProperties _properties{};
+    [[nodiscard]] CubeProperties getProperties() const;
+    [[nodiscard]] CubeProperties &getProperties();
+    float getSize() const;
+    float &getSize();
+protected:
+    CubeProperties _properties{};
 };

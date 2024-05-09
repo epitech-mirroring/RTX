@@ -33,9 +33,8 @@ SceneParser::SceneParser(std::string &path, PropertiesFactory &propertiesFactory
 void SceneParser::setPath(std::string &path)
 {
     if (path.substr(path.find_last_of('.') + 1) != "json") {
-        throw std::invalid_argument(&"Error: Invalid file format, need .json and get " [  path.find_last_of(".")]);
         path = "";
-        return;
+        throw std::invalid_argument(&"Error: Invalid file format, need .json and get " [  path.find_last_of('.')]);
     }
     this->_path = path;
 }

@@ -16,10 +16,12 @@ CXX_SOURCES		= 	src/main.cpp										\
 					src/objects/Object.cpp								\
 					src/Scene.cpp										\
 					src/SceneParser.cpp									\
+					src/primitives/Rectangle.cpp						\
 					src/primitives/Cube.cpp								\
 					src/primitives/ObjectsFactory.cpp					\
 					src/primitives/Properties/AbstractProperties.cpp	\
 					src/primitives/Properties/PropertiesFactory.cpp		\
+					src/primitives/Properties/CubeProperties.cpp		\
 					src/Application.cpp									\
 
 SHADERS 		= 	shaders/screen.vert									\
@@ -30,7 +32,8 @@ CXX_TESTS		=	tests/testsMaterial.cpp								\
 					tests/testsTexture.cpp								\
 					tests/testsSceneParser.cpp							\
 
-LIBS			=   libs/json/libjson.so
+LIBS			=   libs/json/libjson.so								\
+					parser/objFile/libobj.so
 
 # Compiler and linker settings
 NAME 			= 	raytracer
@@ -38,7 +41,7 @@ CXX				= 	g++
 GLSLC			=	$(shell which glslc)
 GLSL_FLAGS		=   -O
 CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include  \
-				 	-L. -ljson -lglfw -lvulkan -ldl -lpthread -lX11 -O3
+				 	-L. -ljson -lobj -lglfw -lvulkan -ldl -lpthread -lX11 -O3
 MACOS_FLAGS		= 	-rpath /usr/local/lib/
 LINUX_FLAGS		=
 CXXFLAGS		+=	$(shell [ `uname -s` = "Darwin" ] && echo $(MACOS_FLAGS))

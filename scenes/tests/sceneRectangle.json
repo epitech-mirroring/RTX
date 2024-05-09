@@ -1,0 +1,71 @@
+{
+  "cameras": [
+    {
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        }
+      },
+      "fov": 90.0,
+      "aspect": 1.0,
+      "near": 2.0
+    }
+  ],
+  "objects": [
+    {
+      "type": "rectangle",
+      "material": {
+        "color": {
+          "r": 1.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "emission": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "brightness": 0.0,
+        "roughness": 1.0
+      },
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 5.0,
+          "z": 10.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "textures": [
+        {
+          "path": "test_texture.png",
+          "type": "normal"
+        }
+      ],
+      "length": 10,
+      "width": 3,
+      "height": 5
+    }
+  ]
+}

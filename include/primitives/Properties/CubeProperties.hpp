@@ -12,14 +12,14 @@
 #include "json/Json.hpp"
 
 class CubeProperties : public AbstractProperties {
-    public:
-        CubeProperties() : AbstractProperties() { _size = 1; };
-        explicit CubeProperties(std::size_t size) : AbstractProperties() { _size = size; };
-        explicit CubeProperties(JsonObject *obj) : AbstractProperties(obj) { _size = obj->getInt("size");};
-        ~CubeProperties() override = default;
-        [[nodiscard]] std::size_t getSize() const { return _size; }
-        [[nodiscard]] std::size_t &getSize() { return _size; }
-        void setSize(std::size_t size) { _size = size; }
-    protected:
-        std::size_t _size;
+public:
+    CubeProperties();
+    explicit CubeProperties(float size);
+    explicit CubeProperties(JsonObject *obj);
+    ~CubeProperties() override = default;
+    [[nodiscard]] float getSize() const;
+    [[nodiscard]] float &getSize();
+    void setSize(float size);
+protected:
+    float _size;
 };
