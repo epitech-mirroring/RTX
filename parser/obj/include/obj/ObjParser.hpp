@@ -7,12 +7,12 @@
 
 
 #pragma once
-
+#include "Object.hpp"
 #include "AbstractParser.hpp"
 
 // will be used to store every data related to the texture
 
-struct objMaterial {
+struct ObjMaterial {
     std::string name;
     std::vector<glm::vec3> ambient;
     std::vector<glm::vec3> diffuse;

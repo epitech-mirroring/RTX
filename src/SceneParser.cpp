@@ -103,6 +103,7 @@ void SceneParser::parseSceneSettings(JsonObject *obj)
     try {
         _scene.setSkyBoxEnabled(obj->getBoolean("skybox-enabled"));
     } catch (std::exception &e) {
+        _scene.setSkyBoxEnabled(false);
     }
 }
 

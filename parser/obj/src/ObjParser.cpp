@@ -5,7 +5,7 @@
 ** objParser
 */
 
-#include "objParser/ObjParser.hpp"
+#include "obj/ObjParser.hpp"
 
 static std::vector<std::string> split(const std::string &s, char delimiter) {
     std::vector<std::string> tokens;
@@ -41,11 +41,11 @@ void ObjParser::parseFaces(const std::string& line)
     if (line.substr(0, 2) == "f ") {
         std::vector<std::string> tokens = split(line.substr(2), ' ');
         if (tokens.size() >= 3) {
-            Triangle tri;
+            Triangle tri{};
             std::vector<int> vertexIndices, normalIndices;
             for (auto& token : tokens) {
                 auto parts = split(token, '/');
-                if (parts.size() >= 1 && !parts[0].empty()) {
+                if (!parts.empty() && !parts[0].empty()) {
                     vertexIndices.push_back(std::stoi(parts[0]) - 1);
                 }
                 if (parts.size() == 3 && !parts[2].empty()) {
@@ -77,12 +77,13 @@ Object *ObjParser::parseFile(const std::string& filename)
 {
     // remain to implement texture
     Transform objTransform;
+    Material objMaterial;
     std::vector<Texture> textures;
 
     std::string line;
     std::ifstream file(filename);
 
-    if (filename.substr(filename.find_last_of(".") + 1) != "obj") {
+    if (filename.substr(filename.find_last_of('.') + 1) != "obj") {
         std::cerr << "Invalid file format: " << filename << std::endl;
         return nullptr;
     }
@@ -99,5 +100,5 @@ Object *ObjParser::parseFile(const std::string& filename)
         parseFaces(line);
     }
     file.close();
-    return new Object({}, objTransform, trianglesBuffer, textures);
+    return new Object(objMaterial, objTransform, trianglesBuffer, textures);
 }

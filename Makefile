@@ -33,7 +33,7 @@ CXX_TESTS		=	tests/testsMaterial.cpp								\
 					tests/testsSceneParser.cpp							\
 
 LIBS			=   libs/json/libjson.so								\
-					parser/objFile/libobj.so
+					parser/obj/libobj.so								\
 
 # Compiler and linker settings
 NAME 			= 	raytracer
@@ -56,7 +56,7 @@ CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 LOG				=	./build.log
 
 .PHONY: all clean fclean re tests_run \
-	clean_test $(LIBS) clean_libs fclean_libs clion
+	clean_test $(LIBS) clean_libs fclean_libs clion _tests_run
 
 # Colors and formatting
 GREEN =		\033[1;32m
@@ -71,6 +71,12 @@ RUNNING = [$(YELLOW)~$(RESET)]
 SUCCESS = [$(GREEN)✔$(RESET)]
 FAILURE = [$(RED)✘$(RESET)]
 SKIPPED = [$(MAGENTA)@$(RESET)]
+
+ifeq ($(ENABLE_COVERAGE), 1)
+	CXXFLAGS += --coverage
+else
+	CXXFLAGS += -O2
+endif
 
 all: $(LIBS)
 # Check if $(NAME) is up to date
@@ -269,7 +275,10 @@ passed successfully$(RESET)\n" \
 failed$(RESET)\n" && exit 1); \
 	done
 
-tests_run: fclean tests_libs $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
+tests_run:
+	@ENABLE_COVERAGE='1' make _tests_run --no-print-directory
+
+_tests_run: fclean tests_libs $(LIBS) $(CXX_OBJS) $(CXX_TESTS_OBJS)
 	@printf "$(RUNNING) $(BLUE) 🔗   Linking for $(shell uname -m)\
  architecture$(RESET)";
 	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \

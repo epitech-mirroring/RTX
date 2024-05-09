@@ -117,3 +117,4 @@ node_modules/
 .vscode/
 *.spv
 include/json/
+include/obj/
