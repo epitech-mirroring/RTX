@@ -116,3 +116,5 @@ node_modules/
 *.lockb
 .vscode/
 *.spv
+include/json/
+include/obj/

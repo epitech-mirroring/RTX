@@ -50,6 +50,7 @@ void SceneParser::parse()
     JsonObject root = JsonObject::parseFile(this->_path);
     this->_scene.setCameras(SceneParser::parseCameras(root));
     this->_scene.setObjects(this->parseObjects(root));
+    this->parseSceneSettings(root.getValue<JsonObject>("settings"));
 }
 
 std::vector<Camera> SceneParser::parseCameras(JsonObject &root)
@@ -92,6 +93,18 @@ std::vector<Object *> SceneParser::parseObjects(JsonObject &root)
         objectsVector.push_back(object);
     }
     return objectsVector;
+}
+
+void SceneParser::parseSceneSettings(JsonObject *obj)
+{
+    if (obj == nullptr) {
+        return;
+    }
+    try {
+        _scene.setSkyBoxEnabled(obj->getBoolean("skybox-enabled"));
+    } catch (std::exception &e) {
+        _scene.setSkyBoxEnabled(false);
+    }
 }
 
 Scene &SceneParser::getScene()

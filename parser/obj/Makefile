@@ -1,34 +1,32 @@
 ##
 ## EPITECH PROJECT, 2024
-## Json
+## objParser
 ## File description:
 ## This is the Makefile for the  project
-## (more specifically the JSON library)
+## (more specifically the objParser library)
 ## It job is to compile, clean and tests the project
 ##
 
 # All the source files
-CXX_SOURCES		= 	src/JsonObject.cpp			\
-					src/JsonArray.cpp			\
-					src/JsonBoolean.cpp			\
-					src/JsonInt.cpp				\
-					src/JsonString.cpp			\
-					src/JsonFloat.cpp			\
+CXX_SOURCES		= 	src/ObjParser.cpp 		\
 
-CXX_TESTS		=   tests/json_parser.cpp	\
-					tests/json_save.cpp		\
+CXX_TESTS		=
 
 # Compiler and linker settings
-NAME 			= 	libjson.so
+NAME 			= 	libobj.so
 CXX				= 	g++
-CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include -fPIC
-LDFLAGS			= 	-shared
+LD				= 	g++
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I../../include \
+					-I./include -fPIC
+LDFLAGS			= 	-shared -fPIC
+MACOS_LDFLAGS	= 	-dynamiclib -Bsymbolic -flat_namespace -undefined suppress
+LDFLAGS			+=	$(shell [ `uname` = "Darwin" ] && echo $(MACOS_LDFLAGS))
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)
 CXX_TESTS_OBJS	= 	$(CXX_TESTS:.cpp=.o)
 
 LOG				=	./build.log
 
-.PHONY: all clean fclean re tests_run clean_test _tests_run
+.PHONY: all clean fclean re tests_run clean_test clion
 
 # Colors and formatting
 GREEN =		\033[1;32m
@@ -43,12 +41,6 @@ RUNNING = [$(YELLOW)~$(RESET)]
 SUCCESS = [$(GREEN)✔$(RESET)]
 FAILURE = [$(RED)✘$(RESET)]
 SKIPPED = [$(MAGENTA)@$(RESET)]
-
-ifeq ($(ENABLE_COVERAGE), 1)
-	CXXFLAGS += --coverage
-else
-	CXXFLAGS += -O2
-endif
 
 all:
 # Check if $(NAME) is up to date
@@ -69,7 +61,7 @@ $(NAME) already up to date$(RESET)\n"; \
 $(NAME):	$(CXX_OBJS)
 # Link the object files
 		@printf "$(RUNNING) $(BLUE) 🔗   Linking$(RESET)"
-		@$(CXX) -o $(NAME) $(CXX_OBJS) $(CXXFLAGS) $(LDFLAGS) >> $(LOG) 2>&1 \
+		@$(LD) -o $(NAME) $(CXX_OBJS) $(LDFLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || (printf "\r$(FAILURE)\n" && cat $(LOG) \
 		&& exit 1)
 # Check if the binary was created
@@ -81,6 +73,8 @@ $(NAME):	$(CXX_OBJS)
 			cat $(LOG); \
 			exit 1; \
 		fi
+
+clion: $(CXX_OBJS)
 
 $(CXX_OBJS):	%.o: %.cpp
 # Compile the source file
@@ -132,28 +126,9 @@ $(CXX_TESTS_OBJS):	%.o: %.cpp
 		@$(CXX) -o $@ -c $< $(CXXFLAGS) >> $(LOG) 2>&1 \
 		&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n"
 
-tests_run:
-	@ENABLE_COVERAGE='1' make _tests_run --no-print-directory
-
-_tests_run: fclean $(CXX_OBJS) $(CXX_TESTS_OBJS)
-	@printf "$(RUNNING) $(BLUE) 🔗   Linking for $(shell uname -m)\
- architecture$(RESET)";
-	@$(CXX) -o tests.out $(filter-out src/main.o, $(CXX_OBJS)) \
-	$(CXX_TESTS_OBJS) $(CXXFLAGS) \
-	$(shell [ `uname -m` != "arm64" ]	\
-	&& echo "-lcriterion" \
-	|| echo "-lcriterion") >> $(LOG) 2>&1 \
-	&& printf "\r$(SUCCESS)\n" || printf "\r$(FAILURE)\n";
-	@printf "$(RUNNING)$(MAGENTA)  ⚗️    Running tests$(RESET)" \
-	&& ./tests.out --xml=criterion.xml --ignore-warnings >> tests.log 2>&1 \
-	&& printf "\r$(SUCCESS)\n" \
-	|| (printf "\r$(FAILURE)\n" && cat tests.log && exit 1);
-	@cat tests.log;
-	@printf "$(RUNNING)$(YELLOW)  📊   Generating coverage$(RESET)" \
-	&& gcovr --exclude tests/ >> coverage.log 2>&1 \
-	&& printf "\r$(SUCCESS)\n" \
-	|| printf "\r$(FAILURE)\n";
-	@cat coverage.log;
+tests_run: fclean
+	@printf "$(SKIPPED) $(MAGENTA) 🧪   Tests are not available$(RESET)\n";
+	@exit 0;
 
 clean_test:
 	@printf "$(RUNNING) $(RED) 🗑️    Deleting tests.out$(RESET)"

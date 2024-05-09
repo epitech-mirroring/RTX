@@ -193,6 +193,7 @@ Test(SceneParser, ParseScene)
     SceneParser parser = SceneParser(path, factory, objFactory);
     parser.parse();
 
+    cr_assert_eq(parser.getScene().isSkyBoxEnabled(), true);
     cr_assert_eq(parser.getScene().getObjects().size(), 1);
     cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getColor(), glm::vec3(255.0, 0.0, 0.0));
     cr_assert_eq(parser.getScene().getObjects()[0]->getMaterial().getEmission(), glm::vec3(0.0, 0.0, 0.0));
