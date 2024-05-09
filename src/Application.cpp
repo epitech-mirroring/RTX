@@ -276,7 +276,6 @@ void Application::initVulkan()
     createUniformBuffers();
     createDescriptorPool();
     createComputeDescriptorPool();
-    //createSampler();
     createDescriptorSets();
     createComputeDescriptorSets();
     createCommandBuffer();
@@ -845,28 +844,6 @@ void Application::createImages()
 
     if (_device.createImageView(&viewInfo, nullptr, &_computeOutputImageView) != vk::Result::eSuccess) {
         throw std::runtime_error("Failed to create output image view!");
-    }
-}
-
-void Application::createSampler()
-{
-    vk::SamplerCreateInfo samplerInfo;
-    samplerInfo.sType = vk::StructureType::eSamplerCreateInfo;
-    samplerInfo.magFilter = vk::Filter::eLinear;
-    samplerInfo.minFilter = vk::Filter::eLinear;
-    samplerInfo.addressModeU = vk::SamplerAddressMode::eRepeat;
-    samplerInfo.addressModeV = vk::SamplerAddressMode::eRepeat;
-    samplerInfo.addressModeW = vk::SamplerAddressMode::eRepeat;
-    samplerInfo.anisotropyEnable = vk::False;
-    samplerInfo.maxAnisotropy = 16;
-    samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
-    samplerInfo.unnormalizedCoordinates = vk::False;
-    samplerInfo.compareEnable = vk::False;
-    samplerInfo.compareOp = vk::CompareOp::eAlways;
-    samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
-
-    if (_device.createSampler(&samplerInfo, nullptr, &_textureSampler) != vk::Result::eSuccess) {
-        throw std::runtime_error("Failed to create texture sampler!");
     }
 }
 
@@ -1818,11 +1795,11 @@ void Application::createDescriptorPool()
     uniforms.type = vk::DescriptorType::eUniformBuffer;
     uniforms.descriptorCount = static_cast<uint32_t>(1);
 
-    vk::DescriptorPoolSize samplers;
-    samplers.type = vk::DescriptorType::eStorageImage;
-    samplers.descriptorCount = static_cast<uint32_t>(1);
+    vk::DescriptorPoolSize image;
+    image.type = vk::DescriptorType::eStorageImage;
+    image.descriptorCount = static_cast<uint32_t>(1);
 
-    std::array<vk::DescriptorPoolSize, 2> poolSizes = {uniforms, samplers};
+    std::array<vk::DescriptorPoolSize, 2> poolSizes = {uniforms, image};
 
     vk::DescriptorPoolCreateInfo poolInfo;
     poolInfo.sType = vk::StructureType::eDescriptorPoolCreateInfo;

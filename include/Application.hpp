@@ -109,7 +109,6 @@ protected:
     vk::DescriptorSetLayout _computeDescriptorSetLayout;
     vk::PipelineLayout _pipelineLayout;
     vk::PipelineLayout _computePipelineLayout;
-    vk::Sampler _textureSampler;
     vk::RenderPass _renderPass;
     vk::Pipeline _graphicsPipeline;
     vk::Pipeline _computePipeline;
@@ -212,7 +211,6 @@ protected:
     void createSwapChain();
     void createImageViews();
     void createImages();
-    void createSampler();
     void createRenderPass();
     void createFrameBuffers();
     void createGraphicsPipeline();
