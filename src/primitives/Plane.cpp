@@ -7,38 +7,50 @@
 */
 
 #include "primitives/Plane.hpp"
+#include <iostream>
 
-static std::vector<Triangle> createPlaneTriangles(PlaneProperties *properties) {
+static std::vector<Triangle> createPlaneTriangles(PlaneProperties &properties) {
     std::vector<Triangle> triangles;
-    Triangle triangle1;
-    Triangle triangle2;
-    float width = properties->getWidth();
-    float height = properties->getHeight();
+    Triangle triangle1{};
+    Triangle triangle2{};
+    float width = properties.getWidth();
+    float height = properties.getHeight();
 
-    triangle1.v0 =  glm::vec3 {};
+    triangle1.v0 =  glm::vec3 {-width / 2, 0, -height / 2};
+    triangle1.v1 =  glm::vec3 {width / 2, 0, -height / 2};
+    triangle1.v2 =  glm::vec3 {width / 2, 0, height / 2};
+
+    triangle2.v0 =  glm::vec3 {-width / 2, 0, -height / 2};
+    triangle2.v1 =  glm::vec3 {width / 2, 0, height / 2};
+    triangle2.v2 =  glm::vec3 {-width / 2, 0, height / 2};
+
+    triangles.push_back(triangle1);
+    triangles.push_back(triangle2);
     return triangles;
 }
 
-Plane::Plane() {
-    _properties = new PlaneProperties();
+Plane::Plane() : Object() {
+    _properties = PlaneProperties();
 }
 
-Plane::Plane(PlaneProperties *properties) {
+Plane::Plane(PlaneProperties &properties) : Object(), _properties(properties){
     _properties = properties;
+    _triangles = createPlaneTriangles(_properties);
 }
 
-Plane::Plane(const Material &material, const Transform &transform, const std::vector<Texture> &textures, float height, float width) : Object(material, transform, createPlaneTriangles(_properties), textures) {
-    _properties = new PlaneProperties(height, width);
+Plane::Plane(const Material &material, const Transform &transform, const std::vector<Texture> &textures, float height, float width) : Object(material, transform, std::vector<Triangle>(), textures) {
+    _properties = PlaneProperties(height, width);
+    _triangles = createPlaneTriangles(_properties);
 }
 
-PlaneProperties *Plane::getProperties() const {
+PlaneProperties Plane::getProperties() const {
     return _properties;
 }
 
-PlaneProperties *Plane::getProperties() {
+PlaneProperties &Plane::getProperties() {
     return _properties;
 }
 
-void Plane::setProperties(PlaneProperties *properties) {
+void Plane::setProperties(PlaneProperties &properties) {
     _properties = properties;
 }

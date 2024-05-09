@@ -7,20 +7,21 @@
 */
 
 #include "primitives/Properties/PlaneProperties.hpp"
+#include <iostream>
 
-PlaneProperties::PlaneProperties()
+PlaneProperties::PlaneProperties() : AbstractProperties()
 {
     _height = 0.0f;
     _width = 0.0f;
 }
 
-PlaneProperties::PlaneProperties(const float height, const float width)
+PlaneProperties::PlaneProperties(const float height, const float width) : AbstractProperties()
 {
     _height = height;
     _width = width;
 }
 
-PlaneProperties::PlaneProperties(JsonObject *obj) {
+PlaneProperties::PlaneProperties(JsonObject *obj) : AbstractProperties(obj){
     _height = obj->getFloat("height");
     _width = obj->getFloat("width");
 }
