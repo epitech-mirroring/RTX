@@ -142,6 +142,7 @@ static std::vector<char> readFile(const std::string& filename) {
 
 Application::Application(glm::vec2 windowSize, const std::string &appName, Scene *scene)
 {
+    _running = false;
     _windowSize = windowSize;
     _appName = appName;
     _window = nullptr;
@@ -176,6 +177,7 @@ Application::Application(glm::vec2 windowSize, const std::string &appName, Scene
 
 Application::Application(unsigned int width, unsigned int height, const std::string &appName, Scene *scene)
 {
+    _running = false;
     _windowSize = glm::vec2(width, height);
     _appName = appName;
     _window = nullptr;
@@ -234,6 +236,7 @@ Application::Application(unsigned int width, unsigned int height, const std::str
 
 void Application::run(const std::function<void()>& update)
 {
+    _running = true;
     initWindow();
     initVulkan();
     loop(update);
@@ -438,7 +441,7 @@ void Application::createSurface()
 
 void Application::loop(const std::function<void()>& update)
 {
-    while (!glfwWindowShouldClose(_window)) {
+    while (!glfwWindowShouldClose(_window) && _running) {
         drawFrame();
         if (update) {
             update();
@@ -1233,8 +1236,6 @@ void Application::recordComputeCommandBuffer(vk::CommandBuffer commandBuffer) {
     transferToInputBarrier.subresourceRange.layerCount = 1;
     transferToInputBarrier.srcAccessMask = vk::AccessFlagBits::eShaderRead;
     transferToInputBarrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
-    transferToInputBarrier.srcAccessMask = vk::AccessFlagBits::eShaderRead;
-    transferToInputBarrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
 
     vk::ImageMemoryBarrier inputToTransferBarrier;
     inputToTransferBarrier.sType = vk::StructureType::eImageMemoryBarrier;
@@ -1248,8 +1249,6 @@ void Application::recordComputeCommandBuffer(vk::CommandBuffer commandBuffer) {
     inputToTransferBarrier.subresourceRange.levelCount = 1;
     inputToTransferBarrier.subresourceRange.baseArrayLayer = 0;
     inputToTransferBarrier.subresourceRange.layerCount = 1;
-    inputToTransferBarrier.srcAccessMask = vk::AccessFlagBits::eShaderRead;
-    inputToTransferBarrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
     inputToTransferBarrier.srcAccessMask = vk::AccessFlagBits::eShaderRead;
     inputToTransferBarrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
 
@@ -1288,8 +1287,6 @@ void Application::recordComputeCommandBuffer(vk::CommandBuffer commandBuffer) {
     inputBarrier.subresourceRange.layerCount = 1;
     inputBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
     inputBarrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-    inputBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
-    inputBarrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
 
     vk::ImageMemoryBarrier outputBarrier;
     outputBarrier.sType = vk::StructureType::eImageMemoryBarrier;
@@ -1303,8 +1300,6 @@ void Application::recordComputeCommandBuffer(vk::CommandBuffer commandBuffer) {
     outputBarrier.subresourceRange.levelCount = 1;
     outputBarrier.subresourceRange.baseArrayLayer = 0;
     outputBarrier.subresourceRange.layerCount = 1;
-    outputBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
-    outputBarrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
     outputBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
     outputBarrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
 
@@ -1328,8 +1323,6 @@ void Application::recordComputeCommandBuffer(vk::CommandBuffer commandBuffer) {
     outputToTransferBarrier.subresourceRange.layerCount = 1;
     outputToTransferBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
     outputToTransferBarrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
-    outputToTransferBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
-    outputToTransferBarrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
 
     vk::ImageMemoryBarrier transferToOutputBarrier;
     transferToOutputBarrier.sType = vk::StructureType::eImageMemoryBarrier;
@@ -1343,8 +1336,6 @@ void Application::recordComputeCommandBuffer(vk::CommandBuffer commandBuffer) {
     transferToOutputBarrier.subresourceRange.levelCount = 1;
     transferToOutputBarrier.subresourceRange.baseArrayLayer = 0;
     transferToOutputBarrier.subresourceRange.layerCount = 1;
-    transferToOutputBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
-    transferToOutputBarrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
     transferToOutputBarrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
     transferToOutputBarrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
 
@@ -1381,8 +1372,6 @@ void Application::recordComputeCommandBuffer(vk::CommandBuffer commandBuffer) {
     barrier.subresourceRange.levelCount = 1;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
-    barrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
-    barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
     barrier.srcAccessMask = vk::AccessFlagBits::eShaderWrite;
     barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
 
@@ -2035,6 +2024,199 @@ void Application::recreateSwapChain()
 void Application::updateScene()
 {
     _sceneChanged = true;
+}
+
+std::size_t Application::getFrameIndex() const
+{
+    return _frameIndex;
+}
+
+vk::Image &Application::getCurrentImage()
+{
+    return _computeOutputImage;
+}
+
+void Application::stop()
+{
+    _running = false;
+}
+
+vk::CommandBuffer Application::beginSingleTimeCommands()
+{
+    vk::CommandBufferAllocateInfo allocInfo;
+    allocInfo.sType = vk::StructureType::eCommandBufferAllocateInfo;
+    allocInfo.level = vk::CommandBufferLevel::ePrimary;
+    allocInfo.commandPool = _commandPool;
+    allocInfo.commandBufferCount = 1;
+
+    vk::CommandBuffer commandBuffer;
+    if (_device.allocateCommandBuffers(&allocInfo, &commandBuffer) != vk::Result::eSuccess) {
+        throw std::runtime_error("failed to allocate command buffer!");
+    }
+
+    vk::CommandBufferBeginInfo beginInfo;
+    beginInfo.sType = vk::StructureType::eCommandBufferBeginInfo;
+    beginInfo.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+
+    if (commandBuffer.begin(&beginInfo) != vk::Result::eSuccess) {
+        throw std::runtime_error("failed to begin recording command buffer!");
+    }
+
+    return commandBuffer;
+}
+
+void Application::screenshot(const std::string &filename)
+{
+    vk::Image src = getCurrentImage();
+
+    vk::ImageCreateInfo imageInfo;
+    imageInfo.sType = vk::StructureType::eImageCreateInfo;
+    imageInfo.imageType = vk::ImageType::e2D;
+    imageInfo.extent.width = _swapChainExtent.width;
+    imageInfo.extent.height = _swapChainExtent.height;
+    imageInfo.extent.depth = 1;
+    imageInfo.mipLevels = 1;
+    imageInfo.arrayLayers = 1;
+    imageInfo.format = vk::Format::eR8G8B8A8Unorm;
+    imageInfo.tiling = vk::ImageTiling::eLinear;
+    imageInfo.initialLayout = vk::ImageLayout::eUndefined;
+    imageInfo.usage = vk::ImageUsageFlagBits::eTransferDst;
+    imageInfo.samples = vk::SampleCountFlagBits::e1;
+    imageInfo.sharingMode = vk::SharingMode::eExclusive;
+
+    vk::Image dst;
+    vk::DeviceMemory dstMemory;
+    if (_device.createImage(&imageInfo, nullptr, &dst) != vk::Result::eSuccess) {
+        throw std::runtime_error("failed to create image!");
+    }
+
+    vk::MemoryRequirements memRequirements;
+    _device.getImageMemoryRequirements(dst, &memRequirements);
+
+    vk::MemoryAllocateInfo allocInfo;
+    allocInfo.sType = vk::StructureType::eMemoryAllocateInfo;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+
+    if (_device.allocateMemory(&allocInfo, nullptr, &dstMemory) != vk::Result::eSuccess) {
+        throw std::runtime_error("failed to allocate image memory!");
+    }
+
+    _device.bindImageMemory(dst, dstMemory, 0);
+
+    vk::CommandBuffer copyCommandBuffer = beginSingleTimeCommands();
+
+    // Transition dst image to transfer destination layout
+    vk::ImageMemoryBarrier barrier;
+    barrier.sType = vk::StructureType::eImageMemoryBarrier;
+    barrier.oldLayout = vk::ImageLayout::eUndefined;
+    barrier.newLayout = vk::ImageLayout::eTransferDstOptimal;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = dst;
+    barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = 1;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = 1;
+    barrier.srcAccessMask = vk::AccessFlags();
+    barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+
+    copyCommandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer, vk::DependencyFlags(), nullptr, nullptr, barrier);
+
+    // Transition src image to transfer source layout
+    barrier.image = src;
+    barrier.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
+    barrier.newLayout = vk::ImageLayout::eTransferSrcOptimal;
+    barrier.srcAccessMask = vk::AccessFlags();
+    barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+
+    copyCommandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer, vk::DependencyFlags(), nullptr, nullptr, barrier);
+
+    // Blit image
+    vk::ImageBlit blit;
+    blit.srcOffsets[0] = vk::Offset3D(0, 0, 0);
+    blit.srcOffsets[1] = vk::Offset3D(_swapChainExtent.width, _swapChainExtent.height, 1);
+    blit.srcSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+    blit.srcSubresource.mipLevel = 0;
+    blit.srcSubresource.baseArrayLayer = 0;
+    blit.srcSubresource.layerCount = 1;
+    blit.dstOffsets[0] = vk::Offset3D(0, 0, 0);
+    blit.dstOffsets[1] = vk::Offset3D(_swapChainExtent.width, _swapChainExtent.height, 1);
+    blit.dstSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+    blit.dstSubresource.mipLevel = 0;
+    blit.dstSubresource.baseArrayLayer = 0;
+    blit.dstSubresource.layerCount = 1;
+
+    copyCommandBuffer.blitImage(src, vk::ImageLayout::eTransferSrcOptimal, dst, vk::ImageLayout::eTransferDstOptimal, 1, &blit, vk::Filter::eLinear);
+
+    // Transition dst image to general layout
+    barrier.image = dst;
+    barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+    barrier.newLayout = vk::ImageLayout::eGeneral;
+    barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+    barrier.dstAccessMask = vk::AccessFlags();
+
+    copyCommandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTopOfPipe, vk::DependencyFlags(), nullptr, nullptr, barrier);
+
+    // Transition src image to general layout
+    barrier.image = src;
+    barrier.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
+    barrier.newLayout = vk::ImageLayout::eGeneral;
+    barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+    barrier.dstAccessMask = vk::AccessFlags();
+
+    copyCommandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTopOfPipe, vk::DependencyFlags(), nullptr, nullptr, barrier);
+
+    // End command buffer
+    copyCommandBuffer.end();
+
+    // Submit command buffer
+    vk::SubmitInfo submitInfo;
+    submitInfo.sType = vk::StructureType::eSubmitInfo;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &copyCommandBuffer;
+
+    if (_graphicsQueue.submit(1, &submitInfo, VK_NULL_HANDLE) != vk::Result::eSuccess) {
+        throw std::runtime_error("failed to submit command buffer!");
+    }
+
+    // Wait for queue to finish
+    _graphicsQueue.waitIdle();
+
+    // Get layout of the image
+    vk::ImageSubresource subResource;
+    subResource.aspectMask = vk::ImageAspectFlagBits::eColor;
+
+    vk::SubresourceLayout subResourceLayout;
+    _device.getImageSubresourceLayout(dst, &subResource, &subResourceLayout);
+
+    const char *data;
+    if (_device.mapMemory(dstMemory, 0, memRequirements.size, vk::MemoryMapFlags(), (void **) &data) != vk::Result::eSuccess) {
+        throw std::runtime_error("failed to map memory!");
+    }
+    data += subResourceLayout.offset;
+
+    // Save image
+    std::ofstream file(filename, std::ios::out | std::ios::binary);
+    file << "P6\n" << _swapChainExtent.width << " " << _swapChainExtent.height << "\n255\n";
+    for (uint32_t y = 0; y < _swapChainExtent.height; y++) {
+        auto *row = (unsigned int *) (data);
+        for (uint32_t x = 0; x < _swapChainExtent.width; x++) {
+            file.write((char *) row, 3);
+            row++;
+        }
+        data += subResourceLayout.rowPitch;
+    }
+    file.close();
+
+    // Unmap memory
+    _device.unmapMemory(dstMemory);
+
+    // Cleanup
+    _device.freeCommandBuffers(_commandPool, 1, &copyCommandBuffer);
+    _device.destroyImage(dst, nullptr);
+    _device.freeMemory(dstMemory, nullptr);
 }
 
 Application::~Application() = default;

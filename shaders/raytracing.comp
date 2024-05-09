@@ -218,7 +218,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
             incomingLight += directLight * color;
             color *= hit.material.color;
         } else {
-            if (iIsSkyboxEnabled == 1) {
+            if (iIsSkyboxEnabled > 0) {
                 incomingLight += environmentLight(ray) * color;
             }
             break;

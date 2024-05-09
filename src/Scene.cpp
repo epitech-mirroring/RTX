@@ -19,6 +19,7 @@ Scene::Scene(Scene const &other)
 {
     _objects = other.getObjects();
     _cameras = other.getCameras();
+    _skyBoxEnabled = other.isSkyBoxEnabled();
 }
 
 Scene::~Scene()
