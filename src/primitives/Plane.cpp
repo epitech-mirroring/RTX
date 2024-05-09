@@ -19,10 +19,16 @@ static std::vector<Triangle> createPlaneTriangles(PlaneProperties &properties) {
     triangle1.v0 =  glm::vec3 {-width / 2, 0, -height / 2};
     triangle1.v1 =  glm::vec3 {width / 2, 0, -height / 2};
     triangle1.v2 =  glm::vec3 {width / 2, 0, height / 2};
+    triangle1.normalV0 = glm::vec3 {0, -1, 0};
+    triangle1.normalV1 = glm::vec3 {0, -1, 0};
+    triangle1.normalV2 = glm::vec3 {0, -1, 0};
 
     triangle2.v0 =  glm::vec3 {-width / 2, 0, -height / 2};
     triangle2.v1 =  glm::vec3 {width / 2, 0, height / 2};
     triangle2.v2 =  glm::vec3 {-width / 2, 0, height / 2};
+    triangle2.normalV0 = glm::vec3 {0, -1, 0};
+    triangle2.normalV1 = glm::vec3 {0, -1, 0};
+    triangle2.normalV2 = glm::vec3 {0, -1, 0};
 
     triangles.push_back(triangle1);
     triangles.push_back(triangle2);
@@ -33,7 +39,7 @@ Plane::Plane() : Object() {
     _properties = PlaneProperties();
 }
 
-Plane::Plane(PlaneProperties &properties) : Object(), _properties(properties){
+Plane::Plane(PlaneProperties &properties) : Object(properties) {
     _properties = properties;
     _triangles = createPlaneTriangles(_properties);
 }
