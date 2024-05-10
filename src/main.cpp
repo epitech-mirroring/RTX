@@ -87,9 +87,11 @@ static void fillFactory(ObjectsFactory &objFactory, PropertiesFactory &propFacto
     objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
     objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
     objFactory.registerObject("plane", [](AbstractProperties &properties) -> Object * {return new Plane(dynamic_cast<PlaneProperties &>(properties));});
+    objFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object * {return new Sphere(dynamic_cast<SphereProperties &>(properties));});
     propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
     propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
     propFactory.registerProperties("plane", [](JsonObject *obj) { return new PlaneProperties(obj); });
+    propFactory.registerProperties("sphere", [](JsonObject *obj) { return new SphereProperties(obj); });
 }
 
 static void checkOverwritingOutput(const std::string &outputPath, bool quiet)

@@ -6,6 +6,7 @@
 ** You can even have multiple lines if you want !
 */
 
+#include <iostream>
 #include "Material.hpp"
 
 Material::Material()
@@ -14,14 +15,18 @@ Material::Material()
     _emission = glm::vec3(0.0, 0.0, 0.0);
     _brightness = 0.0;
     _roughness = 0.0;
+    _transparency = 0.0;
+    _refractionIndex = 0.0;
 }
 
-Material::Material(const glm::vec3 &color, const glm::vec3 &emission, const double brightness, const double roughness)
+Material::Material(const glm::vec3 &color, const glm::vec3 &emission, const double brightness, const double roughness, const double transparency, const double refractionIndex)
 {
     _color = color;
     _emission = emission;
     _brightness = brightness;
     _roughness = roughness;
+    _transparency = transparency;
+    _refractionIndex = refractionIndex;
 }
 
 Material::Material(const Material &material)
@@ -30,6 +35,8 @@ Material::Material(const Material &material)
     _emission = material._emission;
     _brightness = material._brightness;
     _roughness = material._roughness;
+    _transparency = material._transparency;
+    _refractionIndex = material._refractionIndex;
 }
 
 Material::Material(JsonObject *obj)
@@ -38,6 +45,16 @@ Material::Material(JsonObject *obj)
     _emission = GlmParser::parseColor(obj->getValue<JsonObject>("emission"));
     _brightness = obj->getFloat("brightness");
     _roughness = obj->getFloat("roughness");
+    try {
+        _transparency = obj->getFloat("transparency");
+    } catch (std::exception &e) {
+        _transparency = 0.0;
+    }
+    try {
+        _refractionIndex = obj->getFloat("refractionIndex");
+    } catch (std::exception &e) {
+        _refractionIndex = 0.0;
+    }
 }
 
 glm::vec3 Material::getColor() const
@@ -80,6 +97,26 @@ double &Material::getRoughness()
     return _roughness;
 }
 
+double Material::getTransparency() const
+{
+    return _transparency;
+}
+
+double &Material::getTransparency()
+{
+    return _transparency;
+}
+
+double Material::getRefractionIndex() const
+{
+    return _refractionIndex;
+}
+
+double &Material::getRefractionIndex()
+{
+    return _refractionIndex;
+}
+
 void Material::setColor(const glm::vec3 &color)
 {
     _color = color;
@@ -98,4 +135,14 @@ void Material::setBrightness(const double brightness)
 void Material::setRoughness(const double roughness)
 {
     _roughness = roughness;
+}
+
+void Material::setTransparency(const double transparency)
+{
+    _transparency = transparency;
+}
+
+void Material::setRefractionIndex(const double refractionIndex)
+{
+    _refractionIndex = refractionIndex;
 }
