@@ -111,11 +111,11 @@ int main(int argc, char **argv)
         std::cerr << "Missing scene file" << std::endl;
         return 84;
     }
+    checkOverwritingOutput(args.outputPath, args.quiet);
     ObjectsFactory objFactory = ObjectsFactory();
     PropertiesFactory propFactory = PropertiesFactory();
     fillFactory(objFactory, propFactory);
-    std::string path = std::string(argv[1]);
-    SceneParser parser = SceneParser(path, propFactory, objFactory);
+    SceneParser parser = SceneParser(args.scenePath, propFactory, objFactory);
     parser.parse();
     Scene scene = parser.getScene();
 
