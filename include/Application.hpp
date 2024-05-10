@@ -76,6 +76,7 @@ struct SceneUBO {
     alignas(4) unsigned int iSceneChanged;
     alignas(4) unsigned int iSkyboxEnabled;
     alignas(4) unsigned int iFrameIndex;
+    alignas(4) unsigned int iFrameCount;
 };
 
 class Application {
@@ -190,6 +191,7 @@ protected:
     std::vector<Mesh> _meshes;
 
     bool _sceneChanged = true;
+    std::size_t _frameCount = 0;
 public:
     Application(glm::vec2 windowSize, const std::string &appName, Scene *scene);
     Application(unsigned int width, unsigned int height, const std::string &appName, Scene *scene);

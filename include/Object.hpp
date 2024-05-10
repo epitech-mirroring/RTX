@@ -24,6 +24,7 @@ struct RaytracingMaterial {
     alignas(16) glm::vec3 color;
     alignas(16) glm::vec3 emission;
     alignas(4) float emissionIntensity;
+    alignas(4) float roughness;
 };
 
 struct Mesh {

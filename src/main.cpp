@@ -100,6 +100,7 @@ int main(int argc, char **argv)
         std::cerr << "Missing scene file" << std::endl;
         return 84;
     }
+    checkOverwritingOutput(args.outputPath, args.quiet);
     PropertiesFactory propertiesFactory;
     ObjectsFactory objectsFactory;
     propertiesFactory.registerProperties("sphere", [](JsonObject *obj) {
