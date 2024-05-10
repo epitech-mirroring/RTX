@@ -135,8 +135,6 @@ int main(int argc, char **argv)
                 app.stop();
             }
         }
-        Object *obj = scene.getObjects()[0];
-        obj->getTransform().rotate(glm::vec3(0, 1, 0), 0.01f);
     });
     return 0;
 }
