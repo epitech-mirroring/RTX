@@ -241,7 +241,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
     float oldRefractionIndex = 1.0;
     Mesh insideMesh;
 
-    const uint maxBounces = 4;
+    const uint maxBounces = 6;
     for (uint bounce = 0; bounce < maxBounces; bounce++) {
         Hit hit = computeHit(ray, shouldHitNormalsFromBack, insideMesh);
         Material material = hit.mesh.material;
@@ -251,17 +251,21 @@ vec3 raytrace(Ray ray, inout uint seed) {
             bool goesThrough = randomValue(seed) <= material.transparency;
             if (goesThrough) {
                 float incidentAngle = dot(ray.direction, hit.normal);
+                float criticalAngle = asin(oldRefractionIndex / material.refractionIndex);
                 float refractionAngle = asin(oldRefractionIndex * sin(incidentAngle) / material.refractionIndex);
-                ray.direction = refract(ray.direction, hit.normal, oldRefractionIndex / material.refractionIndex);
-                shouldHitNormalsFromBack = !shouldHitNormalsFromBack;
-                if (shouldHitNormalsFromBack) {
-                    oldRefractionIndex = material.refractionIndex;
-                } else {
-                    oldRefractionIndex = 1.0;
+                // if incident angle is greater than critical angle, reflect
+                if (abs(incidentAngle) <= criticalAngle) {
+                    ray.direction = refract(ray.direction, hit.normal, oldRefractionIndex / material.refractionIndex);
+                    shouldHitNormalsFromBack = !shouldHitNormalsFromBack;
+                    if (shouldHitNormalsFromBack) {
+                        oldRefractionIndex = material.refractionIndex;
+                    } else {
+                        oldRefractionIndex = 1.0;
+                    }
+                    color *= material.color;
+                    insideMesh = hit.mesh;
+                    continue;
                 }
-                color *= material.color;
-                insideMesh = hit.mesh;
-                continue;
             }
             vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
             vec3 specularDirection = reflect(ray.direction, hit.normal);
