@@ -24,6 +24,7 @@ struct Material {
     vec3 color;
     vec3 emission;
     float emissionIntensity;
+    float roughness;
 };
 
 struct Mesh {
@@ -207,17 +208,17 @@ vec3 raytrace(Ray ray, inout uint seed) {
 
     for (uint bounce = 0; bounce < 3; bounce++) {
         Hit hit = computeHit(ray);
+        Material material = hit.material;
 
         if (hit.hit) {
             ray.origin = hit.position;
-            vec3 newDirection = randomDirection(seed);
-            if (dot(newDirection, hit.normal) < 0.0) {
-                newDirection = -newDirection;
-            }
-            ray.direction = newDirection;
+            vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
+            vec3 specularDirection = reflect(ray.direction, hit.normal);
+            ray.direction = mix(diffuseDirection, specularDirection, 1.0 - material.roughness);
             vec3 directLight = hit.material.emission * hit.material.emissionIntensity;
+            float lightIntensity = dot(hit.normal, ray.direction);
             incomingLight += directLight * color;
-            color *= hit.material.color;
+            color *= hit.material.color * lightIntensity * 2;
         } else {
             if (iIsSkyboxEnabled > 0) {
                 incomingLight += environmentLight(ray) * color;

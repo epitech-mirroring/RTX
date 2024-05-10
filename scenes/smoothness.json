@@ -1,0 +1,295 @@
+{
+  "settings": {
+    "skybox-enabled": false
+  },
+  "cameras": [
+    {
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "fov": 60.0,
+      "aspect": 1.33,
+      "near": 1.0
+    }
+  ],
+  "objects": [
+    {
+      "type": "rectangle",
+      "material": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0
+        },
+        "emission": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "brightness": 0.0,
+        "roughness": 0.1
+      },
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 5.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "textures": [],
+      "height": 2.0,
+      "width": 1.0,
+      "length": 4.0
+    },
+    {
+      "type": "rectangle",
+      "material": {
+        "color": {
+          "r": 1.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "emission": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "brightness": 0.0,
+        "roughness": 1.0
+      },
+      "transform": {
+        "position": {
+          "x": -2.0,
+          "y": 0.0,
+          "z": 5.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 90.0,
+          "z": 0.0
+        }
+      },
+      "textures": [],
+      "height": 2.0,
+      "width": 0.1,
+      "length": 3.0
+    },
+    {
+      "type": "rectangle",
+      "material": {
+        "color": {
+          "r": 0.0,
+          "g": 1.0,
+          "b": 0.0
+        },
+        "emission": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "brightness": 0.0,
+        "roughness": 1.0
+      },
+      "transform": {
+        "position": {
+          "x": 2.0,
+          "y": 0.0,
+          "z": 5.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 90.0,
+          "z": 0.0
+        }
+      },
+      "textures": [],
+      "height": 2.0,
+      "width": 0.1,
+      "length": 3.0
+    },
+    {
+      "type": "rectangle",
+      "material": {
+        "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0
+        },
+        "emission": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "brightness": 0.0,
+        "roughness": 1.0
+      },
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 1.05,
+          "z": 4.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "textures": [],
+      "height": 0.1,
+      "width": 1.0,
+      "length": 4.1
+    },
+    {
+      "type": "rectangle",
+      "material": {
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "emission": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "brightness": 0.0,
+        "roughness": 1.0
+      },
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": -1.05,
+          "z": 4.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "textures": [],
+      "height": 0.1,
+      "width": 1.0,
+      "length": 4.1
+    },
+    {
+      "type": "rectangle",
+      "material": {
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "emission": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0
+        },
+        "brightness": 1.0,
+        "roughness": 1.0
+      },
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 4.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "textures": [],
+      "height": 0.1,
+      "width": 0.2,
+      "length": 2.0
+    },
+    {
+      "type": "sphere",
+      "material": {
+          "color": {
+          "r": 1.0,
+          "g": 1.0,
+          "b": 1.0
+          },
+          "emission": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+          },
+          "brightness": 0.0,
+          "roughness": 0.5
+      },
+      "transform": {
+          "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 4.0
+          },
+          "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+          },
+          "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+          }
+      },
+      "textures": [],
+      "radius": 0.3
+    }
+  ]
+}

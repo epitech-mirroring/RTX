@@ -228,6 +228,7 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         material.color = mesh->getMaterial().getColor();
         material.emission = mesh->getMaterial().getEmission();
         material.emissionIntensity = (float) mesh->getMaterial().getBrightness();
+        material.roughness = (float) mesh->getMaterial().getRoughness();
         m.material = material;
 
         _meshes.push_back(m);

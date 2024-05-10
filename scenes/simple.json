@@ -1,6 +1,6 @@
 {
   "settings": {
-    "skybox-enabled": false
+    "skybox-enabled": true
   },
   "cameras": [
     {
