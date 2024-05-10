@@ -1,4 +1,7 @@
 {
+  "settings": {
+    "skybox-enabled": true
+  },
   "cameras": [
     {
       "transform": {

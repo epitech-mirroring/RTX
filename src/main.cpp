@@ -11,9 +11,10 @@
 #include "primitives/Sphere.hpp"
 #include "primitives/Cube.hpp"
 #include "primitives/Rectangle.hpp"
+#include "primitives/Plane.hpp"
+#include "primitives/Cylinder.hpp"
 #include "Raytracer.hpp"
 #include "json/Json.hpp"
-#include "primitives/Plane.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -87,9 +88,11 @@ static void fillFactory(ObjectsFactory &objFactory, PropertiesFactory &propFacto
     objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
     objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
     objFactory.registerObject("plane", [](AbstractProperties &properties) -> Object * {return new Plane(dynamic_cast<PlaneProperties &>(properties));});
+    objFactory.registerObject("cylinder", [](AbstractProperties &properties) -> Object * {return new Cylinder(dynamic_cast<CylinderProperties &>(properties));});
     propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
     propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
     propFactory.registerProperties("plane", [](JsonObject *obj) { return new PlaneProperties(obj); });
+    propFactory.registerProperties("cylinder", [](JsonObject *obj) { return new CylinderProperties(obj); });
 }
 
 static void checkOverwritingOutput(const std::string &outputPath, bool quiet)
@@ -123,7 +126,7 @@ int main(int argc, char **argv)
 
     bool saved = false;
 
-    app.run([&app, &saved, &args]() {
+    app.run([&app, &saved, &args, &scene]() {
         if (app.getFrameIndex() >= args.frame_before_render && !saved && !args.disable_render_output) {
             app.screenshot(args.outputPath);
             saved = true;
@@ -132,6 +135,8 @@ int main(int argc, char **argv)
                 app.stop();
             }
         }
+        Object *obj = scene.getObjects()[0];
+        obj->getTransform().rotate(glm::vec3(0, 1, 0), 0.01f);
     });
     return 0;
 }

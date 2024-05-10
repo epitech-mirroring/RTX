@@ -10,7 +10,6 @@
 #include <cstddef>
 #include "primitives/Properties/AbstractProperties.hpp"
 #include "json/Json.hpp"
-#include <iostream>
 
 class SphereProperties : public AbstractProperties {
     public:
