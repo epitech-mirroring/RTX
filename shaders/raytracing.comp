@@ -41,6 +41,7 @@ layout(binding = 3) uniform readonly Scene {
     uint iIsSceneDirty;
     uint iIsSkyboxEnabled;
     uint iFrameIndex;
+    uint iFrameCount;
 };
 
 layout(std140, binding = 4) buffer readonly Triangles {
@@ -237,7 +238,7 @@ void main() {
     vec2 uv = (vec2(pixelCoords)) / iResolution;
     vec3 viewPointLocal = vec3(uv - 0.5, 1.0) * iViewPlaneParams;
     vec3 viewPointWorld = (iCameraMatrix * vec4(viewPointLocal, 1.0)).xyz;
-    uint seed = int(pixelCoords.x) + int(pixelCoords.y) * 1000 + iFrameIndex * 25723;
+    uint seed = int(pixelCoords.x) * int(iResolution.x * iResolution.y) + int(pixelCoords.y) + iFrameIndex * 719393;
 
     Ray ray;
     ray.origin = iCameraPosition;
@@ -251,6 +252,7 @@ void main() {
     incomingLight /= float(numRaysPerPixel);
 
     // Result pixel is the mix of the previous pixel and the new color
-    vec4 newPixel = mix(pixel, vec4(incomingLight, 1.0), 0.1);
+    float weight = 1.0 / (float(iFrameCount + 1));
+    vec4 newPixel = pixel * (1.0 - weight) + vec4(incomingLight, 1.0) * weight;
     imageStore(outputImage, pixelCoords, newPixel);
 }

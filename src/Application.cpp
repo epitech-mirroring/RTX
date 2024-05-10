@@ -173,6 +173,7 @@ Application::Application(glm::vec2 windowSize, const std::string &appName, Scene
     }
     _screenDescriptorSetLayout = VK_NULL_HANDLE;
     _screenDescriptorPool = VK_NULL_HANDLE;
+    _frameCount = 0;
 }
 
 Application::Application(unsigned int width, unsigned int height, const std::string &appName, Scene *scene)
@@ -206,6 +207,7 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         _numTriangles+=mesh->getTriangles().size();
         _numMeshes++;
     }
+    _frameCount = 0;
 
     for (const auto mesh : _scene->getObjects()) {
         std::size_t start_idx = _triangles.size();
@@ -1755,6 +1757,9 @@ void Application::updateComputeUniformBuffer(uint32_t currentImage)
 
     memcpy(_viewBuffersMapped[currentImage], &viewUBO, sizeof(viewUBO));
 
+    if (_sceneChanged) {
+        _frameCount = 0;
+    }
 
     SceneUBO sceneUBO{};
     sceneUBO.iNumTriangles = _numTriangles;
@@ -1762,6 +1767,7 @@ void Application::updateComputeUniformBuffer(uint32_t currentImage)
     sceneUBO.iSceneChanged = _sceneChanged ? 1 : 0;
     sceneUBO.iSkyboxEnabled = _scene->isSkyBoxEnabled() ? 1 : 0;
     sceneUBO.iFrameIndex = _frameIndex;
+    sceneUBO.iFrameCount = _frameCount;
     memcpy(_sceneBuffersMapped[currentImage], &sceneUBO, sizeof(sceneUBO));
 
     if (_sceneChanged) {
@@ -1776,6 +1782,7 @@ void Application::updateComputeUniformBuffer(uint32_t currentImage)
 
     memcpy(_meshBuffersMapped[currentImage], _meshes.data(), sizeof(Mesh) * _numMeshes);
     _sceneChanged = false;
+    _frameCount++;
 }
 
 void Application::createDescriptorPool()
@@ -2077,7 +2084,7 @@ void Application::screenshot(const std::string &filename)
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = 1;
     imageInfo.arrayLayers = 1;
-    imageInfo.format = vk::Format::eR8G8B8A8Unorm;
+    imageInfo.format = vk::Format::eR32G32B32A32Sfloat;
     imageInfo.tiling = vk::ImageTiling::eLinear;
     imageInfo.initialLayout = vk::ImageLayout::eUndefined;
     imageInfo.usage = vk::ImageUsageFlagBits::eTransferDst;
@@ -2195,18 +2202,36 @@ void Application::screenshot(const std::string &filename)
     if (_device.mapMemory(dstMemory, 0, memRequirements.size, vk::MemoryMapFlags(), (void **) &data) != vk::Result::eSuccess) {
         throw std::runtime_error("failed to map memory!");
     }
-    data += subResourceLayout.offset;
 
     // Save image
     std::ofstream file(filename, std::ios::out | std::ios::binary);
     file << "P6\n" << _swapChainExtent.width << " " << _swapChainExtent.height << "\n255\n";
     for (uint32_t y = 0; y < _swapChainExtent.height; y++) {
-        auto *row = (unsigned int *) (data);
         for (uint32_t x = 0; x < _swapChainExtent.width; x++) {
-            file.write((char *) row, 3);
-            row++;
+            auto pixel = reinterpret_cast<const glm::vec4 *>(data);
+
+            // Pixel format is R32G32B32A32SFloat
+            // We need to convert it to R8G8B8A8
+            float r = (float) (std::min(1.0f, std::max(0.0f, pixel->r)) * 255.0f);
+            float g = (float) (std::min(1.0f, std::max(0.0f, pixel->g)) * 255.0f);
+            float b = (float) (std::min(1.0f, std::max(0.0f, pixel->b)) * 255.0f);
+
+            // Crank up the gamma
+            float gamma = 1.0f / 2.2f;
+            r = (255.0f * powf(r / 255.0f, gamma));
+            g = (255.0f * powf(g / 255.0f, gamma));
+            b = (255.0f * powf(b / 255.0f, gamma));
+
+            // Convert to 8-bit
+            uint8_t r8 = (uint8_t) r;
+            uint8_t g8 = (uint8_t) g;
+            uint8_t b8 = (uint8_t) b;
+
+            file.write((char *) &r8, sizeof(uint8_t));
+            file.write((char *) &g8, sizeof(uint8_t));
+            file.write((char *) &b8, sizeof(uint8_t));
+            data += sizeof(glm::vec4);
         }
-        data += subResourceLayout.rowPitch;
     }
     file.close();
 
