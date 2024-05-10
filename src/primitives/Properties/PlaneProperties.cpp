@@ -7,7 +7,6 @@
 */
 
 #include "primitives/Properties/PlaneProperties.hpp"
-#include <iostream>
 
 PlaneProperties::PlaneProperties() : AbstractProperties()
 {

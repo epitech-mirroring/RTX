@@ -17,6 +17,16 @@
 #define WIDTH 800.0f
 #define HEIGHT 600.0f
 
+static void fillFactory(ObjectsFactory &objFactory, PropertiesFactory &propFactory)
+{
+    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
+    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
+    objFactory.registerObject("plane", [](AbstractProperties &properties) -> Object * {return new Plane(dynamic_cast<PlaneProperties &>(properties));});
+    propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
+    propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
+    propFactory.registerProperties("plane", [](JsonObject *obj) { return new PlaneProperties(obj); });
+}
+
 int main(int argc, char **argv)
 {
     Scene scene;
@@ -30,12 +40,7 @@ int main(int argc, char **argv)
     }
     ObjectsFactory objFactory = ObjectsFactory();
     PropertiesFactory propFactory = PropertiesFactory();
-    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
-    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
-    objFactory.registerObject("plane", [](AbstractProperties &properties) -> Object * {return new Plane(dynamic_cast<PlaneProperties &>(properties));});
-    propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
-    propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
-    propFactory.registerProperties("plane", [](JsonObject *obj) { return new PlaneProperties(obj); });
+    fillFactory(objFactory, propFactory);
     std::string path = std::string(argv[1]);
     SceneParser parser = SceneParser(path, propFactory, objFactory);
     parser.parse();

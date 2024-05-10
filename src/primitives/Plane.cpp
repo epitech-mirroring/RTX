@@ -7,7 +7,6 @@
 */
 
 #include "primitives/Plane.hpp"
-#include <iostream>
 
 static std::vector<Triangle> createPlaneTriangles(PlaneProperties &properties) {
     std::vector<Triangle> triangles;

@@ -7,7 +7,6 @@
 */
 
 #include "Transform.hpp"
-#include <iostream>
 
 Transform::Transform()
 {
