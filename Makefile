@@ -45,7 +45,7 @@ NAME 			= 	raytracer
 CXX				= 	g++
 GLSLC			=	$(shell which glslc)
 GLSL_FLAGS		=   -O
-CXXFLAGS		= 	-g -W -Wall -Wextra -std=c++20 -I./include  \
+CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include  \
 				 	-L. -ljson -lobj -lglfw -lvulkan -ldl -lpthread -lX11 -O3
 MACOS_FLAGS		= 	-rpath /usr/local/lib/
 LINUX_FLAGS		=
