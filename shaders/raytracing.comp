@@ -238,7 +238,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
     vec3 color = vec3(1.0, 1.0, 1.0);
     bool shouldHitNormalsFromBack = false;
-    float oldRefractionIndex = 1.0;
+    float fromRefractionIndex = 1.0;
     Mesh insideMesh;
 
     const uint maxBounces = 6;
@@ -250,17 +250,18 @@ vec3 raytrace(Ray ray, inout uint seed) {
             ray.origin = hit.position;
             bool goesThrough = randomValue(seed) <= material.transparency;
             if (goesThrough) {
+                float toRefractionIndex = shouldHitNormalsFromBack ? 1.0 : material.refractionIndex;
                 float incidentAngle = dot(ray.direction, hit.normal);
-                float criticalAngle = asin(oldRefractionIndex / material.refractionIndex);
-                float refractionAngle = asin(oldRefractionIndex * sin(incidentAngle) / material.refractionIndex);
+                float criticalAngle = asin(toRefractionIndex / fromRefractionIndex);
+                float refractionAngle = asin(fromRefractionIndex * sin(incidentAngle) / toRefractionIndex);
                 // if incident angle is greater than critical angle, reflect
                 if (abs(incidentAngle) <= criticalAngle) {
-                    ray.direction = refract(ray.direction, hit.normal, oldRefractionIndex / material.refractionIndex);
+                    ray.direction = refract(ray.direction, hit.normal, fromRefractionIndex / toRefractionIndex);
                     shouldHitNormalsFromBack = !shouldHitNormalsFromBack;
                     if (shouldHitNormalsFromBack) {
-                        oldRefractionIndex = material.refractionIndex;
+                        fromRefractionIndex = material.refractionIndex;
                     } else {
-                        oldRefractionIndex = 1.0;
+                        fromRefractionIndex = 1.0;
                     }
                     color *= material.color;
                     insideMesh = hit.mesh;
