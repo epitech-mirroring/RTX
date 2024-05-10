@@ -20,9 +20,11 @@ CXX_SOURCES		= 	src/main.cpp										\
 					src/primitives/Cube.cpp								\
 					src/primitives/Sphere.cpp							\
 					src/primitives/ObjectsFactory.cpp					\
+					src/primitives/Plane.cpp							\
 					src/primitives/Properties/AbstractProperties.cpp	\
 					src/primitives/Properties/PropertiesFactory.cpp		\
 					src/primitives/Properties/CubeProperties.cpp		\
+					src/primitives/Properties/PlaneProperties.cpp		\
 					src/Application.cpp									\
 
 SHADERS 		= 	shaders/screen.vert									\

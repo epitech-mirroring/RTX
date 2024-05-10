@@ -13,6 +13,7 @@
 #include "primitives/Rectangle.hpp"
 #include "Raytracer.hpp"
 #include "json/Json.hpp"
+#include "primitives/Plane.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -81,6 +82,16 @@ static Arguments parseArgs(int argc, char **argv)
     return args;
 }
 
+static void fillFactory(ObjectsFactory &objFactory, PropertiesFactory &propFactory)
+{
+    objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
+    objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
+    objFactory.registerObject("plane", [](AbstractProperties &properties) -> Object * {return new Plane(dynamic_cast<PlaneProperties &>(properties));});
+    propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
+    propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
+    propFactory.registerProperties("plane", [](JsonObject *obj) { return new PlaneProperties(obj); });
+}
+
 static void checkOverwritingOutput(const std::string &outputPath, bool quiet)
 {
     std::ifstream file(outputPath);
@@ -101,27 +112,10 @@ int main(int argc, char **argv)
         return 84;
     }
     checkOverwritingOutput(args.outputPath, args.quiet);
-    PropertiesFactory propertiesFactory;
-    ObjectsFactory objectsFactory;
-    propertiesFactory.registerProperties("sphere", [](JsonObject *obj) {
-        return new SphereProperties(obj);
-    });
-    objectsFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object *{
-        return new Sphere(dynamic_cast<SphereProperties &>(properties));
-    });
-    propertiesFactory.registerProperties("cube", [](JsonObject *obj) {
-        return new CubeProperties(obj);
-    });
-    objectsFactory.registerObject("cube", [](AbstractProperties &properties) -> Object *{
-        return new Cube(dynamic_cast<CubeProperties &>(properties));
-    });
-    propertiesFactory.registerProperties("rectangle", [](JsonObject *obj) {
-        return new RectangleProperties(obj);
-    });
-    objectsFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object *{
-        return new Rectangle(dynamic_cast<RectangleProperties &>(properties));
-    });
-    SceneParser parser(args.scenePath, propertiesFactory, objectsFactory);
+    ObjectsFactory objFactory = ObjectsFactory();
+    PropertiesFactory propFactory = PropertiesFactory();
+    fillFactory(objFactory, propFactory);
+    SceneParser parser = SceneParser(args.scenePath, propFactory, objFactory);
     parser.parse();
     Scene scene = parser.getScene();
 
