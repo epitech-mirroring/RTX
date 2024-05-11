@@ -103,7 +103,8 @@ bool isRayBoundingBoxIntersect(Ray ray, vec3 boxMin, vec3 boxMax)
 
 Hit rayTriangle(Ray ray, Triangle tri, bool shouldHitNormalsFromBack)
 {
-    // If we should hit normals from the back, we need to invert the normal
+    // If we should hit normals from the back, we need to invert the normal of the triangle
+    // And swap the vertices a and c to keep the winding order
     if (shouldHitNormalsFromBack) {
         tri.aNormal = -tri.aNormal;
         tri.bNormal = -tri.bNormal;
@@ -234,6 +235,17 @@ vec3 environmentLight(Ray ray) {
     return lerp(groundColor, skyGradient, groundToSkyT) + sun * sunMask;
 }
 
+vec3 customReflect(vec3 incoming, vec3 surfaceNormal, float fromRefractionIndex, float toRefractionIndex) {
+    float n = fromRefractionIndex / toRefractionIndex;
+    float cosI = -dot(surfaceNormal, incoming);
+    float sinT2 = n * n * (1.0 - cosI * cosI);
+    if (sinT2 > 1.0) {
+        return reflect(incoming, surfaceNormal);
+    }
+    float cosT = sqrt(1.0 - sinT2);
+    return n * incoming + (n * cosI - cosT) * surfaceNormal;
+}
+
 vec3 raytrace(Ray ray, inout uint seed) {
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
     vec3 color = vec3(1.0, 1.0, 1.0);
@@ -249,20 +261,21 @@ vec3 raytrace(Ray ray, inout uint seed) {
         if (hit.hit) {
             ray.origin = hit.position;
             bool goesThrough = randomValue(seed) <= material.transparency;
-            if (goesThrough || isInsideMesh) {
+            if (goesThrough || isInsideMesh) { // Refraction
                 float toRefractionIndex = isInsideMesh ? 1.0 : material.refractionIndex;
-                float incidentAngle = acos(dot(ray.direction, hit.normal));
+                float incidentAngle = acos(dot(-ray.direction, hit.normal));
                 // Calculate critical angle for total internal reflection (TIR) using Snell's law
                 // The critical angle is the angle of incidence that provides an angle of refraction of 90 degrees
                 float criticalAngle = asin(toRefractionIndex / fromRefractionIndex);
                 // if incident angle is greater than critical angle we have TIR and the ray is reflected
+                // also if the ray is going from a less dense medium to a more dense medium we can't have total internal reflection
                 // So we skip the refraction calculation
-                if (incidentAngle < criticalAngle || fromRefractionIndex < toRefractionIndex) {
-                    // Calculate refraction direction using Snell's law
-                    vec3 refractedDirection = refract(ray.direction, isInsideMesh ? -hit.normal : hit.normal, fromRefractionIndex / toRefractionIndex);
-                    ray.direction = normalize(refractedDirection);
+                if (incidentAngle < criticalAngle || fromRefractionIndex <= toRefractionIndex) {
                     // If we were inside the mesh, we are now outside and vice versa
                     isInsideMesh = !isInsideMesh;
+                    // Calculate refraction direction using Snell's law
+                    vec3 refractedDirection = customReflect(ray.direction, hit.normal, fromRefractionIndex, toRefractionIndex);
+                    ray.direction = normalize(refractedDirection);
                     // If we are inside the mesh the new refraction index is the one of the mesh
                     // Otherwise it is 1.0 (air)
                     if (isInsideMesh) {
@@ -272,7 +285,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
                         fromRefractionIndex = 1.0;
                     }
                     color *= material.color;
-                } else {
+                } else { // Total internal reflection
                     // If we were inside the mesh, we stay inside the mesh and vice versa
                     // If we were outside the reflection can be a diffuse reflection
                     if (!isInsideMesh) {
@@ -285,8 +298,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
                         color *= material.color;
                     }
                 }
-                continue;
-            } else {
+            } else { // Reflection
                 vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
                 vec3 specularDirection = reflect(ray.direction, hit.normal);
                 ray.direction = mix(diffuseDirection, specularDirection, 1.0 - material.roughness);
