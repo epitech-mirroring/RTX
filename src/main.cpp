@@ -95,7 +95,6 @@ static void fillFactory(ObjectsFactory &objFactory, PropertiesFactory &propFacto
     propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
     propFactory.registerProperties("plane", [](JsonObject *obj) { return new PlaneProperties(obj); });
     propFactory.registerProperties("cylinder", [](JsonObject *obj) { return new CylinderProperties(obj); });
-    propFactory.registerProperties("sphere", [](JsonObject *obj) { return new SphereProperties(obj); });
     propFactory.registerProperties("cone", [](JsonObject *obj) { return new ConeProperties(obj); });
 }
 

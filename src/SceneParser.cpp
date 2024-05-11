@@ -15,6 +15,7 @@ SceneParser::SceneParser()
     _scene = Scene();
     _propertiesFactory = PropertiesFactory();
     _objectsFactory = ObjectsFactory();
+    _objParser = ObjParser();
 }
 
 SceneParser::SceneParser(std::string &path, PropertiesFactory &propertiesFactory, ObjectsFactory &objectsFactory)
@@ -22,6 +23,7 @@ SceneParser::SceneParser(std::string &path, PropertiesFactory &propertiesFactory
     _scene = Scene();
     _propertiesFactory = propertiesFactory;
     _objectsFactory = objectsFactory;
+    _objParser = ObjParser();
     if (path.substr(path.find_last_of('.') + 1) != "json") {
         std::cerr << &"Error: Invalid file format, need .json and get " [  path.find_last_of(".")] << std::endl;
         path = "";
@@ -78,6 +80,7 @@ std::vector<Object *> SceneParser::parseObjects(JsonObject &root)
 {
     JsonArray *objects;
     std::vector<Object *> objectsVector;
+    Object *object;
 
     try {
         objects = root.getValue<JsonArray>("objects");
@@ -89,7 +92,12 @@ std::vector<Object *> SceneParser::parseObjects(JsonObject &root)
     }
     for (std::size_t i = 0; i < objects->size() ; i++) {
         auto *objectJson = objects->getValue<JsonObject>(i);
-        Object *object = _objectsFactory.createObject(objectJson->getString("type"), *_propertiesFactory.createProperties(objectJson->getString("type"), objectJson));
+        if (objectJson->getString("type") == "obj") {
+            object = _objParser.parseFile(objectJson->getString("path"));
+            object->setTransform(Transform(objectJson->getValue<JsonObject>("transform")));
+        } else {
+            object = _objectsFactory.createObject(objectJson->getString("type"), *_propertiesFactory.createProperties(objectJson->getString("type"), objectJson));
+        }
         objectsVector.push_back(object);
     }
     return objectsVector;

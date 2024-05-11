@@ -11,6 +11,7 @@
 #include "json/Json.hpp"
 #include "primitives/ObjectsFactory.hpp"
 #include "primitives/Properties/PropertiesFactory.hpp"
+#include "../parser/obj/include/obj/ObjParser.hpp"
 
 class SceneParser {
     public:
@@ -29,5 +30,5 @@ class SceneParser {
         Scene _scene;
         ObjectsFactory _objectsFactory;
         PropertiesFactory _propertiesFactory;
-
+        ObjParser _objParser;
 };
