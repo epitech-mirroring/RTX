@@ -14,7 +14,7 @@
 class PlaneProperties : public AbstractProperties {
 public:
     PlaneProperties();
-    explicit PlaneProperties(float height, float width);
+    PlaneProperties(float height, float width);
     explicit PlaneProperties(JsonObject *obj);
     ~PlaneProperties() override = default;
     float getHeight() const;

@@ -8,7 +8,7 @@
         "position": {
           "x": 0.0,
           "y": 0.0,
-          "z": 20.0
+          "z": 0.0
         },
         "scale": {
           "x": 1.0,
@@ -17,18 +17,18 @@
         },
         "rotation": {
           "x": 0.0,
-          "y": 180.0,
+          "y": 0.0,
           "z": 0.0
         }
       },
       "fov": 60.0,
-      "aspect": 1.33333,
+      "aspect": 1.33,
       "near": 1.0
     }
   ],
   "objects": [
     {
-      "type": "cube",
+      "type": "cone",
       "material": {
         "color": {
           "r": 1.0,
@@ -47,7 +47,7 @@
         "position": {
           "x": 0.0,
           "y": 0.0,
-          "z": 10.0
+          "z": 5.0
         },
         "scale": {
           "x": 1.0,
@@ -61,12 +61,9 @@
         }
       },
       "textures": [
-        {
-          "path": "test_texture.png",
-          "type": "normal"
-        }
       ],
-      "size": 1
+      "radius": 1.0,
+      "height": 0.0001
     }
   ]
 }
