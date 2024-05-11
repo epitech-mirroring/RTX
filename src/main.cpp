@@ -16,6 +16,7 @@
 #include "primitives/Cone.hpp"
 #include "Raytracer.hpp"
 #include "json/Json.hpp"
+#include "primitives/Plane.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -89,6 +90,7 @@ static void fillFactory(ObjectsFactory &objFactory, PropertiesFactory &propFacto
     objFactory.registerObject("cube", [](AbstractProperties &properties) -> Object * {return new Cube(dynamic_cast<CubeProperties &>(properties));});
     objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
     objFactory.registerObject("plane", [](AbstractProperties &properties) -> Object * {return new Plane(dynamic_cast<PlaneProperties &>(properties));});
+    objFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object * {return new Sphere(dynamic_cast<SphereProperties &>(properties));});
     objFactory.registerObject("cylinder", [](AbstractProperties &properties) -> Object * {return new Cylinder(dynamic_cast<CylinderProperties &>(properties));});
     objFactory.registerObject("cone", [](AbstractProperties &properties) -> Object * {return new Cone(dynamic_cast<ConeProperties &>(properties));});
     objFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object * {return new Sphere(dynamic_cast<SphereProperties &>(properties));});
@@ -131,7 +133,7 @@ int main(int argc, char **argv)
 
     bool saved = false;
 
-    app.run([&app, &saved, &args, &scene]() {
+    app.run([&app, &saved, &args]() {
         if (app.getFrameIndex() >= args.frame_before_render && !saved && !args.disable_render_output) {
             app.screenshot(args.outputPath);
             saved = true;
