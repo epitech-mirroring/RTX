@@ -237,44 +237,63 @@ vec3 environmentLight(Ray ray) {
 vec3 raytrace(Ray ray, inout uint seed) {
     vec3 incomingLight = vec3(0.0, 0.0, 0.0);
     vec3 color = vec3(1.0, 1.0, 1.0);
-    bool shouldHitNormalsFromBack = false;
+    bool isInsideMesh = false;
     float fromRefractionIndex = 1.0;
     Mesh insideMesh;
 
     const uint maxBounces = 6;
     for (uint bounce = 0; bounce < maxBounces; bounce++) {
-        Hit hit = computeHit(ray, shouldHitNormalsFromBack, insideMesh);
+        Hit hit = computeHit(ray, isInsideMesh, insideMesh);
         Material material = hit.mesh.material;
 
         if (hit.hit) {
             ray.origin = hit.position;
             bool goesThrough = randomValue(seed) <= material.transparency;
-            if (goesThrough) {
-                float toRefractionIndex = shouldHitNormalsFromBack ? 1.0 : material.refractionIndex;
-                float incidentAngle = dot(ray.direction, hit.normal);
+            if (goesThrough || isInsideMesh) {
+                float toRefractionIndex = isInsideMesh ? 1.0 : material.refractionIndex;
+                float incidentAngle = acos(dot(ray.direction, hit.normal));
+                // Calculate critical angle for total internal reflection (TIR) using Snell's law
+                // The critical angle is the angle of incidence that provides an angle of refraction of 90 degrees
                 float criticalAngle = asin(toRefractionIndex / fromRefractionIndex);
-                float refractionAngle = asin(fromRefractionIndex * sin(incidentAngle) / toRefractionIndex);
-                // if incident angle is greater than critical angle, reflect
-                if (abs(incidentAngle) <= criticalAngle) {
-                    ray.direction = refract(ray.direction, hit.normal, fromRefractionIndex / toRefractionIndex);
-                    shouldHitNormalsFromBack = !shouldHitNormalsFromBack;
-                    if (shouldHitNormalsFromBack) {
+                // if incident angle is greater than critical angle we have TIR and the ray is reflected
+                // So we skip the refraction calculation
+                if (incidentAngle < criticalAngle) {
+                    // Calculate refraction direction using Snell's law
+                    ray.direction = normalize(refract(ray.direction, hit.normal, fromRefractionIndex / toRefractionIndex));
+                    // If we were inside the mesh, we are now outside and vice versa
+                    isInsideMesh = !isInsideMesh;
+                    // If we are inside the mesh the new refraction index is the one of the mesh
+                    // Otherwise it is 1.0 (air)
+                    if (isInsideMesh) {
                         fromRefractionIndex = material.refractionIndex;
+                        insideMesh = hit.mesh;
                     } else {
                         fromRefractionIndex = 1.0;
                     }
                     color *= material.color;
-                    insideMesh = hit.mesh;
-                    continue;
+                } else {
+                    // If we were inside the mesh, we stay inside the mesh and vice versa
+                    // If we were outside the reflection can be a diffuse reflection
+                    if (!isInsideMesh) {
+                        vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
+                        vec3 specularDirection = reflect(ray.direction, hit.normal);
+                        ray.direction = mix(diffuseDirection, specularDirection, 1.0 - material.roughness);
+                        color *= material.color;
+                    } else {
+                        ray.direction = reflect(ray.direction, hit.normal);
+                        color *= material.color;
+                    }
                 }
+                continue;
+            } else {
+                vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
+                vec3 specularDirection = reflect(ray.direction, hit.normal);
+                ray.direction = mix(diffuseDirection, specularDirection, 1.0 - material.roughness);
+                vec3 directLight = material.emission * material.emissionIntensity;
+                float lightIntensity = dot(hit.normal, ray.direction);
+                incomingLight += directLight * color;
+                color *= material.color * lightIntensity * 2;
             }
-            vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
-            vec3 specularDirection = reflect(ray.direction, hit.normal);
-            ray.direction = mix(diffuseDirection, specularDirection, 1.0 - material.roughness);
-            vec3 directLight = material.emission * material.emissionIntensity;
-            float lightIntensity = dot(hit.normal, ray.direction);
-            incomingLight += directLight * color;
-            color *= material.color * lightIntensity * 2;
         } else {
             if (iIsSkyboxEnabled > 0) {
                 incomingLight += environmentLight(ray) * color;
