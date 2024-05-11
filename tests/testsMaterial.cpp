@@ -26,7 +26,7 @@ Test(Material, Constructor)
 
 Test(Material, Constructor2)
 {
-    Material material = Material(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), 0.0, 0.0);
+    Material material = Material(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), 0.0, 0.0, 0.0, 0.0);
     cr_assert_eq(material.getColor().x, 0.0);
     cr_assert_eq(material.getColor().y, 0.0);
     cr_assert_eq(material.getColor().z, 0.0);
@@ -35,11 +35,13 @@ Test(Material, Constructor2)
     cr_assert_eq(material.getEmission().z, 0.0);
     cr_assert_eq(material.getBrightness(), 0.0);
     cr_assert_eq(material.getRoughness(), 0.0);
+    cr_assert_eq(material.getTransparency(), 0.0);
+    cr_assert_eq(material.getRefractionIndex(), 0.0);
 }
 
 Test(Material, Constructor3)
 {
-    Material material = Material(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), 0.0, 0.0);
+    Material material = Material(glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), 0.0, 0.0, 0.0, 0.0);
     auto material2 = Material(material);
     cr_assert_eq(material2.getColor().x, 0.0);
     cr_assert_eq(material2.getColor().y, 0.0);
@@ -49,6 +51,8 @@ Test(Material, Constructor3)
     cr_assert_eq(material2.getEmission().z, 0.0);
     cr_assert_eq(material2.getBrightness(), 0.0);
     cr_assert_eq(material2.getRoughness(), 0.0);
+    cr_assert_eq(material2.getTransparency(), 0.0);
+    cr_assert_eq(material2.getRefractionIndex(), 0.0);
 }
 
 Test(Material, setColor)
