@@ -13,6 +13,7 @@
 #include "primitives/Rectangle.hpp"
 #include "primitives/Plane.hpp"
 #include "primitives/Cylinder.hpp"
+#include "primitives/Cone.hpp"
 #include "Raytracer.hpp"
 #include "json/Json.hpp"
 #include <iostream>
@@ -89,10 +90,13 @@ static void fillFactory(ObjectsFactory &objFactory, PropertiesFactory &propFacto
     objFactory.registerObject("rectangle", [](AbstractProperties &properties) -> Object * {return new Rectangle(dynamic_cast<RectangleProperties &>(properties));});
     objFactory.registerObject("plane", [](AbstractProperties &properties) -> Object * {return new Plane(dynamic_cast<PlaneProperties &>(properties));});
     objFactory.registerObject("cylinder", [](AbstractProperties &properties) -> Object * {return new Cylinder(dynamic_cast<CylinderProperties &>(properties));});
+    objFactory.registerObject("cone", [](AbstractProperties &properties) -> Object * {return new Cone(dynamic_cast<ConeProperties &>(properties));});
     propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
     propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
     propFactory.registerProperties("plane", [](JsonObject *obj) { return new PlaneProperties(obj); });
     propFactory.registerProperties("cylinder", [](JsonObject *obj) { return new CylinderProperties(obj); });
+    propFactory.registerProperties("sphere", [](JsonObject *obj) { return new SphereProperties(obj); });
+    propFactory.registerProperties("cone", [](JsonObject *obj) { return new ConeProperties(obj); });
 }
 
 static void checkOverwritingOutput(const std::string &outputPath, bool quiet)

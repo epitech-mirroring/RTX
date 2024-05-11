@@ -1,0 +1,69 @@
+{
+  "settings": {
+    "skybox-enabled": true
+  },
+  "cameras": [
+    {
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "fov": 60.0,
+      "aspect": 1.33,
+      "near": 1.0
+    }
+  ],
+  "objects": [
+    {
+      "type": "cone",
+      "material": {
+        "color": {
+          "r": 1.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "emission": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0
+        },
+        "brightness": 0.0,
+        "roughness": 1.0
+      },
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 5.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "textures": [
+      ],
+      "radius": 1.0,
+      "height": 0.0001
+    }
+  ]
+}
