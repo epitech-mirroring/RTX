@@ -257,9 +257,10 @@ vec3 raytrace(Ray ray, inout uint seed) {
                 float criticalAngle = asin(toRefractionIndex / fromRefractionIndex);
                 // if incident angle is greater than critical angle we have TIR and the ray is reflected
                 // So we skip the refraction calculation
-                if (incidentAngle < criticalAngle) {
+                if (incidentAngle < criticalAngle || fromRefractionIndex < toRefractionIndex) {
                     // Calculate refraction direction using Snell's law
-                    ray.direction = normalize(refract(ray.direction, hit.normal, fromRefractionIndex / toRefractionIndex));
+                    vec3 refractedDirection = refract(ray.direction, isInsideMesh ? -hit.normal : hit.normal, fromRefractionIndex / toRefractionIndex);
+                    ray.direction = normalize(refractedDirection);
                     // If we were inside the mesh, we are now outside and vice versa
                     isInsideMesh = !isInsideMesh;
                     // If we are inside the mesh the new refraction index is the one of the mesh
