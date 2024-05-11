@@ -93,12 +93,13 @@ static void fillFactory(ObjectsFactory &objFactory, PropertiesFactory &propFacto
     objFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object * {return new Sphere(dynamic_cast<SphereProperties &>(properties));});
     objFactory.registerObject("cylinder", [](AbstractProperties &properties) -> Object * {return new Cylinder(dynamic_cast<CylinderProperties &>(properties));});
     objFactory.registerObject("cone", [](AbstractProperties &properties) -> Object * {return new Cone(dynamic_cast<ConeProperties &>(properties));});
+    objFactory.registerObject("sphere", [](AbstractProperties &properties) -> Object * {return new Sphere(dynamic_cast<SphereProperties &>(properties));});
     propFactory.registerProperties("cube", [](JsonObject *obj) { return new CubeProperties(obj); });
     propFactory.registerProperties("rectangle", [](JsonObject *obj) { return new RectangleProperties(obj); });
     propFactory.registerProperties("plane", [](JsonObject *obj) { return new PlaneProperties(obj); });
     propFactory.registerProperties("cylinder", [](JsonObject *obj) { return new CylinderProperties(obj); });
-    propFactory.registerProperties("sphere", [](JsonObject *obj) { return new SphereProperties(obj); });
     propFactory.registerProperties("cone", [](JsonObject *obj) { return new ConeProperties(obj); });
+    propFactory.registerProperties("sphere", [](JsonObject *obj) { return new SphereProperties(obj); });
 }
 
 static void checkOverwritingOutput(const std::string &outputPath, bool quiet)

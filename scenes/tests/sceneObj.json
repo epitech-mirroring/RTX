@@ -1,0 +1,52 @@
+{
+  "settings": {
+    "skybox-enabled": true
+  },
+  "cameras": [
+    {
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "fov": 60.0,
+      "aspect": 1.33,
+      "near": 1.0
+    }
+  ],
+  "objects": [
+    {
+      "type": "obj",
+      "transform": {
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 5.0
+        },
+        "scale": {
+          "x": 1.0,
+          "y": 1.0,
+          "z": 1.0
+        },
+        "rotation": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        }
+      },
+      "path": "./bonus/objFiles/chair/Chair_Version_2_mm.obj"
+    }
+  ]
+}
