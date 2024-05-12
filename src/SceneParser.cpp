@@ -32,8 +32,14 @@ SceneParser::SceneParser(std::string &path, PropertiesFactory &propertiesFactory
     this->_path = path;
 }
 
-void SceneParser::setPath(std::string &path)
+void SceneParser::setPath(std::string &path, std::vector<std::string> &previousPaths)
 {
+    for (auto &previousPath : previousPaths) {
+        if (previousPath == path) {
+            std::cerr << "Error: Circular dependency detected" << std::endl;
+            path = "";
+        }
+    }
     if (path.substr(path.find_last_of('.') + 1) != "json") {
         path = "";
         throw std::invalid_argument(&"Error: Invalid file format, need .json and get " [  path.find_last_of('.')]);
@@ -43,8 +49,12 @@ void SceneParser::setPath(std::string &path)
 
 void SceneParser::parse()
 {
+    if (_path.length() == 0) {
+        _scene.setObjects(std::vector<Object *>());
+        _scene.setCameras(std::vector<Camera>());
+        return;
+    }
     std::ifstream file(this->_path);
-
     if (!file.is_open()) {
         throw std::invalid_argument("Error: can't open Scene file");
     }
@@ -81,6 +91,7 @@ std::vector<Object *> SceneParser::parseObjects(JsonObject &root)
     JsonArray *objects;
     std::vector<Object *> objectsVector;
     Object *object;
+    std::vector<std::string> previousPaths;
 
     try {
         objects = root.getValue<JsonArray>("objects");
@@ -90,11 +101,22 @@ std::vector<Object *> SceneParser::parseObjects(JsonObject &root)
     if (objects->size() == 0) {
         throw std::invalid_argument("Error: Empty objects array in Scene file");
     }
+    previousPaths.push_back(this->_path);
     for (std::size_t i = 0; i < objects->size() ; i++) {
         auto *objectJson = objects->getValue<JsonObject>(i);
         if (objectJson->getString("type") == "obj") {
             object = _objParser.parseFile(objectJson->getString("path"));
             object->setTransform(Transform(objectJson->getValue<JsonObject>("transform")));
+        } else if (objectJson->getString("type") == "scene") {
+            std::string path = objectJson->getString("path");
+            SceneParser sceneParser = SceneParser();
+            sceneParser.setPath(path, previousPaths);
+            sceneParser.parse();
+            std::vector<Object *> objects = sceneParser.getScene().getObjects();
+            for (auto &object : objects) {
+                objectsVector.push_back(object);
+            }
+            previousPaths.push_back(path);
         } else {
             object = _objectsFactory.createObject(objectJson->getString("type"), *_propertiesFactory.createProperties(objectJson->getString("type"), objectJson));
         }
