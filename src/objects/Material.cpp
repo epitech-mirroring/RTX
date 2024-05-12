@@ -17,9 +17,10 @@ Material::Material()
     _roughness = 0.0;
     _transparency = 0.0;
     _refractionIndex = 0.0;
+    _hasCheckerPattern = false;
 }
 
-Material::Material(const glm::vec3 &color, const glm::vec3 &emission, const double brightness, const double roughness, const double transparency, const double refractionIndex)
+Material::Material(const glm::vec3 &color, const glm::vec3 &emission, const double brightness, const double roughness, const double transparency, const double refractionIndex, const bool hasCheckerPattern)
 {
     _color = color;
     _emission = emission;
@@ -27,6 +28,7 @@ Material::Material(const glm::vec3 &color, const glm::vec3 &emission, const doub
     _roughness = roughness;
     _transparency = transparency;
     _refractionIndex = refractionIndex;
+    _hasCheckerPattern = hasCheckerPattern;
 }
 
 Material::Material(const Material &material)
@@ -37,6 +39,7 @@ Material::Material(const Material &material)
     _roughness = material._roughness;
     _transparency = material._transparency;
     _refractionIndex = material._refractionIndex;
+    _hasCheckerPattern = material._hasCheckerPattern;
 }
 
 Material::Material(JsonObject *obj)
@@ -54,6 +57,11 @@ Material::Material(JsonObject *obj)
         _refractionIndex = obj->getFloat("refractionIndex");
     } catch (std::exception &e) {
         _refractionIndex = 0.0;
+    }
+    try {
+        _hasCheckerPattern = obj->getBoolean("hasCheckerPattern");
+    } catch (std::exception &e) {
+        _hasCheckerPattern = false;
     }
 }
 
@@ -145,4 +153,19 @@ void Material::setTransparency(const double transparency)
 void Material::setRefractionIndex(const double refractionIndex)
 {
     _refractionIndex = refractionIndex;
+}
+
+bool Material::hasCheckerPattern() const
+{
+    return _hasCheckerPattern;
+}
+
+bool &Material::hasCheckerPattern()
+{
+    return _hasCheckerPattern;
+}
+
+void Material::setHasCheckerPattern(const bool hasCheckerPattern)
+{
+    _hasCheckerPattern = hasCheckerPattern;
 }

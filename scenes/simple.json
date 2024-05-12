@@ -100,7 +100,7 @@
       "size": 1.0
     },
     {
-      "type": "rectangle",
+      "type": "plane",
       "material": {
         "color": {
           "r": 1.0,
@@ -113,12 +113,13 @@
           "b": 0.0
         },
         "brightness": 0.0,
-        "roughness": 1.0
+        "roughness": 1.0,
+        "hasCheckerPattern": true
       },
       "transform": {
         "position": {
           "x": -2.0,
-          "y": 1.0,
+          "y": 0.8,
           "z": 5.0
         },
         "scale": {
@@ -133,9 +134,8 @@
         }
       },
       "textures": [],
-      "height": 0.5,
-      "width": 5.0,
-      "length": 10.0
+      "height": 5.0,
+      "width": 10.0
     }
   ]
 }
