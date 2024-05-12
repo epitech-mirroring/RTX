@@ -49,11 +49,11 @@ static std::vector<Triangle> GenerateTorusTriangles(const TorusProperties &prope
             float zCenterNext = sin(((i + 1) % (std::size_t) precisionTorus) * thetaTorus);
             float yCenterNext = 0;
             glm::vec3 centerNext = glm::vec3(xCenterNext, yCenterNext, zCenterNext);
-            triangles.push_back(Triangle(a, b, c));
+            triangles.push_back({a, b, c});
             triangles.back().normalV0 = glm::normalize(a - center);
             triangles.back().normalV1 = glm::normalize(b - centerNext);
             triangles.back().normalV2 = glm::normalize(c - centerNext);
-            triangles.push_back(Triangle(a, c, d));
+            triangles.push_back({a, c, d});
             triangles.back().normalV0 = glm::normalize(a - center);
             triangles.back().normalV1 = glm::normalize(c - centerNext);
             triangles.back().normalV2 = glm::normalize(d - center);
