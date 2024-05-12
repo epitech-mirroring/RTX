@@ -30,6 +30,7 @@ struct Material {
     float roughness;
     float transparency;
     float refractionIndex;
+    bool hasCheckerPattern;
 };
 
 struct Mesh {
@@ -42,7 +43,7 @@ struct Mesh {
     Material material;
 };
 
-layout(std140, binding = 3) uniform Scene {
+layout(std140, binding = 3) uniform readonly Scene {
     uint iNumMeshes;
     uint iNumTriangles;
     uint iIsSceneDirty;
@@ -270,6 +271,19 @@ vec3 raytrace(Ray ray, inout uint seed) {
 
         if (hit.hit) {
             ray.origin = hit.position;
+            vec3 directLight;
+            vec3 newColor;
+            if (material.hasCheckerPattern) {
+                newColor = mod(hit.position.x, 1.0) < 0.5 == mod(hit.position.z, 1.0) < 0.5 ? material.color : vec3(1.0 - material.color);
+                directLight = newColor * material.emissionIntensity;
+            } else if (hit.mesh.textureOffset >= 0) {
+                vec2 uv = hit.uv + vec2(hit.mesh.textureOffset, 0.0);
+                newColor = texture(textures, uv).rgb * lightIntensity * 2;
+                directLight = texture(textures, uv).rgb * material.emissionIntensity;
+            } else {
+                directLight = material.emission * material.emissionIntensity;
+                newColor = material.color;
+            }
             bool goesThrough = randomValue(seed) <= material.transparency;
             if (goesThrough || isInsideMesh) { // Refraction
                 float toRefractionIndex = isInsideMesh ? 1.0 : material.refractionIndex;
@@ -294,7 +308,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
                     } else {
                         fromRefractionIndex = 1.0;
                     }
-                    color *= material.color;
+                    color *= newColor;
                 } else { // Total internal reflection
                     // If we were inside the mesh, we stay inside the mesh and vice versa
                     // If we were outside the reflection can be a diffuse reflection
@@ -302,30 +316,19 @@ vec3 raytrace(Ray ray, inout uint seed) {
                         vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
                         vec3 specularDirection = reflect(ray.direction, hit.normal);
                         ray.direction = mix(diffuseDirection, specularDirection, 1.0 - material.roughness);
-                        color *= material.color;
+                        color *= newColor;
                     } else {
                         ray.direction = reflect(ray.direction, hit.normal);
-                        color *= material.color;
+                        color *= newColor;
                     }
                 }
             } else { // Reflection
                 vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
                 vec3 specularDirection = reflect(ray.direction, hit.normal);
                 ray.direction = mix(diffuseDirection, specularDirection, 1.0 - material.roughness);
-                vec3 directLight;
                 float lightIntensity = dot(hit.normal, ray.direction);
-                vec3 newColor;
-                // If mesh texture is enabled, we need to sample the texture
-                if (hit.mesh.textureOffset >= 0) {
-                    vec2 uv = hit.uv + vec2(hit.mesh.textureOffset, 0.0);
-                    newColor = texture(textures, uv).rgb * lightIntensity * 2;
-                    directLight = texture(textures, uv).rgb * material.emissionIntensity;
-                } else {
-                    newColor = material.color * lightIntensity * 2;
-                    directLight = material.emission * material.emissionIntensity;
-                }
                 incomingLight += directLight * color;
-                color *= newColor;
+                color *= newColor * lightIntensity * 2;
             }
         } else {
             if (iIsSkyboxEnabled > 0) {

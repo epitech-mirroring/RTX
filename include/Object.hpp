@@ -30,6 +30,7 @@ struct RaytracingMaterial {
     alignas(4) float roughness;
     alignas(4) float transparency;
     alignas(4) float refractionIndex;
+    alignas(4) bool hasCheckerPattern;
 };
 
 struct Mesh {
