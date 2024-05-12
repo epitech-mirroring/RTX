@@ -229,11 +229,11 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         m.transform = mesh->getTransform().getTransformationMatrix();
         if (mesh->getTextures().contains(Texture::TextureType::TEXTURE)) {
             m.textureOffset = (float) _mainTextureOffsets[offsetIdx];
-            m.textureWidth = (float) _textureWidth[offsetIdx];
+            m.textureSize = _texturesSizes[offsetIdx];
             offsetIdx++;
         } else {
             m.textureOffset = -1;
-            m.textureWidth = -1;
+            m.textureSize = glm::vec2(0, 0);
         }
         RaytracingMaterial material{};
         material.color = mesh->getMaterial().getColor();
@@ -1792,7 +1792,7 @@ void Application::updateComputeUniformBuffer(uint32_t currentImage)
     sceneUBO.iSkyboxEnabled = _scene->isSkyBoxEnabled() ? 1 : 0;
     sceneUBO.iFrameIndex = _frameIndex;
     sceneUBO.iFrameCount = _frameCount;
-    sceneUBO.iMainTextureTotalWidth =  (float) _mainTextureTotalWidth;
+    sceneUBO.iMainTextureSize = glm::vec2(_mainTextureTotalWidth, _mainTextureMaxHeight);
     memcpy(_sceneBuffersMapped[currentImage], &sceneUBO, sizeof(sceneUBO));
 
     if (_sceneChanged) {
@@ -2296,7 +2296,7 @@ void Application::computeMainTextureSize()
             if (type == Texture::TextureType::TEXTURE) {
                 // Store offset
                 _mainTextureOffsets.push_back(_mainTextureTotalWidth);
-                _textureWidth.push_back(texWidth);
+                _texturesSizes.push_back(glm::vec2(texWidth, texHeight));
 
                 _mainTextureTotalWidth += texWidth;
                 _mainTextureMaxHeight = std::max(_mainTextureMaxHeight, (std::size_t) texHeight);
@@ -2533,21 +2533,6 @@ void Application::createMainTexture()
     }
 
     _device.bindImageMemory(_mainTextureImage, _mainTextureImageMemory, 0);
-
-    vk::ImageViewCreateInfo viewInfo;
-    viewInfo.sType = vk::StructureType::eImageViewCreateInfo;
-    viewInfo.image = _mainTextureImage;
-    viewInfo.viewType = vk::ImageViewType::e2D;
-    viewInfo.format = vk::Format::eR8G8B8A8Unorm;
-    viewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-    viewInfo.subresourceRange.baseMipLevel = 0;
-    viewInfo.subresourceRange.levelCount = 1;
-    viewInfo.subresourceRange.baseArrayLayer = 0;
-    viewInfo.subresourceRange.layerCount = 1;
-
-    if (_device.createImageView(&viewInfo, nullptr, &_mainTextureImageView) != vk::Result::eSuccess) {
-        throw std::runtime_error("failed to create texture image view!");
-    }
 
     // Step 3
     transitionImageLayout(_mainTextureImage, vk::Format::eR8G8B8A8Unorm,

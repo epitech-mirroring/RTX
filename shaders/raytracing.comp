@@ -40,7 +40,7 @@ struct Mesh {
     vec3 boundingBoxMax;
     mat4 transform;
     float textureOffset; // -1 if no texture else the x offset in main texture atlas
-    float textureWidth;
+    vec2 textureSize;
     Material material;
 };
 
@@ -51,7 +51,7 @@ layout(std140, binding = 3) uniform readonly Scene {
     uint iIsSkyboxEnabled;
     uint iFrameIndex;
     uint iFrameCount;
-    float mainTextureWidth;
+    vec2 mainTextureSize;
 };
 
 layout(std140, binding = 4) buffer readonly Triangles {
@@ -280,7 +280,8 @@ vec3 raytrace(Ray ray, inout uint seed) {
                 directLight = newColor * material.emissionIntensity;
             } else if (hit.mesh.textureOffset >= 0) {
                 vec2 uv = hit.uv;
-                uv.x = (uv.x * hit.mesh.textureWidth + hit.mesh.textureOffset) / mainTextureWidth;
+                uv.x = (uv.x * hit.mesh.textureSize.x + hit.mesh.textureOffset) / mainTextureSize.x;
+                uv.y = (uv.y * hit.mesh.textureSize.y) / mainTextureSize.y;
                 newColor = texture(textures, uv).rgb;
                 directLight = texture(textures, uv).rgb * material.emissionIntensity;
             } else {
