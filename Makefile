@@ -23,12 +23,14 @@ CXX_SOURCES		= 	src/main.cpp										\
 					src/primitives/Plane.cpp							\
 					src/primitives/Cylinder.cpp							\
 					src/primitives/Cone.cpp								\
+					src/primitives/Torus.cpp							\
 					src/primitives/Properties/AbstractProperties.cpp	\
 					src/primitives/Properties/PropertiesFactory.cpp		\
 					src/primitives/Properties/CubeProperties.cpp		\
 					src/primitives/Properties/PlaneProperties.cpp		\
 					src/primitives/Properties/CylinderProperties.cpp	\
 					src/primitives/Properties/ConeProperties.cpp		\
+					src/primitives/Properties/TorusProperties.cpp		\
 					src/Application.cpp									\
 
 SHADERS 		= 	shaders/screen.vert									\
