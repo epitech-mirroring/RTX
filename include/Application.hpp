@@ -201,6 +201,8 @@ protected:
     vk::DeviceMemory _mainTextureImageMemory;
 
     vk::Sampler _mainTextureSampler;
+
+    std::vector<std::size_t> _mainTextureOffsets;
 public:
     Application(glm::vec2 windowSize, const std::string &appName, Scene *scene);
     Application(unsigned int width, unsigned int height, const std::string &appName, Scene *scene);

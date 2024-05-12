@@ -35,6 +35,7 @@ struct Mesh {
     vec3 boundingBoxMin;
     vec3 boundingBoxMax;
     mat4 transform;
+    float textureOffset; // -1 if no texture else the x offset in main texture atlas
     Material material;
 };
 

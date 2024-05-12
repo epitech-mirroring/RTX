@@ -220,12 +220,18 @@ Application::Application(unsigned int width, unsigned int height, const std::str
             _triangles.push_back(triangle);
         }
         std::size_t end_idx = _triangles.size();
+        std::size_t offsetIdx = 0;
         Mesh m{};
         m.startIdx = start_idx;
         m.endIdx = end_idx;
         m.boundingBoxMax = boundingBoxMax;
         m.boundingBoxMin = boundingBoxMin;
         m.transform = mesh->getTransform().getTransformationMatrix();
+        if (mesh->getTextures().contains(Texture::TextureType::TEXTURE)) {
+            m.textureOffset = _mainTextureOffsets[offsetIdx++];
+        } else {
+            m.textureOffset = -1;
+        }
         RaytracingMaterial material{};
         material.color = mesh->getMaterial().getColor();
         material.emission = mesh->getMaterial().getEmission();
@@ -1723,14 +1729,16 @@ void Application::createComputeDescriptorSetLayout()
     // Binding 3: Scene UBO
     // Binding 4: Triangle buffer
     // Binding 5: Mesh buffer
+    // Binding 6: Main texture sampler
     vk::DescriptorSetLayoutBinding inputImageLayoutBinding = createDescriptorSetLayoutBinding(0, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute);
     vk::DescriptorSetLayoutBinding outputImageLayoutBinding = createDescriptorSetLayoutBinding(1, vk::DescriptorType::eStorageImage, vk::ShaderStageFlagBits::eCompute);
     vk::DescriptorSetLayoutBinding viewLayoutBinding = createDescriptorSetLayoutBinding(2, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eCompute);
     vk::DescriptorSetLayoutBinding sceneLayoutBinding = createDescriptorSetLayoutBinding(3, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eCompute);
     vk::DescriptorSetLayoutBinding triangleLayoutBinding = createDescriptorSetLayoutBinding(4, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eCompute);
     vk::DescriptorSetLayoutBinding meshLayoutBinding = createDescriptorSetLayoutBinding(5, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eCompute);
+    vk::DescriptorSetLayoutBinding textureLayoutBinding = createDescriptorSetLayoutBinding(6, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eCompute);
 
-    std::array<vk::DescriptorSetLayoutBinding, 6> bindings = {inputImageLayoutBinding, outputImageLayoutBinding, viewLayoutBinding, sceneLayoutBinding, triangleLayoutBinding, meshLayoutBinding};
+    std::array<vk::DescriptorSetLayoutBinding, 7> bindings = {inputImageLayoutBinding, outputImageLayoutBinding, viewLayoutBinding, sceneLayoutBinding, triangleLayoutBinding, meshLayoutBinding, textureLayoutBinding};
     vk::DescriptorSetLayoutCreateInfo layoutInfo;
     layoutInfo.sType = vk::StructureType::eDescriptorSetLayoutCreateInfo;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -1829,7 +1837,11 @@ void Application::createComputeDescriptorPool()
     storagePool.type = vk::DescriptorType::eStorageBuffer;
     storagePool.descriptorCount = static_cast<uint32_t>(2);
 
-    std::array<vk::DescriptorPoolSize, 3> poolSizes = {imagePool, uniformPool, storagePool};
+    vk::DescriptorPoolSize samplerPool;
+    samplerPool.type = vk::DescriptorType::eCombinedImageSampler;
+    samplerPool.descriptorCount = static_cast<uint32_t>(1);
+
+    std::array<vk::DescriptorPoolSize, 4> poolSizes = {imagePool, uniformPool, storagePool, samplerPool};
 
     vk::DescriptorPoolCreateInfo poolInfo;
     poolInfo.sType = vk::StructureType::eDescriptorPoolCreateInfo;
@@ -1997,8 +2009,21 @@ void Application::createComputeDescriptorSets()
         meshesDescriptorWrite.descriptorCount = 1;
         meshesDescriptorWrite.pBufferInfo = &meshesBufferInfo;
 
+        vk::DescriptorImageInfo textureImageInfo;
+        textureImageInfo.imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+        textureImageInfo.imageView = _mainTextureImageView;
+        textureImageInfo.sampler = _mainTextureSampler;
 
-        std::array<vk::WriteDescriptorSet, 6> descriptorWrites = {inputImageDescriptorWrite, outputImageDescriptorWrite, viewDescriptorWrite, sceneDescriptorWrite, triangleDescriptorWrite, meshesDescriptorWrite};
+        vk::WriteDescriptorSet textureDescriptorWrite;
+        textureDescriptorWrite.sType = vk::StructureType::eWriteDescriptorSet;
+        textureDescriptorWrite.dstSet = _computeDescriptorSets[i];
+        textureDescriptorWrite.dstBinding = 6;
+        textureDescriptorWrite.dstArrayElement = 0;
+        textureDescriptorWrite.descriptorType = vk::DescriptorType::eCombinedImageSampler;
+        textureDescriptorWrite.descriptorCount = 1;
+        textureDescriptorWrite.pImageInfo = &textureImageInfo;
+
+        std::array<vk::WriteDescriptorSet, 7> descriptorWrites = {inputImageDescriptorWrite, outputImageDescriptorWrite, viewDescriptorWrite, sceneDescriptorWrite, triangleDescriptorWrite, meshesDescriptorWrite, textureDescriptorWrite};
         if (!descriptorWrites.empty()) {
             _device.updateDescriptorSets(static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
         }
@@ -2259,6 +2284,9 @@ void Application::computeMainTextureSize()
             int texWidth, texHeight, texChannels;
             stbi_uc* pixels = stbi_load(texture.getPath().c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
             if (type == Texture::TextureType::TEXTURE) {
+                // Store offset
+                _mainTextureOffsets.push_back(_mainTextureTotalWidth);
+
                 _mainTextureTotalWidth += texWidth;
                 _mainTextureMaxHeight = std::max(_mainTextureMaxHeight, (std::size_t) texHeight);
             }
@@ -2335,6 +2363,36 @@ void Application::transitionImageLayout(vk::Image image, vk::Format format, vk::
 
         sourceStage = vk::PipelineStageFlagBits::eTransfer;
         destinationStage = vk::PipelineStageFlagBits::eFragmentShader;
+    } else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eGeneral) {
+        barrier.srcAccessMask = vk::AccessFlags();
+        barrier.dstAccessMask = vk::AccessFlags();
+
+        sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+        destinationStage = vk::PipelineStageFlagBits::eTopOfPipe;
+    } else if (oldLayout == vk::ImageLayout::eGeneral && newLayout == vk::ImageLayout::eTransferSrcOptimal) {
+        barrier.srcAccessMask = vk::AccessFlags();
+        barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+
+        sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+        destinationStage = vk::PipelineStageFlagBits::eTransfer;
+    } else if (oldLayout == vk::ImageLayout::eTransferSrcOptimal && newLayout == vk::ImageLayout::eGeneral) {
+        barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+        barrier.dstAccessMask = vk::AccessFlags();
+
+        sourceStage = vk::PipelineStageFlagBits::eTransfer;
+        destinationStage = vk::PipelineStageFlagBits::eTopOfPipe;
+    } else if (oldLayout == vk::ImageLayout::eGeneral && newLayout == vk::ImageLayout::eTransferDstOptimal) {
+        barrier.srcAccessMask = vk::AccessFlags();
+        barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
+
+        sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+        destinationStage = vk::PipelineStageFlagBits::eTransfer;
+    } else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eTransferSrcOptimal) {
+        barrier.srcAccessMask = vk::AccessFlags();
+        barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+
+        sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+        destinationStage = vk::PipelineStageFlagBits::eTransfer;
     } else {
         throw std::invalid_argument("unsupported layout transition!");
     }
@@ -2360,7 +2418,7 @@ void Application::createMainTexture()
 {
     // Steps:
     // 1. Create a big image that allow all texture to fit on it
-    // 2. Create the memory for the big image and it's view
+    // 2. Create the memory for the big image
     // 2. Load all images and blit them to the big image
     // 3. Transition the big image to shader read only optimal layout
     // 4. Create the image view
@@ -2422,36 +2480,20 @@ void Application::createMainTexture()
     }
 
     // Step 3
-    vk::CommandBuffer commandBuffer = beginSingleTimeCommands();
-
-    // Step 3 - Transition big image to be "blit" ready
-    vk::ImageMemoryBarrier barrier;
-    barrier.sType = vk::StructureType::eImageMemoryBarrier;
-    barrier.oldLayout = vk::ImageLayout::eUndefined;
-    barrier.newLayout = vk::ImageLayout::eTransferDstOptimal;
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image = _mainTextureImage;
-    barrier.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
-    barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = 1;
-    barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount = 1;
-    barrier.srcAccessMask = vk::AccessFlags();
-    barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
-
-    commandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe, vk::PipelineStageFlagBits::eTransfer, vk::DependencyFlags(), nullptr, nullptr, barrier);
+    transitionImageLayout(_mainTextureImage, vk::Format::eR8G8B8A8Unorm,
+                          vk::ImageLayout::eUndefined,
+                          vk::ImageLayout::eTransferDstOptimal);
 
     // Step 3 - Load all images and blit them to the big image
     int xOffset = 0;
     for (auto &obj : _scene->getObjects()) {
         for (auto &[type, texture]: obj->getTextures()) {
-            std::cout << "Loading texture: " << texture.getPath() << std::endl;
             // Get image size
             int texWidth, texHeight, texChannels;
             stbi_uc *pixels =
                     stbi_load(texture.getPath().c_str(), &texWidth, &texHeight,
                               &texChannels, STBI_rgb_alpha);
+            std::cout << "Loading texture: " << texture.getPath() << " (" << texWidth << "x" << texHeight << ")" << std::endl;
             if (type == Texture::TextureType::TEXTURE) {
                 // Create a staging image
                 vk::Image stagingImage;
@@ -2479,6 +2521,8 @@ void Application::createMainTexture()
                                       vk::ImageLayout::eUndefined,
                                       vk::ImageLayout::eTransferSrcOptimal);
 
+                vk::CommandBuffer commandBuffer = beginSingleTimeCommands();
+
                 // Blit the staging image to the big image
                 vk::ImageBlit blit;
                 blit.srcOffsets[0] = vk::Offset3D(0, 0, 0);
@@ -2503,6 +2547,26 @@ void Application::createMainTexture()
                         _mainTextureImage, vk::ImageLayout::eTransferDstOptimal,
                         1, &blit, vk::Filter::eLinear);
 
+                // Transition the staging image back to be "blit" ready
+                /*transitionImageLayout(stagingImage, vk::Format::eR8G8B8A8Unorm,
+                                      vk::ImageLayout::eTransferSrcOptimal,
+                                      vk::ImageLayout::eUndefined);*/
+
+                commandBuffer.end();
+
+                // Submit command buffer
+                vk::SubmitInfo submitInfo;
+                submitInfo.sType = vk::StructureType::eSubmitInfo;
+                submitInfo.commandBufferCount = 1;
+                submitInfo.pCommandBuffers = &commandBuffer;
+
+                if (_graphicsQueue.submit(1, &submitInfo, VK_NULL_HANDLE) != vk::Result::eSuccess) {
+                    throw std::runtime_error("failed to submit command buffer!");
+                }
+
+                _graphicsQueue.waitIdle();
+                _device.freeCommandBuffers(_commandPool, 1, &commandBuffer);
+
                 xOffset += texWidth;
 
                 // Cleanup
@@ -2517,21 +2581,23 @@ void Application::createMainTexture()
                           vk::ImageLayout::eTransferDstOptimal,
                           vk::ImageLayout::eShaderReadOnlyOptimal);
 
-    commandBuffer.end();
+    vk::ImageSubresourceRange subresourceRange;
+    subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+    subresourceRange.baseMipLevel = 0;
+    subresourceRange.levelCount = 1;
+    subresourceRange.baseArrayLayer = 0;
+    subresourceRange.layerCount = 1;
 
-    // Submit command buffer
-    vk::SubmitInfo submitInfo;
-    submitInfo.sType = vk::StructureType::eSubmitInfo;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffer;
+    vk::ImageViewCreateInfo imageViewInfo;
+    imageViewInfo.sType = vk::StructureType::eImageViewCreateInfo;
+    imageViewInfo.image = _mainTextureImage;
+    imageViewInfo.viewType = vk::ImageViewType::e2D;
+    imageViewInfo.format = vk::Format::eR8G8B8A8Unorm;
+    imageViewInfo.subresourceRange = subresourceRange;
 
-    if (_graphicsQueue.submit(1, &submitInfo, VK_NULL_HANDLE) != vk::Result::eSuccess) {
-        throw std::runtime_error("failed to submit command buffer!");
+    if (_device.createImageView(&imageViewInfo, nullptr, &_mainTextureImageView) != vk::Result::eSuccess) {
+        throw std::runtime_error("failed to create texture image view!");
     }
-
-    _graphicsQueue.waitIdle();
-    _device.freeCommandBuffers(_commandPool, 1, &commandBuffer);
-
 
     // Step 5
     vk::SamplerCreateInfo samplerInfo;
@@ -2541,11 +2607,11 @@ void Application::createMainTexture()
     samplerInfo.addressModeU = vk::SamplerAddressMode::eClampToEdge;
     samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;
     samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;
-    samplerInfo.anisotropyEnable = VK_TRUE;
+    samplerInfo.anisotropyEnable = vk::False;
     samplerInfo.maxAnisotropy = 16;
     samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
-    samplerInfo.unnormalizedCoordinates = VK_FALSE;
-    samplerInfo.compareEnable = VK_FALSE;
+    samplerInfo.unnormalizedCoordinates = vk::False;
+    samplerInfo.compareEnable = vk::False;
     samplerInfo.compareOp = vk::CompareOp::eAlways;
     samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
     samplerInfo.mipLodBias = 0.0f;
