@@ -55,6 +55,7 @@ layout(std140, binding = 5) buffer readonly Meshes {
     Mesh iMeshes[];
 };
 
+//layout(binding = 6) uniform sampler2D textures;
 
 struct Ray {
     vec3 origin;

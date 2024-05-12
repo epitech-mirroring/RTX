@@ -18,6 +18,7 @@ public:
         SPECULAR,
         NORMAL,
         HEIGHT,
+        TEXTURE
     };
 private:
     std::string _path;
