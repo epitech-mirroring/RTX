@@ -18,6 +18,9 @@ struct Triangle {
     vec3 aNormal;
     vec3 bNormal;
     vec3 cNormal;
+    vec2 aUV;
+    vec2 bUV;
+    vec2 cUV;
 };
 
 struct Material {
@@ -39,7 +42,7 @@ struct Mesh {
     Material material;
 };
 
-layout(binding = 3) uniform readonly Scene {
+layout(std140, binding = 3) uniform Scene {
     uint iNumMeshes;
     uint iNumTriangles;
     uint iIsSceneDirty;
@@ -56,7 +59,7 @@ layout(std140, binding = 5) buffer readonly Meshes {
     Mesh iMeshes[];
 };
 
-//layout(binding = 6) uniform sampler2D textures;
+layout(binding = 6) uniform sampler2D textures;
 
 struct Ray {
     vec3 origin;
@@ -68,6 +71,7 @@ struct Hit {
     float distance;
     vec3 normal;
     vec3 position;
+    vec2 uv;
     Mesh mesh;
 };
 
@@ -141,6 +145,7 @@ Hit rayTriangle(Ray ray, Triangle tri, bool shouldHitNormalsFromBack)
     hit.hit = _determinant >= 1E-6 && dst >= 0 && u >= 0 && v >= 0 && w >= 0;
     hit.position = ray.origin + ray.direction * dst;
     hit.normal = normalize(tri.aNormal * w + tri.bNormal * u + tri.cNormal * v);
+    hit.uv = tri.aUV * w + tri.bUV * u + tri.cUV * v;
     hit.distance = dst;
     return hit;
 }
@@ -153,6 +158,9 @@ Triangle getTransformedTriangle(Triangle tri, mat4 transform) {
     transformedTri.aNormal = (transform * vec4(tri.aNormal, 0.0)).xyz;
     transformedTri.bNormal = (transform * vec4(tri.bNormal, 0.0)).xyz;
     transformedTri.cNormal = (transform * vec4(tri.cNormal, 0.0)).xyz;
+    transformedTri.aUV = tri.aUV;
+    transformedTri.bUV = tri.bUV;
+    transformedTri.cUV = tri.cUV;
     return transformedTri;
 }
 
@@ -304,10 +312,20 @@ vec3 raytrace(Ray ray, inout uint seed) {
                 vec3 diffuseDirection = normalize(hit.normal + randomDirection(seed));
                 vec3 specularDirection = reflect(ray.direction, hit.normal);
                 ray.direction = mix(diffuseDirection, specularDirection, 1.0 - material.roughness);
-                vec3 directLight = material.emission * material.emissionIntensity;
+                vec3 directLight;
                 float lightIntensity = dot(hit.normal, ray.direction);
+                vec3 newColor;
+                // If mesh texture is enabled, we need to sample the texture
+                if (hit.mesh.textureOffset >= 0) {
+                    vec2 uv = hit.uv + vec2(hit.mesh.textureOffset, 0.0);
+                    newColor = texture(textures, uv).rgb * lightIntensity * 2;
+                    directLight = texture(textures, uv).rgb * material.emissionIntensity;
+                } else {
+                    newColor = material.color * lightIntensity * 2;
+                    directLight = material.emission * material.emissionIntensity;
+                }
                 incomingLight += directLight * color;
-                color *= material.color * lightIntensity * 2;
+                color *= newColor;
             }
         } else {
             if (iIsSkyboxEnabled > 0) {

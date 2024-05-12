@@ -28,30 +28,30 @@ static std::vector<Triangle> GenerateCylinderTriangles(const CylinderProperties 
     //top triangles
     for (std::size_t i = 0; i < verticesTop.size(); i++) {
         if (i == verticesTop.size() - 1)
-            triangles.push_back({top, verticesTop[i], verticesTop[0]});
+            triangles.push_back({top, verticesTop[i], verticesTop[0], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
         else
-            triangles.push_back({top, verticesTop[i], verticesTop[i + 1]});
+            triangles.push_back({top, verticesTop[i], verticesTop[i + 1], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
     }
-//    //bottom triangles
+    //bottom triangles
     for (std::size_t i = 0; i < verticesBottom.size(); i++) {
         if (i == verticesBottom.size() - 1)
-            triangles.push_back({bottom, verticesBottom[0], verticesBottom[i]});
+            triangles.push_back({bottom, verticesBottom[0], verticesBottom[i], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
         else
-            triangles.push_back({bottom, verticesBottom[i + 1], verticesBottom[i]});
+            triangles.push_back({bottom, verticesBottom[i + 1], verticesBottom[i], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
     }
     //top start triangles
     for (std::size_t i = 0; i < verticesTop.size(); i++) {
         if (i == verticesTop.size() - 1)
-            triangles.push_back({verticesBottom[i], verticesTop[0], verticesTop[i]});
+            triangles.push_back({verticesBottom[i], verticesTop[0], verticesTop[i], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
         else
-            triangles.push_back({verticesBottom[i], verticesTop[i + 1], verticesTop[i]});
+            triangles.push_back({verticesBottom[i], verticesTop[i + 1], verticesTop[i], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
     }
     //bottom start triangles
     for (std::size_t i = 0; i < verticesBottom.size(); i++) {
         if (i == verticesBottom.size() - 1)
-            triangles.push_back({verticesBottom[i], verticesBottom[0], verticesTop[0]});
+            triangles.push_back({verticesBottom[i], verticesBottom[0], verticesTop[0], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
         else
-            triangles.push_back({verticesBottom[i], verticesBottom[i + 1], verticesTop[i + 1]});
+            triangles.push_back({verticesBottom[i], verticesBottom[i + 1], verticesTop[i + 1], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
     }
 
     for (std::size_t i = 0; i < precision; i++) {

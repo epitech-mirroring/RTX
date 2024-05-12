@@ -210,7 +210,7 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         _numMeshes++;
     }
     _frameCount = 0;
-
+    computeMainTextureSize();
     for (const auto mesh : _scene->getObjects()) {
         std::size_t start_idx = _triangles.size();
         glm::vec3 boundingBoxMax = {0, 0, 0};
@@ -228,7 +228,7 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         m.boundingBoxMin = boundingBoxMin;
         m.transform = mesh->getTransform().getTransformationMatrix();
         if (mesh->getTextures().contains(Texture::TextureType::TEXTURE)) {
-            m.textureOffset = _mainTextureOffsets[offsetIdx++];
+            m.textureOffset = (float) _mainTextureOffsets[offsetIdx++];
         } else {
             m.textureOffset = -1;
         }
@@ -272,7 +272,6 @@ void Application::initWindow()
 
 void Application::initVulkan()
 {
-    computeMainTextureSize();
     createInstance();
     setupDebugMessenger();
     createSurface();

@@ -18,6 +18,9 @@ struct Triangle {
     alignas(16) glm::vec3 normalV0;
     alignas(16) glm::vec3 normalV1;
     alignas(16) glm::vec3 normalV2;
+    alignas(8) glm::vec2 uv0;
+    alignas(8) glm::vec2 uv1;
+    alignas(8) glm::vec2 uv2;
 };
 
 struct RaytracingMaterial {
