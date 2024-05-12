@@ -19,9 +19,10 @@ protected:
     double _roughness;
     double _transparency;
     double _refractionIndex;
+    bool _hasCheckerPattern;
 public:
     Material();
-    Material(const glm::vec3 &color, const glm::vec3 &emission, double brightness, double roughness, double transparency, double refractionIndex);
+    Material(const glm::vec3 &color, const glm::vec3 &emission, double brightness, double roughness, double transparency, double refractionIndex, bool hasCheckerPattern = false);
     Material(const Material &material);
     explicit Material(JsonObject *obj);
     ~Material() = default;
@@ -37,10 +38,13 @@ public:
     [[nodiscard]] double &getTransparency();
     [[nodiscard]] double getRefractionIndex() const;
     [[nodiscard]] double &getRefractionIndex();
+    [[nodiscard]] bool hasCheckerPattern() const;
+    [[nodiscard]] bool &hasCheckerPattern();
     void setColor(const glm::vec3 &color);
     void setEmission(const glm::vec3 &emission);
     void setBrightness(double brightness);
     void setRoughness(double roughness);
     void setTransparency(double transparency);
     void setRefractionIndex(double refractionIndex);
+    void setHasCheckerPattern(bool hasCheckerPattern);
 };

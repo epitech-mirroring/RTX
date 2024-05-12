@@ -231,6 +231,7 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         material.roughness = (float) mesh->getMaterial().getRoughness();
         material.transparency = (float) mesh->getMaterial().getTransparency();
         material.refractionIndex = (float) mesh->getMaterial().getRefractionIndex();
+        material.hasCheckerPattern = mesh->getMaterial().hasCheckerPattern();
         m.material = material;
 
         _meshes.push_back(m);
