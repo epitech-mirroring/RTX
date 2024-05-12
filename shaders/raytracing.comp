@@ -18,6 +18,9 @@ struct Triangle {
     vec3 aNormal;
     vec3 bNormal;
     vec3 cNormal;
+    vec2 aUV;
+    vec2 bUV;
+    vec2 cUV;
 };
 
 struct Material {
@@ -36,16 +39,19 @@ struct Mesh {
     vec3 boundingBoxMin;
     vec3 boundingBoxMax;
     mat4 transform;
+    float textureOffset; // -1 if no texture else the x offset in main texture atlas
+    vec2 textureSize;
     Material material;
 };
 
-layout(binding = 3) uniform readonly Scene {
+layout(std140, binding = 3) uniform readonly Scene {
     uint iNumMeshes;
     uint iNumTriangles;
     uint iIsSceneDirty;
     uint iIsSkyboxEnabled;
     uint iFrameIndex;
     uint iFrameCount;
+    vec2 mainTextureSize;
 };
 
 layout(std140, binding = 4) buffer readonly Triangles {
@@ -56,6 +62,7 @@ layout(std140, binding = 5) buffer readonly Meshes {
     Mesh iMeshes[];
 };
 
+layout(binding = 6) uniform sampler2D textures;
 
 struct Ray {
     vec3 origin;
@@ -67,8 +74,8 @@ struct Hit {
     float distance;
     vec3 normal;
     vec3 position;
+    vec2 uv;
     Mesh mesh;
-    vec3 barycentric;
 };
 
 float randomValue(inout uint seed) {
@@ -141,8 +148,8 @@ Hit rayTriangle(Ray ray, Triangle tri, bool shouldHitNormalsFromBack)
     hit.hit = _determinant >= 1E-6 && dst >= 0 && u >= 0 && v >= 0 && w >= 0;
     hit.position = ray.origin + ray.direction * dst;
     hit.normal = normalize(tri.aNormal * w + tri.bNormal * u + tri.cNormal * v);
+    hit.uv = tri.aUV * w + tri.bUV * u + tri.cUV * v;
     hit.distance = dst;
-    hit.barycentric = vec3(u, v, w);
     return hit;
 }
 
@@ -154,6 +161,9 @@ Triangle getTransformedTriangle(Triangle tri, mat4 transform) {
     transformedTri.aNormal = (transform * vec4(tri.aNormal, 0.0)).xyz;
     transformedTri.bNormal = (transform * vec4(tri.bNormal, 0.0)).xyz;
     transformedTri.cNormal = (transform * vec4(tri.cNormal, 0.0)).xyz;
+    transformedTri.aUV = tri.aUV;
+    transformedTri.bUV = tri.bUV;
+    transformedTri.cUV = tri.cUV;
     return transformedTri;
 }
 
@@ -268,6 +278,12 @@ vec3 raytrace(Ray ray, inout uint seed) {
             if (material.hasCheckerPattern) {
                 newColor = mod(hit.position.x, 1.0) < 0.5 == mod(hit.position.z, 1.0) < 0.5 ? material.color : vec3(1.0 - material.color);
                 directLight = newColor * material.emissionIntensity;
+            } else if (hit.mesh.textureOffset >= 0) {
+                vec2 uv = hit.uv;
+                uv.x = (uv.x * hit.mesh.textureSize.x + hit.mesh.textureOffset) / mainTextureSize.x;
+                uv.y = (uv.y * hit.mesh.textureSize.y) / mainTextureSize.y;
+                newColor = texture(textures, uv).rgb;
+                directLight = texture(textures, uv).rgb * material.emissionIntensity;
             } else {
                 directLight = material.emission * material.emissionIntensity;
                 newColor = material.color;

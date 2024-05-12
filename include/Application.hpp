@@ -77,6 +77,7 @@ struct SceneUBO {
     alignas(4) unsigned int iSkyboxEnabled;
     alignas(4) unsigned int iFrameIndex;
     alignas(4) unsigned int iFrameCount;
+    alignas(8) glm::vec2 iMainTextureSize;
 };
 
 class Application {
@@ -192,6 +193,18 @@ protected:
 
     bool _sceneChanged = true;
     std::size_t _frameCount = 0;
+
+    std::size_t _mainTextureTotalWidth = 0;
+    std::size_t _mainTextureMaxHeight = 0;
+
+    vk::Image _mainTextureImage;
+    vk::ImageView _mainTextureImageView;
+    vk::DeviceMemory _mainTextureImageMemory;
+
+    vk::Sampler _mainTextureSampler;
+
+    std::vector<std::size_t> _mainTextureOffsets;
+    std::vector<glm::vec2> _texturesSizes;
 public:
     Application(glm::vec2 windowSize, const std::string &appName, Scene *scene);
     Application(unsigned int width, unsigned int height, const std::string &appName, Scene *scene);
@@ -205,6 +218,8 @@ public:
     void screenshot(const std::string &filename);
     void stop();
 protected:
+    void computeMainTextureSize();
+    void createMainTexture();
     void initWindow();
     void initVulkan();
     void createInstance();
@@ -255,4 +270,7 @@ protected:
     uint32_t findMemoryType(uint32_t typeFilter, vk::MemoryPropertyFlags properties);
     void drawFrame();
     vk::CommandBuffer beginSingleTimeCommands();
+
+    void createImage(uint32_t width, uint32_t height, vk::Format format, vk::ImageTiling tiling, vk::ImageUsageFlags usage, vk::MemoryPropertyFlags properties, vk::Image& image, vk::DeviceMemory& imageMemory);
+    void transitionImageLayout(vk::Image image, vk::Format format, vk::ImageLayout oldLayout, vk::ImageLayout newLayout);
 };

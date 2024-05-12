@@ -52,7 +52,7 @@ GLSL_FLAGS		=   -O
 CXXFLAGS		= 	-W -Wall -Wextra -std=c++20 -I./include  \
 				 	-L. -ljson -lobj -lglfw -lvulkan -ldl -lpthread -lX11 -O3
 MACOS_FLAGS		= 	-rpath /usr/local/lib/
-LINUX_FLAGS		=
+LINUX_FLAGS		=	-I$(VULKAN_SDK_PATH)/include
 CXXFLAGS		+=	$(shell [ `uname -s` = "Darwin" ] && echo $(MACOS_FLAGS))
 CXXFLAGS		+=	$(shell [ `uname -s` = "Linux" ] && echo $(LINUX_FLAGS))
 CXX_OBJS		= 	$(CXX_SOURCES:.cpp=.o)

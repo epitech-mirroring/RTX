@@ -119,10 +119,10 @@ std::vector<Triangle> Sphere::duplicateTriangles(std::vector<Triangle>& triangle
             glm::vec3 h1 = getMiddle(triangle.v0, triangle.v1);
             glm::vec3 h2 = getMiddle(triangle.v1, triangle.v2);
             glm::vec3 h3 = getMiddle(triangle.v2, triangle.v0);
-            vertex.push_back({triangle.v0, h1, h3, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}});
-            vertex.push_back({h1, triangle.v1, h2, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}});
-            vertex.push_back({h3, h2, triangle.v2, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}});
-            vertex.push_back({h3, h1, h2, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}});
+            vertex.push_back({triangle.v0, h1, h3, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
+            vertex.push_back({h1, triangle.v1, h2, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
+            vertex.push_back({h3, h2, triangle.v2, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
+            vertex.push_back({h3, h1, h2, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
         }
         triangles.clear();
         triangles = vertex;

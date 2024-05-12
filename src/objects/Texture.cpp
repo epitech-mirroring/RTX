@@ -40,6 +40,8 @@ Texture::Texture(JsonObject *obj)
         this->_type = Texture::TextureType::NORMAL;
     else if (type == "height")
         this->_type = Texture::TextureType::HEIGHT;
+    else if (type == "texture")
+        this->_type = Texture::TextureType::TEXTURE;
     else {
         throw std::invalid_argument("Error: Invalid texture type");
     }

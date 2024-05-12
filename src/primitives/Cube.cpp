@@ -26,23 +26,23 @@ static std::vector<Triangle> createCubeTriangles(float size)
     double offset = size / 2.f;
     std::vector<Triangle> triangles = {
         // Front
-            {{-offset, -offset, -offset}, {-offset, offset, -offset}, {offset, offset, -offset}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}},
-            {{-offset, -offset, -offset}, {offset, offset, -offset}, {offset, -offset, -offset}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}},
+            {{-offset, -offset, -offset}, {-offset, offset, -offset}, {offset, offset, -offset}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0} , {0, 1}, {1, 1}},
+            {{-offset, -offset, -offset}, {offset, offset, -offset}, {offset, -offset, -offset}, {0, 0, -1}, {0, 0, -1}, {0, 0, -1}, {0, 0} , {1, 1}, {1, 0}},
         // Back
-            {{-offset, -offset, offset}, {offset, -offset, offset}, {offset, offset, offset}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}},
-            {{-offset, -offset, offset}, {offset, offset, offset}, {-offset, offset, offset}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}},
+            {{-offset, -offset, offset}, {offset, -offset, offset}, {offset, offset, offset}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0} , {0, 1}, {1, 1}},
+            {{-offset, -offset, offset}, {offset, offset, offset}, {-offset, offset, offset}, {0, 0, 1}, {0, 0, 1}, {0, 0, 1}, {0, 0} , {1, 1}, {1, 0}},
         // Left
-            {{-offset, -offset, -offset}, {-offset, -offset, offset}, {-offset, offset, offset}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}},
-            {{-offset, -offset, -offset}, {-offset, offset, offset}, {-offset, offset, -offset}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}},
+            {{-offset, -offset, -offset}, {-offset, -offset, offset}, {-offset, offset, offset}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}, {0, 0} , {0, 1}, {1, 1}},
+            {{-offset, -offset, -offset}, {-offset, offset, offset}, {-offset, offset, -offset}, {-1, 0, 0}, {-1, 0, 0}, {-1, 0, 0}, {0, 0} , {1, 1}, {1, 0}},
         // Right
-            {{offset, -offset, -offset}, {offset, offset, -offset}, {offset, offset, offset}, {1, 0, 0}, {1, 0, 0}, {1, 0, 0}},
-            {{offset, -offset, -offset}, {offset, offset, offset}, {offset, -offset, offset}, {1, 0, 0}, {1, 0, 0}, {1, 0, 0}},
+            {{offset, -offset, -offset}, {offset, offset, -offset}, {offset, offset, offset}, {1, 0, 0}, {1, 0, 0}, {1, 0, 0}, {0, 0} , {0, 1}, {1, 1}},
+            {{offset, -offset, -offset}, {offset, offset, offset}, {offset, -offset, offset}, {1, 0, 0}, {1, 0, 0}, {1, 0, 0}, {0, 0} , {1, 1}, {1, 0}},
         // Top
-            {{-offset, offset, -offset}, {-offset, offset, offset}, {offset, offset, offset}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}},
-            {{-offset, offset, -offset}, {offset, offset, offset}, {offset, offset, -offset}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}},
+            {{-offset, offset, -offset}, {-offset, offset, offset}, {offset, offset, offset}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {0, 0} , {0, 1}, {1, 1}},
+            {{-offset, offset, -offset}, {offset, offset, offset}, {offset, offset, -offset}, {0, 1, 0}, {0, 1, 0}, {0, 1, 0}, {0, 0} , {1, 1}, {1, 0}},
         // Bottom
-            {{-offset, -offset, -offset}, {offset, -offset, -offset}, {offset, -offset, offset}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0}},
-            {{-offset, -offset, -offset}, {offset, -offset, offset}, {-offset, -offset, offset}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0}},
+            {{-offset, -offset, -offset}, {offset, -offset, -offset}, {offset, -offset, offset}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0}, {0, 0} , {0, 1}, {1, 1}},
+            {{-offset, -offset, -offset}, {offset, -offset, offset}, {-offset, -offset, offset}, {0, -1, 0}, {0, -1, 0}, {0, -1, 0}, {0, 0} , {1, 1}, {1, 0}},
     };
     return triangles;
 }

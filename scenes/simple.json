@@ -60,7 +60,12 @@
           "z": 0.0
         }
       },
-      "textures": [],
+      "textures": [
+        {
+          "type": "texture",
+          "path": "assets/grass.png"
+        }
+      ],
       "size": 1.0
     },
     {
@@ -96,7 +101,12 @@
           "z": 0.0
         }
       },
-      "textures": [],
+      "textures": [
+        {
+          "type": "texture",
+          "path": "assets/glowstone.png"
+        }
+      ],
       "size": 1.0
     },
     {

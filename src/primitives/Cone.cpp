@@ -27,16 +27,16 @@ static std::vector<Triangle> GenerateConeTriangles(const ConeProperties &propert
     //bottom triangles
     for (std::size_t i = 0; i < verticesBottom.size(); i++) {
         if (i == verticesBottom.size() - 1)
-            triangles.push_back({bottom, verticesBottom[0], verticesBottom[i]});
+            triangles.push_back({bottom, verticesBottom[0], verticesBottom[i], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
         else
-            triangles.push_back({bottom, verticesBottom[i + 1], verticesBottom[i]});
+            triangles.push_back({bottom, verticesBottom[i + 1], verticesBottom[i], {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
     }
     //bottom start triangles
     for (std::size_t i = 0; i < verticesBottom.size(); i++) {
         if (i == verticesBottom.size() - 1)
-            triangles.push_back({verticesBottom[i], verticesBottom[0], top});
+            triangles.push_back({verticesBottom[i], verticesBottom[0], top, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
         else
-            triangles.push_back({verticesBottom[i], verticesBottom[i + 1], top});
+            triangles.push_back({verticesBottom[i], verticesBottom[i + 1], top, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0} , {0, 0}, {0, 0}});
     }
 
     for (std::size_t i = 0; i < precision; i++) {
