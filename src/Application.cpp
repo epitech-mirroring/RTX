@@ -210,6 +210,7 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         _numMeshes++;
     }
     _frameCount = 0;
+    std::size_t offsetIdx = 0;
     computeMainTextureSize();
     for (const auto mesh : _scene->getObjects()) {
         std::size_t start_idx = _triangles.size();
@@ -220,7 +221,6 @@ Application::Application(unsigned int width, unsigned int height, const std::str
             _triangles.push_back(triangle);
         }
         std::size_t end_idx = _triangles.size();
-        std::size_t offsetIdx = 0;
         Mesh m{};
         m.startIdx = start_idx;
         m.endIdx = end_idx;
@@ -228,9 +228,12 @@ Application::Application(unsigned int width, unsigned int height, const std::str
         m.boundingBoxMin = boundingBoxMin;
         m.transform = mesh->getTransform().getTransformationMatrix();
         if (mesh->getTextures().contains(Texture::TextureType::TEXTURE)) {
-            m.textureOffset = (float) _mainTextureOffsets[offsetIdx++];
+            m.textureOffset = (float) _mainTextureOffsets[offsetIdx];
+            m.textureWidth = (float) _textureWidth[offsetIdx];
+            offsetIdx++;
         } else {
             m.textureOffset = -1;
+            m.textureWidth = -1;
         }
         RaytracingMaterial material{};
         material.color = mesh->getMaterial().getColor();
@@ -509,6 +512,12 @@ void Application::cleanup()
     }
 
     // Destroy the images
+    _device.destroyImageView(_mainTextureImageView, nullptr);
+    _device.destroyImage(_mainTextureImage, nullptr);
+    _device.freeMemory(_mainTextureImageMemory, nullptr);
+
+    _device.destroySampler(_mainTextureSampler, nullptr);
+
     _device.destroyImageView(_textureImageView, nullptr);
     _device.destroyImage(_textureImage, nullptr);
     _device.freeMemory(_textureImageMemory, nullptr);
@@ -1783,6 +1792,7 @@ void Application::updateComputeUniformBuffer(uint32_t currentImage)
     sceneUBO.iSkyboxEnabled = _scene->isSkyBoxEnabled() ? 1 : 0;
     sceneUBO.iFrameIndex = _frameIndex;
     sceneUBO.iFrameCount = _frameCount;
+    sceneUBO.iMainTextureTotalWidth =  (float) _mainTextureTotalWidth;
     memcpy(_sceneBuffersMapped[currentImage], &sceneUBO, sizeof(sceneUBO));
 
     if (_sceneChanged) {
@@ -2286,6 +2296,7 @@ void Application::computeMainTextureSize()
             if (type == Texture::TextureType::TEXTURE) {
                 // Store offset
                 _mainTextureOffsets.push_back(_mainTextureTotalWidth);
+                _textureWidth.push_back(texWidth);
 
                 _mainTextureTotalWidth += texWidth;
                 _mainTextureMaxHeight = std::max(_mainTextureMaxHeight, (std::size_t) texHeight);
@@ -2393,6 +2404,12 @@ void Application::transitionImageLayout(vk::Image image, vk::Format format, vk::
 
         sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
         destinationStage = vk::PipelineStageFlagBits::eTransfer;
+    } else if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal) {
+        barrier.srcAccessMask = vk::AccessFlags();
+        barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+        sourceStage = vk::PipelineStageFlagBits::eTopOfPipe;
+        destinationStage = vk::PipelineStageFlagBits::eFragmentShader;
     } else {
         throw std::invalid_argument("unsupported layout transition!");
     }
@@ -2425,6 +2442,59 @@ void Application::createMainTexture()
     // 5. Create the sampler
 
     if (_mainTextureMaxHeight == 0 || _mainTextureTotalWidth == 0) {
+        // We need to at least create the sampler
+        std::cout << "No textures to load" << std::endl;
+
+        vk::SamplerCreateInfo samplerInfo;
+        samplerInfo.sType = vk::StructureType::eSamplerCreateInfo;
+        samplerInfo.magFilter = vk::Filter::eLinear;
+        samplerInfo.minFilter = vk::Filter::eLinear;
+        samplerInfo.addressModeU = vk::SamplerAddressMode::eClampToEdge;
+        samplerInfo.addressModeV = vk::SamplerAddressMode::eClampToEdge;
+        samplerInfo.addressModeW = vk::SamplerAddressMode::eClampToEdge;
+        samplerInfo.anisotropyEnable = vk::False;
+        samplerInfo.maxAnisotropy = 16;
+        samplerInfo.borderColor = vk::BorderColor::eIntOpaqueBlack;
+        samplerInfo.unnormalizedCoordinates = vk::False;
+        samplerInfo.compareEnable = vk::False;
+        samplerInfo.compareOp = vk::CompareOp::eAlways;
+        samplerInfo.mipmapMode = vk::SamplerMipmapMode::eLinear;
+        samplerInfo.mipLodBias = 0.0f;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = 0.0f;
+
+        if (_device.createSampler(&samplerInfo, nullptr, &_mainTextureSampler) != vk::Result::eSuccess) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+
+        // And create a dummy image (1x1)
+
+        createImage(1, 1, vk::Format::eR8G8B8A8Unorm,
+                    vk::ImageTiling::eLinear,
+                    vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eStorage,
+                    vk::MemoryPropertyFlagBits::eHostVisible |
+                            vk::MemoryPropertyFlagBits::eHostCoherent,
+                    _mainTextureImage, _mainTextureImageMemory);
+
+        transitionImageLayout(_mainTextureImage, vk::Format::eR8G8B8A8Unorm,
+                              vk::ImageLayout::eUndefined,
+                              vk::ImageLayout::eShaderReadOnlyOptimal);
+
+        vk::ImageViewCreateInfo viewInfo;
+        viewInfo.sType = vk::StructureType::eImageViewCreateInfo;
+        viewInfo.image = _mainTextureImage;
+        viewInfo.viewType = vk::ImageViewType::e2D;
+        viewInfo.format = vk::Format::eR8G8B8A8Unorm;
+        viewInfo.subresourceRange.aspectMask = vk::ImageAspectFlagBits::eColor;
+        viewInfo.subresourceRange.baseMipLevel = 0;
+        viewInfo.subresourceRange.levelCount = 1;
+        viewInfo.subresourceRange.baseArrayLayer = 0;
+        viewInfo.subresourceRange.layerCount = 1;
+
+        if (_device.createImageView(&viewInfo, nullptr, &_mainTextureImageView) != vk::Result::eSuccess) {
+            throw std::runtime_error("failed to create texture image view!");
+        }
+
         return;
     }
     std::cout << "Creating main texture with size: " << _mainTextureTotalWidth << "x" << _mainTextureMaxHeight << std::endl;

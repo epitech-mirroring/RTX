@@ -77,6 +77,7 @@ struct SceneUBO {
     alignas(4) unsigned int iSkyboxEnabled;
     alignas(4) unsigned int iFrameIndex;
     alignas(4) unsigned int iFrameCount;
+    alignas(4) float iMainTextureTotalWidth;
 };
 
 class Application {
@@ -203,6 +204,7 @@ protected:
     vk::Sampler _mainTextureSampler;
 
     std::vector<std::size_t> _mainTextureOffsets;
+    std::vector<std::size_t> _textureWidth;
 public:
     Application(glm::vec2 windowSize, const std::string &appName, Scene *scene);
     Application(unsigned int width, unsigned int height, const std::string &appName, Scene *scene);

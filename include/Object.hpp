@@ -40,6 +40,7 @@ struct Mesh {
     alignas(16) glm::vec3 boundingBoxMax;
     alignas(16) glm::mat4 transform;
     alignas(4) float textureOffset;
+    alignas(4) float textureWidth;
     RaytracingMaterial material;
 };
 
