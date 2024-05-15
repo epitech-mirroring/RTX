@@ -29,9 +29,11 @@ class ObjParser : public AbstractParser {
         void parseVertices(const std::string& line) override;
         void parseNormals(const std::string& line) override;
         void parseFaces(const std::string& line) override;
+        void parseUVs(const std::string& line) override;
         ~ObjParser() override = default;
     private:
         std::vector<glm::vec3> verticesBuffer;
         std::vector<glm::vec3> normalsBuffer;
+        std::vector<glm::vec2> uvsBuffer;
         std::vector<Triangle> trianglesBuffer;
 };

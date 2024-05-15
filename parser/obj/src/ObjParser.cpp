@@ -7,13 +7,16 @@
 
 #include "obj/ObjParser.hpp"
 
-static std::vector<std::string> split(const std::string &s, char delimiter) {
+static std::vector<std::string> split(std::string s, const std::string& delimiter)
+{
     std::vector<std::string> tokens;
-    std::string token;
-    std::istringstream tokenStream(s);
-    while (getline(tokenStream, token, delimiter)) {
-        tokens.push_back(token);
+    size_t pos = 0;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        tokens.push_back(s.substr(0, pos));
+        s.erase(0, pos + delimiter.length());
     }
+    if (!s.empty())
+        tokens.push_back(s);
     return tokens;
 }
 
@@ -36,38 +39,60 @@ void ObjParser::parseNormals(const std::string& line)
         normalsBuffer.push_back(parseVec3(line.substr(3)));
 }
 
+void ObjParser::parseUVs(const std::string& line)
+{
+    if (line.substr(0, 3) == "vt ") {
+        float u, v = 0, w = 0;
+        std::istringstream s(line.substr(3));
+        std::vector<std::string> tokens = split(line.substr(3), " ");
+        if (!tokens.empty()) {
+            s >> u;
+        } else {
+            throw std::runtime_error("Invalid UV format: " + line);
+        }
+        if (tokens.size() >= 2)
+            s >> v;
+        if (tokens.size() >= 3)
+            s >> w;
+        uvsBuffer.emplace_back(glm::vec2(u, v));
+    }
+}
+
 void ObjParser::parseFaces(const std::string& line)
 {
     if (line.substr(0, 2) == "f ") {
-        std::vector<std::string> tokens = split(line.substr(2), ' ');
+        std::vector<std::string> tokens = split(line.substr(2), " ");
         if (tokens.size() >= 3) {
-            Triangle tri{};
-            std::vector<int> vertexIndices, normalIndices;
+            std::vector<int> vertexIndices, normalIndices, textureIndices;
             for (auto& token : tokens) {
-                auto parts = split(token, '/');
-                if (!parts.empty() && !parts[0].empty()) {
+                auto parts = split(token, "/");
+                if (parts.size() != 3) {
+                    std::cerr << "Invalid face format: " << line << std::endl;
+                    return;
+                }
+                if (!parts[0].empty())
                     vertexIndices.push_back(std::stoi(parts[0]) - 1);
-                }
-                if (parts.size() == 3 && !parts[2].empty()) {
+                if (!parts[1].empty())
+                    textureIndices.push_back(std::stoi(parts[1]) - 1);
+                if (!parts[2].empty())
                     normalIndices.push_back(std::stoi(parts[2]) - 1);
-                }
             }
-            if (vertexIndices.size() == 3) {
-                tri.v0 = verticesBuffer[vertexIndices[0]];
-                tri.v1 = verticesBuffer[vertexIndices[1]];
-                tri.v2 = verticesBuffer[vertexIndices[2]];
-
-                if (normalIndices.size() == 3) {
-                    tri.normalV0 = normalsBuffer[normalIndices[0]];
-                    tri.normalV1 = normalsBuffer[normalIndices[1]];
-                    tri.normalV2 = normalsBuffer[normalIndices[2]];
-                } else {
-                    glm::vec3 edge1 = tri.v1 - tri.v0;
-                    glm::vec3 edge2 = tri.v2 - tri.v0;
-                    glm::vec3 normal = glm::normalize(glm::cross(edge1, edge2));
-                    tri.normalV0 = tri.normalV1 = tri.normalV2 = normal;
+            for (size_t i = 2; i < vertexIndices.size(); i++) {
+                Triangle triangle{};
+                triangle.v0 = verticesBuffer[vertexIndices[0]];
+                triangle.v1 = verticesBuffer[vertexIndices[i - 1]];
+                triangle.v2 = verticesBuffer[vertexIndices[i]];
+                if (!normalIndices.empty()) {
+                    triangle.normalV0 = normalsBuffer[normalIndices[0]];
+                    triangle.normalV1 = normalsBuffer[normalIndices[i - 1]];
+                    triangle.normalV2 = normalsBuffer[normalIndices[i]];
                 }
-                trianglesBuffer.push_back(tri);
+                if (!textureIndices.empty()) {
+                    triangle.uv0 = uvsBuffer[textureIndices[0]];
+                    triangle.uv1 = uvsBuffer[textureIndices[i - 1]];
+                    triangle.uv2 = uvsBuffer[textureIndices[i]];
+                }
+                trianglesBuffer.push_back(triangle);
             }
         }
     }
@@ -97,8 +122,25 @@ Object *ObjParser::parseFile(const std::string& filename)
     while (getline(file, line)) {
         parseVertices(line);
         parseNormals(line);
+        parseUVs(line);
         parseFaces(line);
     }
     file.close();
+    for (auto &triangle: trianglesBuffer) {
+        // Axe Y is inverted in the raytracing engine
+        triangle.v0.y = -triangle.v0.y;
+        triangle.v1.y = -triangle.v1.y;
+        triangle.v2.y = -triangle.v2.y;
+        triangle.normalV0.y = -triangle.normalV0.y;
+        triangle.normalV1.y = -triangle.normalV1.y;
+        triangle.normalV2.y = -triangle.normalV2.y;
+
+        triangle.v0.z = -triangle.v0.z;
+        triangle.v1.z = -triangle.v1.z;
+        triangle.v2.z = -triangle.v2.z;
+        triangle.normalV0.z = -triangle.normalV0.z;
+        triangle.normalV1.z = -triangle.normalV1.z;
+        triangle.normalV2.z = -triangle.normalV2.z;
+    }
     return new Object(objMaterial, objTransform, trianglesBuffer, textures);
 }

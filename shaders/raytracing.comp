@@ -288,6 +288,7 @@ vec3 raytrace(Ray ray, inout uint seed) {
                 directLight = material.emission * material.emissionIntensity;
                 newColor = material.color;
             }
+            return hit.normal;
             bool goesThrough = randomValue(seed) <= material.transparency;
             if (goesThrough || isInsideMesh) { // Refraction
                 float toRefractionIndex = isInsideMesh ? 1.0 : material.refractionIndex;
