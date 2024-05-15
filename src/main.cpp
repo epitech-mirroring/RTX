@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 
     bool saved = false;
 
-    app.run([&app, &saved, &args]() {
+    app.run([&app, &saved, &args, &scene]() {
         if (app.getFrameIndex() >= args.frame_before_render && !saved && !args.disable_render_output) {
             app.screenshot(args.outputPath);
             saved = true;
@@ -145,6 +145,10 @@ int main(int argc, char **argv)
                 app.stop();
             }
         }
+
+        Object *obj = scene.getObject(0);
+        obj->getTransform().rotate(glm::vec3(0, 1, 0), 0.01);
+        app.updateScene();
     });
     return 0;
 }
