@@ -82,10 +82,15 @@ void ObjParser::parseFaces(const std::string& line)
                 triangle.v0 = verticesBuffer[vertexIndices[0]];
                 triangle.v1 = verticesBuffer[vertexIndices[i - 1]];
                 triangle.v2 = verticesBuffer[vertexIndices[i]];
-                if (!normalIndices.empty()) {
+                if (!normalIndices.empty() && false) {
                     triangle.normalV0 = normalsBuffer[normalIndices[0]];
                     triangle.normalV1 = normalsBuffer[normalIndices[i - 1]];
                     triangle.normalV2 = normalsBuffer[normalIndices[i]];
+                } else {
+                    glm::vec3 normal = glm::normalize(glm::cross(triangle.v1 - triangle.v0, triangle.v2 - triangle.v0));
+                    triangle.normalV0 = normal;
+                    triangle.normalV1 = normal;
+                    triangle.normalV2 = normal;
                 }
                 if (!textureIndices.empty()) {
                     triangle.uv0 = uvsBuffer[textureIndices[0]];
@@ -103,6 +108,8 @@ Object *ObjParser::parseFile(const std::string& filename)
     // remain to implement texture
     Transform objTransform;
     Material objMaterial;
+    objMaterial.setColor(glm::vec3(1, 1, 1));
+    objMaterial.setRoughness(1.0);
     std::vector<Texture> textures;
 
     std::string line;

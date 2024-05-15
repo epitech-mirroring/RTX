@@ -136,7 +136,8 @@ int main(int argc, char **argv)
 
     bool saved = false;
 
-    app.run([&app, &saved, &args, &scene]() {
+    float angle = 0;
+    app.run([&app, &saved, &args, &scene, &angle]() {
         if (app.getFrameIndex() >= args.frame_before_render && !saved && !args.disable_render_output) {
             app.screenshot(args.outputPath);
             saved = true;
@@ -146,8 +147,13 @@ int main(int argc, char **argv)
             }
         }
 
-        Object *obj = scene.getObject(0);
-        obj->getTransform().rotate(glm::vec3(0, 1, 0), 0.01);
+        Camera &camera = scene.getMainCamera();
+        float speed = 0.01f;
+        angle += speed;
+        if (angle > 2 * M_PI)
+            angle = 0;
+        camera.getTransform().setPosition(glm::vec3(cos(angle) * 3.0, -1, sin(angle)*3.0));
+        camera.getTransform().setRotation(glm::dquat(glm::vec3(0, M_PI + (M_PI / 2 - angle), 0)));
         app.updateScene();
     });
     return 0;
